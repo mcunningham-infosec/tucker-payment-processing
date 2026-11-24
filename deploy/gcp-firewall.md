@@ -9,6 +9,10 @@ Anyone who tries the server's IP directly gets no answer at all.
 |---|---|---|
 | `allow-web` | TCP 80, 443 (web) | Cloudflare's IPv4 ranges only |
 | `allow-ssh-iap-only` | TCP 22 (admin) | Google's Identity-Aware Proxy, `35.235.240.0/20`, only (no public SSH) |
+| `default-allow-icmp` | ping | **Disabled** (Nov 24, 2026): the server doesn't answer pings, so scanners can't confirm it's there |
+
+To turn ping back on briefly for troubleshooting: `gcloud compute firewall-rules update default-allow-icmp --no-disabled`
+(and `--disabled` to switch it off again).
 
 How `allow-web` was locked down (run in Cloud Shell). The ranges are fetched fresh from Cloudflare rather
 than typed by hand:

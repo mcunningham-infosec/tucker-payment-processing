@@ -25,7 +25,8 @@ Apache only if its config test passes, refreshes the nightly timers and restarts
 | `ops-agent-config.yaml` | Google Cloud Ops Agent: ships ONLY the app's owner-alert lines to Cloud Logging | once, at setup |
 | `alert-policy.json` | Cloud Monitoring policy that emails the owner when an alert line arrives | once, at setup |
 | `postgres-store-login.md` | How the app's two database logins work with no passwords (peer authentication) | once, at setup |
-| `gcp-firewall.md` | The Google Cloud firewall: web traffic only from Cloudflare, admin only through Identity-Aware Proxy | once, at setup |
+| `dns.md` | Every DNS record (Cloudflare), the email lockdown, and the Cloudflare settings that matter | reference |
+| `gcp-firewall.md` | The Google Cloud firewall: web traffic only from Cloudflare, admin only through Identity-Aware Proxy, no ping | once, at setup |
 | `auto-maintenance.sh` | Automatic security updates, reboot-if-needed at 4:30 AM, services on boot, log and disk caps | once, at setup |
 | `status.sh` | One-screen health check of every service, updates, disk, certificate and the site | any time |
 | `build_policy_pages.py` | Builds the AI Policies pages from `policies/*.md` (a test keeps them in sync) | after editing a policy |
