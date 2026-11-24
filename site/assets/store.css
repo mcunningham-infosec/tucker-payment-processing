@@ -1,5 +1,6 @@
 /* Tucker's Treats: cart icon (every page), product grid, checkout. Mobile-first. */
 .top { position:relative; }
+/* (the old top-right cart link is gone; the cart button now sits next to the theme song) */
 .cart-link { position:absolute; top:-12px; right:0; display:flex; align-items:center; gap:4px; color:var(--blue);
              text-decoration:none; font-weight:800; background:var(--card); border:2px solid #e8dcc8; border-radius:999px; padding:6px 12px 6px 10px; }
 .cart-link:hover, .cart-link:focus-visible { border-color:var(--blue); outline:none; }
@@ -70,3 +71,26 @@
 /* Store header: sign centered, theme song button centered underneath */
 .sign-row-shop { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:6px; }
 .sign-row-shop .theme-player { justify-content:center; }
+
+/* "Access Cart and Checkout" - right next to the theme song, where nobody can miss it */
+.sign-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px; }
+.cart-cta { display:inline-flex; align-items:center; gap:8px; background:var(--blue); color:#fff; text-decoration:none; font-weight:800;
+            font-size:.92rem; border-radius:999px; padding:8px 16px; box-shadow:0 4px 0 rgba(31,95,191,.3); white-space:nowrap; }
+.cart-cta:hover, .cart-cta:focus-visible { background:#174a96; outline:none; }
+.cart-cta .cart-count { background:var(--orange); }
+
+/* Left column on store pages: Behind the Scenes, then the small chat */
+.side { display:flex; flex-direction:column; gap:18px; }
+.chat-card.mini .chat-head img { width:44px; height:44px; }
+.chat-card.mini .log { height:230px; }
+.chat-card.mini .try { font-size:.85rem; }
+.chat-card.mini .try button { font-size:.8rem; padding:3px 9px; }
+.side .bts { position:static; max-height:460px; overflow-y:auto; }   /* long step lists scroll, so the chat stays close */
+@media (min-width:900px) { .shop-grid { grid-template-columns:300px minmax(0,1fr); } }
+
+/* Checkout: LEFT Behind the Scenes + chat | MIDDLE pick a customer / place order | RIGHT your cart.
+   Phones: cart first, then payment, then Behind the Scenes and chat. */
+.checkout-grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"cart" "pay" "side"; }
+.checkout-grid .side { grid-area:side; } .checkout-grid .pay { grid-area:pay; } .checkout-grid .cart-col { grid-area:cart; }
+@media (min-width:820px) { .checkout-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"pay cart" "side side"; } }
+@media (min-width:1200px) { .checkout-grid { grid-template-columns:320px minmax(0,1fr) minmax(0,1fr); grid-template-areas:"side pay cart"; align-items:start; } }

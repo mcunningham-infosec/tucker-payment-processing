@@ -94,7 +94,7 @@
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text.slice(0, MAX) })
+      body: JSON.stringify({ message: text.slice(0, MAX), page: page, cart: page === "cart" ? currentCart() : [] })
     })
       .then(function (r) {
         if (!r.ok) { throw new Error("HTTP " + r.status); }
@@ -132,7 +132,20 @@
   }
 
   // Wire everything up once the page is ready.
+  // Which page's chat this is: "home" (full chat), "store" (products) or "cart" (cart + this visit's orders).
+  var page = "home";
+
+  // The cart's product codes and quantities (never prices), read from this tab's storage for the cart chat.
+  function currentCart() {
+    try {
+      var c = JSON.parse(window.sessionStorage.getItem("tucker-cart") || "{}") || {};
+      return Object.keys(c).map(function (sku) { return { sku: sku, qty: c[sku] }; });
+    } catch (e) { return []; }
+  }
+
   function init() {
+    var box = document.querySelector("[data-chat-page]");
+    page = box ? box.getAttribute("data-chat-page") : "home";
     log = document.getElementById("log");
     form = document.getElementById("form");
     msg = document.getElementById("msg");
@@ -148,7 +161,8 @@
       if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!send.disabled) { sendMessage(msg.value); } }
     });
     msg.addEventListener("input", updateCount);
-    document.getElementById("reset").addEventListener("click", resetChat);
+    var resetBtn = document.getElementById("reset");
+    if (resetBtn) { resetBtn.addEventListener("click", resetChat); }
     Array.prototype.forEach.call(document.querySelectorAll(".try button"), function (b) {
       b.addEventListener("click", function () { if (!send.disabled) { sendMessage(b.getAttribute("data-say")); } });
     });
