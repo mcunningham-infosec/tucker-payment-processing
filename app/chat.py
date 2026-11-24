@@ -150,7 +150,8 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     reply = ""
     try:
         for round_no in range(SETTINGS.max_tool_rounds + 1):
-            turn = llm.generate(SYSTEM_PROMPT + PAGE_PROMPTS[page], messages, tools.declarations_for(page))
+            turn = llm.generate(SYSTEM_PROMPT + PAGE_PROMPTS[page] + _known_visitor(session, page), messages,
+                                tools.declarations_for(page))
             cost = spend.record(getattr(llm, "model", "model"), turn.tokens_in, turn.tokens_out)
             _ev(events, "model", "ok", f"AI model call {round_no + 1}",
                 f"{turn.tokens_in} tokens in, {turn.tokens_out} out, about ${cost:.5f}")
@@ -182,6 +183,16 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     history += [("user", text), ("model", reply)]
     db.record_event(session.id, "message", "")
     return _result(session, reply, events)
+
+
+def _known_visitor(session: Session, page: str) -> str:
+    """On the store and cart pages, tell Tucker the FIRST NAME of a visitor who verified on the home page,
+    so he can greet them. Nothing else crosses over: these pages' chats still have no account tools."""
+    if page == "home" or not session.customer_first_name:
+        return ""
+    return (f"\n\nThis visitor already verified their identity in the home page chat. Their first name is "
+            f"{session.customer_first_name}; you may greet them by name. This page's chat can't see their account "
+            "details (cards, transactions, profile); for those, point them to the chat on the home page.")
 
 
 def _result(session: Session, reply: str, events: list, napping: bool = False) -> dict:
