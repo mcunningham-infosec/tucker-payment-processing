@@ -73,7 +73,7 @@ def test_chat_can_read_orders_but_never_change_them():
     """Tucker's chat login can read orders, but can't edit them or place one."""
     from app.db import connect
     with connect() as c:
-        assert c.execute("SELECT count(*) FROM demo.orders").fetchone()["count"] >= 50
+        assert c.execute("SELECT count(*) FROM demo.orders").fetchone()["count"] >= 30
     for sql in ("UPDATE demo.orders SET status = 'refunded'", "SELECT demo.place_order('TPP-1001', '[]')"):
         with pytest.raises(psycopg.errors.InsufficientPrivilege):
             with connect() as c:

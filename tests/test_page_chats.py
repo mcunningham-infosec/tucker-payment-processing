@@ -36,7 +36,7 @@ def test_cart_chat_sees_the_cart_priced_by_the_server():
 
 
 def test_visit_orders_only_show_this_visit():
-    """The cart chat lists only orders placed in this session, never the customer's 50-order history."""
+    """The cart chat lists only orders placed in this session, never the customer's order history."""
     s = Session(id="v1")
     r = store.checkout([{"sku": "TT-108", "qty": 1}], s.id, [], (), "TPP-1001", "203.0.113.20")
     s.order_refs.append(r["confirmation"])

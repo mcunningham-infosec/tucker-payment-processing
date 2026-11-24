@@ -49,11 +49,31 @@ def test_no_raw_ip_is_stored(admin):
 
 
 def test_nightly_reset_clears_today_but_keeps_spend_and_history(admin):
-    """The reset removes web orders and counters but keeps the 50 historical orders and the AI spend tally."""
+    """The reset removes web orders and counters but keeps the 30 historical orders and the AI spend tally."""
     store.checkout([{"sku": "TT-101", "qty": 1}], "c", [], (), "TPP-1001", "203.0.113.5")
     admin.execute("INSERT INTO ops.ai_usage (model, input_tokens, output_tokens, cost_usd) VALUES ('test', 1, 1, 0.01)")
     subprocess.run(DB + ["-f", "db/nightly_reset.sql"], check=True)
     assert admin.execute("SELECT count(*) FROM demo.orders WHERE source='web'").fetchone()[0] == 0
-    assert admin.execute("SELECT count(*) FROM demo.orders WHERE source='history'").fetchone()[0] == 50
+    assert admin.execute("SELECT count(*) FROM demo.orders WHERE source='history'").fetchone()[0] == 30
     assert admin.execute("SELECT count(*) FROM ops.usage_events").fetchone()[0] == 0
     assert admin.execute("SELECT count(*) FROM ops.ai_usage WHERE model='test'").fetchone()[0] == 1
+
+
+def test_after_reset_every_customer_has_six_recent_transactions(admin):
+    """Michael's rule: after every midnight reset, each demo customer has 6 transactions, the newest one
+    is yesterday, and each has at least one approved purchase, so every part of the site has data."""
+    subprocess.run(DB + ["-f", "db/nightly_reset.sql"], check=True)
+    rows = admin.execute(
+        "SELECT c.customer_ref, count(t.id), max(t.created_at)::date, "
+        "count(*) FILTER (WHERE t.status = 'approved') "
+        "FROM demo.customers c JOIN demo.transactions t ON t.customer_id = c.id "
+        "WHERE c.customer_ref <> 'TPP-0001' GROUP BY 1 ORDER BY 1").fetchall()
+    assert len(rows) == 5
+    newest = admin.execute("SELECT current_date - 1").fetchone()[0]
+    for ref, count, latest, approved in rows:
+        assert count == 6, ref
+        assert approved >= 1, ref
+        assert (newest - latest).days <= 1, ref        # recent: yesterday (or the day before)
+    # orders and their transactions stay on the same timestamp after the shift
+    assert admin.execute("SELECT count(*) FROM demo.transactions t JOIN demo.orders o ON o.id = t.order_id "
+                         "WHERE t.created_at <> o.created_at").fetchone()[0] == 0
