@@ -73,7 +73,7 @@
   };
 
   var OFFERED = "tucker-tour-offered";
-  var bubble, picEl, textEl, countEl, backBtn, nextBtn, launcher, spotted = null, current = -1;
+  var bubble, picEl, textEl, tipEl, countEl, backBtn, nextBtn, launcher, spotted = null, current = -1;
   var note = null;   // set while Tucker shows a one-off tip (not a tour step): where its button goes
 
   function el(tag, cls, text) {
@@ -103,13 +103,17 @@
     var body = el("div", "tour-body");
     textEl = el("p", "tour-text");
     textEl.setAttribute("aria-live", "polite");
+    // On small screens the welcome adds a friendly note: everything works, but the site shines on a big screen.
+    tipEl = el("p", "tour-tip", "Tip: this site is best experienced on a full-size computer screen. Everything works on " +
+                                "your phone, but the side-by-side views are easier to follow on a bigger screen.");
+    tipEl.hidden = true;
     var row = el("div", "tour-row");
     countEl = el("span", "tour-count");
     backBtn = el("button", "tour-back", "Back");
     nextBtn = el("button", "tour-next", "Next");
     backBtn.type = nextBtn.type = "button";
     row.appendChild(countEl); row.appendChild(backBtn); row.appendChild(nextBtn);
-    body.appendChild(textEl); body.appendChild(row);
+    body.appendChild(textEl); body.appendChild(tipEl); body.appendChild(row);
 
     var close = el("button", "tour-close", "×");
     close.type = "button";
@@ -166,6 +170,7 @@
     }
     guide(s.who);
     textEl.textContent = s.say;
+    tipEl.hidden = !(i === 0 && window.matchMedia && window.matchMedia("(max-width: 899px)").matches);
     countEl.textContent = (i + 1) + " of " + STEPS.length;
     backBtn.hidden = i === 0;
     nextBtn.textContent = s.last ? "Done" : s.label || (s.go ? "Take me there" : "Next");
@@ -237,6 +242,7 @@
     unspot();
     current = -1;
     note = href;
+    tipEl.hidden = true;
     guide("tucker");
     textEl.textContent = text;
     countEl.textContent = "";

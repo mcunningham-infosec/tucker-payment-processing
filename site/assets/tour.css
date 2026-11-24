@@ -13,6 +13,9 @@
 .tour-pic { width:56px; height:56px; border-radius:50%; flex:none; border:3px solid #ff8a1f; background:#fff; }
 .tour-body { flex:1; min-width:0; }
 .tour-text { margin:2px 22px 10px 0; font-size:.95rem; line-height:1.45; }
+.tour-tip { margin:-4px 22px 10px 0; padding:6px 9px; font-size:.82rem; line-height:1.4; background:#fff4e8;
+            border-left:3px solid #ff8a1f; border-radius:8px; color:#5a3a12; }
+.tour-tip[hidden] { display:none; }
 .tour-row { display:flex; align-items:center; gap:8px; }
 .tour-count { color:#777; font-size:.8rem; margin-right:auto; }
 .tour-row button { font:inherit; font-size:.9rem; font-weight:700; border-radius:999px; padding:7px 16px; cursor:pointer; }
