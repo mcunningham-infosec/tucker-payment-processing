@@ -8,6 +8,8 @@ chat.py - one chat turn, start to finish, with every guardrail in order.
   5. Model + tool loop, every tool authorized in Python, at most N rounds
   6. Output filter masks card numbers / SSNs / secrets
 Every step adds an event for the live "Behind the Scenes" panel.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import logging
 import time

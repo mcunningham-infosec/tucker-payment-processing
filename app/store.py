@@ -12,9 +12,10 @@ Orders ARE stored (real stores must keep them), but only through demo.place_orde
 login can call that one function and nothing else, and the function re-prices everything from the catalog.
 Nobody can edit or delete an order. A request that tries to tamper is refused outright and nothing is saved.
 Every step adds a Behind the Scenes event so visitors can watch the checks happen.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import datetime as dt
-import secrets
 from decimal import Decimal, ROUND_HALF_UP
 
 from . import db, limits

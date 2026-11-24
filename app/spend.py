@@ -4,6 +4,8 @@ spend.py - the app-level AI spending cap (the graceful layer of cost control).
 Every model call's tokens are priced and recorded. Before each new call we check the
 month-to-date and day-to-date totals. Over the cap -> Tucker "takes a nap" instead of calling
 the model. Google's own hard cap on the Gemini API ($9/month) sits behind this as a backstop.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from . import alerts, db, limits
 from .config import SETTINGS

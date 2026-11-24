@@ -5,6 +5,8 @@ The app's database role (tucker_app) can only SELECT the demo company's data and
 INSERT into its own ops tables. So even if every other layer failed, a visitor (or the AI)
 could not change a customer, card or transaction: the database itself refuses.
 All queries use parameters (%s), never string-building, so SQL injection isn't possible here.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from contextlib import contextmanager
 import psycopg
@@ -97,13 +99,18 @@ def record_ai_usage(model: str, tokens_in: int, tokens_out: int, cost: float):
                   (model, tokens_in, tokens_out, cost))
 
 
+_SPEND_SQL = {   # two fixed queries (no string building), one per cap
+    "month": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= date_trunc('month', now())",
+    "day": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= date_trunc('day', now())",
+}
+
+
 def ai_spend_since(interval: str) -> float:
     """Total AI cost for the current month ('month') or day ('day'), in USD."""
-    if interval not in ("month", "day"):
+    if interval not in _SPEND_SQL:
         raise ValueError("interval must be 'month' or 'day'")
     with connect() as c:
-        row = c.execute(f"SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage "
-                        f"WHERE called_at >= date_trunc('{interval}', now())").fetchone()
+        row = c.execute(_SPEND_SQL[interval]).fetchone()
         return float(row["total"])
 
 

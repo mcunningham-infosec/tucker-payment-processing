@@ -6,6 +6,8 @@ Output side: masking of anything that looks like a full card number (Luhn-valid 
              a Social Security number, or a secret/API key.
 Each check returns plain data that the chat layer turns into a "Behind the Scenes" event,
 so visitors can watch the guardrails fire in real time.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import re
 import unicodedata
@@ -76,6 +78,7 @@ def mask_output(text: str):
     findings = []
 
     def _pan(m):
+        """A run of 13-19 digits that passes the Luhn check is treated as a card number and masked."""
         digits = re.sub(r"\D", "", m.group(0))
         if 13 <= len(digits) <= 19 and _luhn_ok(digits):
             findings.append("card number")

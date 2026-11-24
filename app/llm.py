@@ -4,6 +4,8 @@ llm.py - a thin adapter around the AI model, so the model can be swapped.
 GeminiLLM talks to Google Gemini with function calling (tools). FakeLLM is a scripted stand-in
 used by the automated tests, so the guardrails can be tested without calling (or paying for)
 a real model. Both return the same simple ModelTurn object.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from dataclasses import dataclass, field
 

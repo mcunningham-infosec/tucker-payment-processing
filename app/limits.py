@@ -5,6 +5,8 @@ Every limit is counted two ways where it matters: by the visitor's IP address an
 Neither is stored as-is. Each is turned into an anonymous code with an HMAC keyed by a server secret plus
 today's date, so the codes change every day and can't be traced back to a person or linked across days.
 Counters live in ops.usage_events and are wiped every night at midnight.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import hashlib
 import hmac

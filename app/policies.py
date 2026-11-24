@@ -6,6 +6,8 @@ and each question is matched against those sections with TF-IDF keyword scoring.
 sections (with their policy name) are handed to the AI, so Tucker's policy answers are
 grounded in the documents and can name their source.
 Deliberately simple and explainable: no external service, no embeddings bill, easy to audit.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import math
 import re
@@ -55,7 +57,7 @@ def search(query: str, top_k: int = 2):
     """Return up to top_k best-matching policy sections as dicts with policy, section, text and score."""
     q = _tokens(query)
     scored = []
-    for (title, heading, text), counts in zip(SECTIONS, _DOC_TOKENS):
+    for (title, heading, text), counts in zip(SECTIONS, _DOC_TOKENS, strict=True):
         score = sum(counts[w] * _IDF.get(w, 0) for w in q)
         if score > 0:
             scored.append((score, title, heading, text))

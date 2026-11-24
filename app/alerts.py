@@ -3,10 +3,12 @@ alerts.py - tells the site owner when a limit starts biting, so the limits can b
 
 Each alert is ONE structured line in the app's system log, e.g.
     TUCKER_ALERT kind=fair_share who=3f9a1c... detail="Network hit its daily AI share (200)"
-Something outside the app (see deploy/alerts.md) watches for that prefix and emails the owner.
+Something outside the app (Cloud Monitoring, see deploy/alert-policy.json) watches for that prefix and emails the owner.
 - Sent at most once per day per kind (and per network, where a network is involved), so no alert storms.
 - Networks appear only as the anonymous daily code from limits.subject(): never a raw IP address.
 - Never raises: alerting must not break the site.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import logging
 import threading
@@ -33,8 +35,8 @@ def _notify(kind: str, text: str):
         from . import db, report
         db.record_event("system", "alert", f"{kind}: {text}")
         threading.Thread(target=report.warn, args=(kind, text), daemon=True).start()
-    except Exception:
-        pass
+    except Exception as e:      # an alert must never break the visitor's request; the log line above still went out
+        print(f"Owner alert email not sent: {type(e).__name__}", flush=True)
 
 
 def raise_once(kind: str, detail: str = "", who: str = ""):

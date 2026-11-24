@@ -18,6 +18,8 @@ What goes in:
 Privacy: web server logs are kept for at most two days (deploy/logrotate-apache2) and this email is the only
 summary of them. Email goes out through Resend (RESEND_API_KEY in /etc/tucker/tucker.env, never in this repo).
 Everything taken from requests (paths, user agents) is attacker-controlled, so it is HTML-escaped and shortened.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import collections
 import datetime as dt
@@ -46,6 +48,7 @@ SCAN_PATH = re.compile(r"\.(php|asp|aspx|jsp|cgi|env|git|bak|sql|ini|yml)\b|wp-|
 
 
 def _day_bounds(day: dt.date):
+    """Midnight to midnight, Eastern time, for the given day."""
     start = dt.datetime.combine(day, dt.time(0), ET)
     return start, start + dt.timedelta(days=1)
 
@@ -73,24 +76,29 @@ def read_log(day: dt.date, paths=None):
 
 def network_owner(ip: str) -> str:
     """Who runs this address: the ASN registry name (e.g. 'COMCAST-7922') and the reverse-DNS domain.
-    Uses public DNS only (Team Cymru's free IP-to-ASN service); best effort, never raises."""
+    Uses public DNS only (Team Cymru's free IP-to-ASN service), for IPv4 and IPv6 (phone carriers such as
+    T-Mobile give visitors IPv6 addresses). Best effort: a failed lookup just leaves that part out."""
+    import ipaddress
     parts = []
     try:
         import dns.resolver                                 # dnspython
         r = dns.resolver.Resolver()
         r.lifetime = 3
-        if ":" not in ip:
+        addr = ipaddress.ip_address(ip)
+        if addr.version == 4:
             q = ".".join(reversed(ip.split("."))) + ".origin.asn.cymru.com"
-            asn = str(r.resolve(q, "TXT")[0]).strip('"').split("|")[0].strip().split()[0]
-            name = str(r.resolve(f"AS{asn}.asn.cymru.com", "TXT")[0]).strip('"').split("|")[-1].strip()
-            parts.append(f"{name} (AS{asn})")
-    except Exception:
+        else:                                               # IPv6: reversed hex nibbles, Cymru's origin6 zone
+            q = ".".join(reversed(addr.exploded.replace(":", ""))) + ".origin6.asn.cymru.com"
+        asn = str(r.resolve(q, "TXT")[0]).strip('"').split("|")[0].strip().split()[0]
+        name = str(r.resolve(f"AS{asn}.asn.cymru.com", "TXT")[0]).strip('"').split("|")[-1].strip()
+        parts.append(f"{name} (AS{asn})")
+    except Exception:       # noqa: S110 - best effort: no answer just means "owner unknown"
         pass
     try:
         socket.setdefaulttimeout(3)
         host = socket.gethostbyaddr(ip)[0]
         parts.append(".".join(host.split(".")[-3:]))
-    except Exception:
+    except Exception:       # noqa: S110 - many addresses have no reverse DNS name
         pass
     return " / ".join(parts) or "unknown"
 
@@ -193,6 +201,7 @@ def build(day: dt.date, entries=None, activity=None, lookup=network_owner):
                f"{e.get('message', 0)} chats, ${act['spend_day']:.2f} AI" + (f", {len(notes)} to review" if notes else ""))
 
     def esc(x, n=120):
+        """HTML-escape and shorten: paths and user agents come from visitors and could contain markup."""
         return html.escape(str(x)[:n])
 
     rows = []
@@ -223,6 +232,7 @@ def build(day: dt.date, entries=None, activity=None, lookup=network_owner):
 
     # ---- HTML
     def table(head, body):
+        """A plain HTML table for the email (inline styles, since email clients ignore style sheets)."""
         h = "".join(f"<th style='text-align:left;padding:4px 8px;background:#eef2f7'>{esc(x)}</th>" for x in head)
         b = "".join("<tr>" + "".join(f"<td style='padding:4px 8px;border-top:1px solid #dde'>{esc(c, 160)}</td>" for c in r)
                     + "</tr>" for r in body)
@@ -247,11 +257,12 @@ def send(subject: str, text: str, html_body: str) -> bool:
         return False
     body = json.dumps({"from": os.environ.get("REPORT_FROM", "Tucker SOC <onboarding@resend.dev>"),
                        "to": [to], "subject": subject[:200], "text": text, "html": html_body}).encode()
+    # Fixed HTTPS address (never visitor-supplied); the API key comes from the server's env file only.
     req = urllib.request.Request("https://api.resend.com/emails", data=body, method="POST",
                                  headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
                                           "User-Agent": "tucker-report/1.0"})
     try:
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=15) as r:   # noqa: S310 - fixed https:// URL above
             return 200 <= r.status < 300
     except Exception:
         return False
@@ -265,6 +276,7 @@ def warn(kind: str, detail: str) -> bool:
 
 
 def main():
+    """Build today's report; email it (the nightly timer) or print it with --print (testing)."""
     day = dt.datetime.now(ET).date()
     subject, text, html_body = build(day)
     if "--print" in sys.argv:

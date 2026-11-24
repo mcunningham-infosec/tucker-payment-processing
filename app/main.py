@@ -8,9 +8,11 @@ Endpoints:
   GET  /api/products        - Tucker's Treats catalog, straight from the database
   POST /api/quote           - price a cart on the server (the browser never sets prices)
   GET  /api/shoppers        - demo customers a visitor can shop as (number and name only)
-  POST /api/checkout        - price + simulated charge to Tucker's card on file; nothing is stored
+  POST /api/checkout        - price + simulated charge to Tucker's card on file; the order is saved via demo.place_order()
 The only cookie is the session id: HttpOnly (JavaScript can't read it), Secure (HTTPS only),
 SameSite=Lax, and it expires when the browser closes.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse

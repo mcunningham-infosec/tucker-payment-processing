@@ -8,6 +8,8 @@ Security design (the heart of the demo):
   * Every call is checked in Python before it runs, and every result is minimized
     (last 4 digits only, no ZIP or email echoed back).
 Each function returns (result_for_the_ai, event_for_behind_the_scenes).
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from datetime import date, datetime
 from decimal import Decimal

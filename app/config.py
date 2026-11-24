@@ -4,6 +4,8 @@ config.py - all settings in one place, read from environment variables.
 Secrets (the Gemini API key and the database password) come ONLY from the server's
 environment file, never from this repository. Every limit that protects cost or abuse
 is a named setting here so it can be shown on the About page and changed in one spot.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import os
 from dataclasses import dataclass

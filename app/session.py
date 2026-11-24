@@ -5,6 +5,8 @@ Each browser gets a random session id (in one strictly necessary, HttpOnly cooki
 The session holds WHO has been verified. That's the key security decision: the AI never
 says whose data to fetch; the application looks it up from the verified session.
 Sessions expire after 30 minutes of inactivity and nothing here is written to disk.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import secrets
 import time
