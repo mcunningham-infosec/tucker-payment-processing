@@ -1,6 +1,6 @@
 /*
  * report.js - builds the SOC incident report from this visitor's Cipher run (/api/cipher/status).
- * Every value is inserted as text (never HTML). "Save as PDF" opens the browser's print dialog.
+ * Every value is inserted as text (never HTML). The "Download PDF" button is handled by report-pdf.js.
  */
 (function () {
   "use strict";
@@ -239,7 +239,6 @@
   }
 
   function init() {
-    document.getElementById("save-pdf").addEventListener("click", function () { window.print(); });
     fetch("api/cipher/status", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (st) {
