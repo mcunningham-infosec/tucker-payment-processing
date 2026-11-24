@@ -1,9 +1,8 @@
-/* Cipher's Lair: black page, Matrix-green "terminal" text in dark grey boxes, small white footer. */
-body.lair { background:#000; color:#d7ffe0; border-top:6px solid #fff; }
-.lair .lair-top .tag { color:#9fb3a5; }
-.lair .tabs a { background:#111; border-color:#2c2c2c; color:#7dffa6; }
-.lair .tabs a[aria-current="page"] { background:#38ff7a; color:#000; border-color:#38ff7a; }
-.lair .home .logo { filter:drop-shadow(0 0 6px rgba(56,255,122,.25)); }
+/* Cipher's Lair: the logo and tabs keep the standard site theme; below them a white line, then a black
+   "lair" with Matrix-green "terminal" text in dark grey boxes and a small white footer. */
+body.lair { padding-bottom:0; }
+/* Full-width black band: cancel the body's side padding, then put it back inside. */
+.lair-zone { background:#000; color:#d7ffe0; border-top:6px solid #fff; margin:18px -16px 0; padding:24px 0 0; }
 
 .lair-main { max-width:1400px; margin:0 auto; padding:0 16px 24px; }
 .lair-sign { display:flex; flex-direction:column; align-items:center; gap:10px; margin:4px 0 16px; }
@@ -49,5 +48,5 @@ body.lair { background:#000; color:#d7ffe0; border-top:6px solid #fff; }
 .term .you { color:#000; background:#38ff7a; padding:0 4px; border-radius:4px; }
 .term .big { color:#fff; font-weight:700; }
 
-.lair-foot { color:#fff; font-size:.75rem; text-align:center; opacity:.85; padding:18px 16px 26px; background:#000; }
+.lair-foot { color:#fff; font-size:.75rem; text-align:center; opacity:.85; padding:18px 16px 30px; margin:0 auto; max-width:none; background:#000; }
 @media (prefers-reduced-motion: reduce) { .term li, .lair-bubble { animation:none; } }
