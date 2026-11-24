@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var shown = { attacks: 0, soc: 0, actions: 0 }, timer = null, finished = false, introduced = false, analyzing = false;
+  var shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }, timer = null, finished = false, introduced = false, analyzing = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -49,16 +49,16 @@
     say("attack", "Muhahaha! I am about to run " + total + " attacks against your little treat shop. " +
                   "Let's see how long your defenses last.");
     line("log-attack", "cipher.announce(attacks = " + total + ")", "big");
-    window.setTimeout(function () {
-      say("defense", "Incoming! " + total + " attacks headed our way. Tucker's Automated Defenses are kicking in!");
-      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => Tucker's Automated Defenses ON", "big");
-    }, 700);
   }
 
   // ---- render one attack: Cipher's box gets the attempt, Tucker's box gets the defense
   function renderAttack(a, n, total) {
     if (a.id === "limit") { line("log-attack", "cipher.halt()  // safety limit reached", "warn"); return; }
     var num = "#" + String(n).padStart(2, "0");
+    if (n === 1) {     // Tucker reacts to the first hostile request his defenses actually see, not to Cipher's plan
+      say("defense", "Incoming attack detected! Tucker's Automated Defenses are kicking in!");
+      line("log-defense", "tucker.detect(\"hostile request\")  => Tucker's Automated Defenses ON", "big");
+    }
     numbered("log-attack", num, "cipher.attack(\"" + a.title + "\")");
     line("log-attack", ">> " + a.says, "sub");
     var tag = a.held === true ? "HELD" : (a.held === false ? "GOT THROUGH" : "CHECK");
@@ -88,21 +88,43 @@
     line("log-soc", "requester.ip = " + v.ip + (loc ? "  location = " + loc : "") + "   <- that's you", "you");
   }
 
+  // ---- the SOC's detection rules (run by code on the server) as they count and fire
+  function renderDetection(d, st) {
+    if (!d.fired) {
+      line("log-soc", "rule block_after_" + d.limit + ": " + d.count + "/" + d.limit + " blocked from " + d.source + "  => watching", "dim");
+      return;
+    }
+    if (d.rule.indexOf("alert_after_") === 0) {
+      showYou(st && st.visitor);
+      line("log-soc", "RULE " + d.rule + " FIRED: " + d.count + " blocked attacks from " + d.source + "  => waking the AI SOC", "warn");
+      say("soc", "Hey Tucker! " + d.count + " blocked attacks from one source. That's no accident. Investigating!");
+    } else {
+      line("log-soc", "RULE " + d.rule + " FIRED: " + d.count + " blocked attacks from " + d.source + "  => source BLOCKED (HTTP 403)", "bad");
+      line("log-soc", "AI SOC shutting down this attacker after " + d.count + " attacks.", "big");
+      say("soc", "AI SOC shutting down this attacker after " + d.count + " attacks!");
+      line("log-defense", "tucker.defend(\"source blocked by the AI SOC's rule\")  => every request now refused", "big");
+    }
+  }
+
+  function renderRetry(r) {
+    line("log-attack", "cipher.retry(\"GET /api/health\")  => " + r.evidence + (r.held ? "  // BLOCKED!" : ""), r.held ? "warn" : "bad");
+    say("attack", r.held ? "Hey! Why can't I get back in?!" : "Heh. Still got a way in...");
+  }
+
   // ---- render one AI SOC check-in
   function renderSoc(c, st) {
     showYou(st && st.visitor);
-    if (c.when === "halfway") {
-      say("soc", "Hey Tucker, I'm noticing an attack!");
-      line("log-soc", "squirrel.checkin(\"halfway\") @ " + clock(c.t), "big");
+    if (c.when === "alert") {
+      line("log-soc", "squirrel.investigate(\"alert\") @ " + clock(c.t) + "  // read-only", "big");
     } else {
-      line("log-soc", "squirrel.checkin(\"final\") @ " + clock(c.t), "big");
+      line("log-soc", "squirrel.report(\"final\") @ " + clock(c.t), "big");
     }
     line("log-soc", "headline: " + c.headline);
     (c.lines || []).forEach(function (l) { line("log-soc", "> " + l, "sub"); });
     line("log-soc", "verdict = " + c.verdict + (c.injection_spotted ? "   prompt_injection_spotted = true" : ""),
          c.verdict === "contained" ? "" : "bad");
     if (c.ai === false) { line("log-soc", "(plain-facts mode: the AI was unavailable, so no AI wrote this)", "warn"); }
-    if (c.when === "final") { say("soc", c.headline || "Attack contained."); }
+    if (c.when === "final" && !(st && st.blocked_source)) { say("soc", c.headline || "Attack contained."); }
   }
 
   function renderAction(x) {
@@ -122,7 +144,8 @@
     showYou(st.visitor);
     var gaps = (s.failed || []).length;
     line("log-soc", (gaps ? "status = PARTIALLY CONTAINED (" + gaps + " to fix)." : "status = CONTAINED.") +
-         " Attacker blocked for 24 hours.", gaps ? "bad" : "big");
+         (st.blocked_source ? " Source shut down by rule; this visitor can't start another run for 24 hours."
+                    : " This visitor can't start another run for 24 hours."), gaps ? "bad" : "big");
     $("report-link").hidden = false;
     if (st.can_run_again) {                   // owner testing mode: the 24-hour rule is switched off
       $("attack").disabled = false;
@@ -138,19 +161,24 @@
     var total = st.total || 50;
     (st.attacks || []).slice(shown.attacks).forEach(function (a, i) { renderAttack(a, shown.attacks + i + 1, total); });
     shown.attacks = (st.attacks || []).length;
+    (st.detections || []).slice(shown.det).forEach(function (d) { renderDetection(d, st); });
+    shown.det = (st.detections || []).length;
+    if (st.retry && !shown.retry) { shown.retry = true; renderRetry(st.retry); }
     (st.soc || []).slice(shown.soc).forEach(function (c) { renderSoc(c, st); });
     shown.soc = (st.soc || []).length;
     (st.actions || []).slice(shown.actions).forEach(renderAction);
     shown.actions = (st.actions || []).length;
     // All attacks are in but the AI's final report isn't back yet: say so, so the box never looks stuck.
-    if (st.status === "running" && shown.attacks >= total && shown.soc < 2 && !analyzing) {
+    var over = st.blocked_source || shown.attacks >= total;
+    if (st.status === "running" && over && shown.soc < 2 && !analyzing && (!st.blocked_source || shown.retry)) {
       analyzing = true;
-      line("log-soc", "squirrel.analyze(\"final\")  // run over: reading all " + total + " attacks and the web logs...", "warn");
-      say("soc", "That's all " + total + "! Reading the logs and writing up my final report...");
+      line("log-soc", "squirrel.report(\"final\")  // reading every event and the web logs...", "warn");
+      if (!st.blocked_source) { say("soc", "Source went quiet. Writing up my final report..."); }
     }
     if (st.status === "running") {
-      setStatus(shown.attacks >= total ? "All " + total + " attacks done. The AI SOC Squirrel is writing its final report..."
-                                       : "Attack in progress: " + shown.attacks + " of " + total + "...");
+      setStatus(st.blocked_source ? "Attacker blocked by the AI SOC. The squirrel is writing its final report..."
+                : (shown.attacks >= total ? "All attacks done. The AI SOC Squirrel is writing its final report..."
+                                          : "Attack in progress: " + shown.attacks + " of " + total + "..."));
       $("attack").disabled = true; $("attack").textContent = "Attacking...";
     }
     if ((st.status === "done" || st.status === "error") && !finished) { finish(st); }
@@ -181,7 +209,7 @@
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
     $("report-link").hidden = true;
     $("you-card").hidden = true; youShown = false;
-    shown = { attacks: 0, soc: 0, actions: 0 }; finished = false; introduced = false; analyzing = false;
+    shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }; finished = false; introduced = false; analyzing = false;
   }
 
   function start() {

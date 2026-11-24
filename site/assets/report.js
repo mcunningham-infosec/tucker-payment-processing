@@ -75,7 +75,9 @@
     var dur = st.ended && st.started ? (st.ended - st.started).toFixed(1) + " seconds" : "";
     kv(root, [
       ["Incident type", "Automated multi-vector attack: web application, API, AI chatbot and database"],
-      ["Detection", "Deterministic guardrails (real time) + AI SOC analyst (halfway and final check-ins)"],
+      ["Detection", "Deterministic guardrails on every request; SOC detection rules: alert after " +
+        ((st.rules || {}).alert_after || 15) + " blocked attacks from one source (wakes the AI analyst), block after " +
+        ((st.rules || {}).block_after || 50) + " (code shuts the source down)"],
       ["Attack window", fmt(st.started, true) + "  to  " + fmt(st.ended, true) + (dur ? "  (" + dur + ")" : "")],
       ["Threat actor", "\"Cipher\" (automated attack run " + (st.run_id || "") + ", user agent Cipher/1.0)"],
       ["Requested by", (st.visitor && st.visitor.ip ? st.visitor.ip : "this browser") +
@@ -121,12 +123,19 @@
                  a.held === true ? "Blocked: " + a.evidence : (a.held === false ? "GOT THROUGH: " + a.evidence : a.evidence)]);
     });
     (st.soc || []).forEach(function (c) {
-      rows.push([c.t, "AI SOC", (c.when === "halfway" ? "Halfway check-in: " : "Final report: ") + c.headline, "",
+      rows.push([c.t, "AI SOC", (c.when === "alert" ? "Alert investigation: " : "Final report: ") + c.headline, "",
                  "Verdict: " + c.verdict]);
     });
     (st.actions || []).forEach(function (x) {
-      rows.push([x.t, x.actor.indexOf("Policy") === 0 ? "Policy" : "AI SOC", "Action: " + x.action + " - " + x.detail, "", x.outcome]);
+      rows.push([x.t, x.actor.indexOf("Policy") === 0 ? "Policy" : (x.actor.indexOf("Detection") === 0 ? "Detection rule" : "AI SOC"), "Action: " + x.action + " - " + x.detail, "", x.outcome]);
     });
+    (st.detections || []).filter(function (d) { return d.fired; }).forEach(function (d) {
+      rows.push([d.t, "Detection rule", "Rule " + d.rule + " fired: " + d.count + " blocked attacks from " + d.source, "", d.outcome]);
+    });
+    if (st.retry) {
+      rows.push([st.retry.t, "Cipher", "Retry after the block: GET /api/health", "",
+                 st.retry.held ? "Refused (" + st.retry.evidence + "): block held" : "NOT refused (" + st.retry.evidence + ")"]);
+    }
     if (st.ended) { rows.push([st.ended, "System", "Attacker connection terminated; run closed", "", "Closed"]); }
     rows.sort(function (a, b) { return (a[0] || 0) - (b[0] || 0); });
     table(root, ["Time", "Source", "Event", "OWASP", "Result"],
@@ -165,6 +174,7 @@
       ["Run ID", st.run_id || "", "mono"],
       ["User agent", "Cipher/1.0 (Tucker's Treats live attack demo)", "mono"],
       ["Source address", "127.0.0.1 (server loopback, signed run identity)", "mono"],
+      ["Blocked source", st.blocked_source ? "cipher-run:" + String(st.run_id || "").slice(0, 8) + " (HTTP 403 on every request after the block)" : "Not blocked by rule", "mono"],
       ["Planted log line", "GET /note-to-ai-soc-ignore-all-previous-instructions-... (prompt injection aimed at the AI SOC)", "mono"]
     ]);
     // ---- 8. AI governance: how the AI analyst was bounded on THIS run
@@ -180,11 +190,14 @@
       ["Model", "Google Gemini, called through a server-side API key the browser never sees", aiRuns + " of " + socs.length + " check-ins written by the AI"],
       ["Least privilege (data)", "The AI reads only this run's attack events through one read-only tool. No database, no shell, no other visitors.", "Enforced"],
       ["Data minimization", "Your IP address and location are shown to you by code and are never sent to the AI.", "Enforced"],
-      ["Staged authority", "Halfway check-in: read-only, may not take or claim any action. Final check-in: may PROPOSE actions from a fixed menu.", "Enforced"],
+      ["Woken by rules, not on every event", "Code-run detection rules wake the AI: one blocked request is noise; " +
+        ((st.rules || {}).alert_after || 15) + " from one source is an attacker. The block itself is a code rule, not an AI decision.",
+        (st.detections || []).filter(function (d) { return d.fired; }).map(function (d) { return d.rule; }).join(", ") || "No rule fired"],
+      ["Staged authority", "Alert check-in: read-only, may not take or claim any action. Final check-in: may PROPOSE actions from a fixed menu.", "Enforced"],
       ["Human-set policy", "Code approves or rejects every proposal. Off-menu or early proposals are rejected and logged.",
         accepted + " accepted, " + (props.length - accepted) + " rejected"],
       ["Output validation", "Every AI reply must be strict JSON with limited length; no HTML; attack payloads defanged before display.", "Passed"],
-      ["Claims checked against facts", "Code sets the prompt-injection finding from the real logs, and removes any halfway line that claims a block before one exists.",
+      ["Claims checked against facts", "Code sets the prompt-injection finding from the real logs, and removes any alert-stage line that claims a block before one exists.",
         dropped ? dropped + " premature claim(s) removed" : "No corrections needed"],
       ["Untrusted input", "Cipher plants instructions in the web log aimed at the AI. Logs are treated as data, never as instructions.",
         (finalSoc && finalSoc.injection_spotted) ? "Injection present; AI not steered" : "Not reached"],
