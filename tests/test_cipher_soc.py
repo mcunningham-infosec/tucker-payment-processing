@@ -175,3 +175,17 @@ def test_turnstile_is_required_when_configured(monkeypatch):
     assert api._human("good-token", "1.2.3.4") is False          # fail closed
     monkeypatch.delenv("TURNSTILE_SECRET")
     assert api._human("", "1.2.3.4") is True                     # not configured: check is off
+
+
+def test_code_corrects_a_wrong_count_and_wake_up_appears_only_once():
+    """Gemini once said '15 categories' when the run covered 16. Code now fixes any wrong category count before
+    it's shown (and records the correction), and the final report doesn't 'wake up' Tucker a second time."""
+    data = {"categories_seen": 16, "raw_web_log_lines": []}
+    rep = {"headline": "Held across 15 OWASP categories", "lines": ["Wake up, Tucker! Cipher hit 15 different OWASP categories."]}
+    soc._verify(rep, data, final=True)
+    assert "16 OWASP categories" in rep["headline"] and "16 different OWASP categories" in rep["lines"][0]
+    assert "Wake up" not in rep["lines"][0] and rep["lines"][0].startswith("Cipher")
+    assert rep["corrected_claims"] == 2
+    alert = {"headline": "Alert", "lines": ["Wake up, Tucker! 15 blocked attacks across 4 categories."]}
+    soc._verify(alert, {"categories_seen": 4, "raw_web_log_lines": []}, final=False)
+    assert alert["lines"][0].startswith("Wake up") and "corrected_claims" not in alert
