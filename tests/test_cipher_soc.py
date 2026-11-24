@@ -151,3 +151,27 @@ def test_a_blocked_source_really_gets_403():
     cipher.block_run(run_id)
     assert c.get("/api/health", headers={cipher.HEADER: token}).status_code == 403
     assert c.get("/api/health").status_code == 200          # everyone else is unaffected
+
+
+def test_turnstile_is_required_when_configured(monkeypatch):
+    """With Turnstile keys set, an attack run needs a valid human token; Cloudflare's answer decides."""
+    from app.cipher import api
+    monkeypatch.setenv("TURNSTILE_SECRET", "test-secret")
+    assert api._human("", "1.2.3.4") is False                    # no token, no run
+    assert api._human("x" * 3000, "1.2.3.4") is False            # oversized token refused unread
+
+    class Resp:
+        def __init__(self, ok): self.ok = ok
+        def read(self, n): return b'{"success": %s}' % (b"true" if self.ok else b"false")
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    monkeypatch.setattr(api.urllib.request, "urlopen", lambda req, timeout: Resp(True))
+    assert api._human("good-token", "1.2.3.4") is True
+    monkeypatch.setattr(api.urllib.request, "urlopen", lambda req, timeout: Resp(False))
+    assert api._human("bad-token", "1.2.3.4") is False
+    def down(req, timeout): raise OSError("unreachable")
+    monkeypatch.setattr(api.urllib.request, "urlopen", down)
+    assert api._human("good-token", "1.2.3.4") is False          # fail closed
+    monkeypatch.delenv("TURNSTILE_SECRET")
+    assert api._human("", "1.2.3.4") is True                     # not configured: check is off
