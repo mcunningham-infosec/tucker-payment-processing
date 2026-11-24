@@ -32,6 +32,8 @@ figcaption strong { color:var(--ink); font-size:1.1rem; }
 .about h2.real { margin-top:22px; }
 .code a { color:var(--blue); font-weight:700; }
 footer { margin:40px auto 0; font-size:.8rem; color:var(--muted); max-width:560px; text-align:center; }
+footer .copyright { display:block; margin-top:6px; }
+footer .copyright a { color:inherit; }
 /* Phones: bubble sits centered above Tucker so it never runs off-screen */
 @media (max-width:560px) {
   .bubble { left:50%; transform:translateX(-50%); }

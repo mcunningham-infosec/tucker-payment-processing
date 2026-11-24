@@ -225,7 +225,8 @@
 
     add(root, el("div", "foot", "Generated automatically by the Tucker Payment Processing security demo. Tucker Payment " +
       "Processing is a fictional company; Cipher attacks only this site, from inside its own server. " +
-      "This report is visible only to the browser that started the run and is kept on the server for one hour."));
+      "This report is visible only to the browser that started the run and is kept on the server for one hour. " +
+      "\u00a9 2026 Michael Cunningham. All rights reserved."));
   }
 
   function byCat(attacks) {
