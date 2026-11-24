@@ -38,6 +38,31 @@
     b.style.animation = "none"; void b.offsetWidth; b.style.animation = "";   // replay the pop-in
   }
 
+  // ---- Cloudflare Turnstile: a quick "are you human?" check before an attack run (bots can't launch runs).
+  // Loaded only when the server says it's configured; the token is checked by the server with Cloudflare.
+  var tsKey = "", tsToken = "", tsWidget = null;
+  function loadTurnstile(key) {
+    if (tsKey || !key) { return; }
+    tsKey = key;
+    window.onTurnstileLoad = function () {
+      $("turnstile").hidden = false;
+      tsWidget = window.turnstile.render("#turnstile", {
+        sitekey: key, theme: "dark",
+        callback: function (t) { tsToken = t; },
+        "expired-callback": function () { tsToken = ""; },
+        "error-callback": function () { tsToken = ""; }
+      });
+    };
+    var s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad";
+    s.async = true;
+    document.head.appendChild(s);
+  }
+  function resetTurnstile() {
+    tsToken = "";
+    if (window.turnstile && tsWidget !== null) { window.turnstile.reset(tsWidget); }
+  }
+
   function setStatus(text) { $("lair-status").textContent = text; }
 
   function clock(t) { return t ? new Date(t * 1000).toLocaleTimeString([], { hour12: false }) : ""; }
@@ -188,6 +213,7 @@
     fetch("api/cipher/status", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (st) {
+        if (st.turnstile_sitekey && !st.run_id) { loadTurnstile(st.turnstile_sitekey); }
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
         if (st.status === "none") { return; }
         render(st);
@@ -214,10 +240,15 @@
 
   function start() {
     var btn = $("attack");
+    if (tsKey && !tsToken) { setStatus("One quick check first: confirm you're human (the box next to the button)."); return; }
     if (finished) { clearBoxes(); }
     btn.disabled = true;                       // the server ignores extra presses too
     btn.textContent = "Attacking...";
-    fetch("api/cipher/start", { method: "POST", credentials: "same-origin" })
+    var token = tsToken;
+    resetTurnstile();                          // tokens are single-use
+    fetch("api/cipher/start", { method: "POST", credentials: "same-origin",
+                               headers: { "Content-Type": "application/json" },
+                               body: JSON.stringify({ turnstile: token }) })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.status === "started" || d.status === "running") {
