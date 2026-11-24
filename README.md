@@ -41,3 +41,11 @@ Built by **Michael Cunningham**, information security leader (25+ years, payment
 LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
 
 All names, customers, cards and data on the site are fictional.
+
+## License and ownership
+
+© 2026 Michael Cunningham. **All rights reserved.** The code is public so it can be read, reviewed and learned from:
+you're welcome to study it and to run it privately to understand how it works. Copying it, hosting it, or presenting
+it (or something substantially based on it) as your own work requires written permission. The names Tucker Payment
+Processing, Tucker, Cipher and the AI SOC Squirrel, and all artwork and images, are part of the work and are not
+licensed for reuse. See [LICENSE](LICENSE).
