@@ -1,0 +1,9 @@
+# Runs db/nightly_reset.sql: puts Tucker's Treats back to a known state (see that file for what's kept).
+[Unit]
+Description=Tucker Payment Processing nightly demo reset
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=postgres
+ExecStart=/usr/bin/psql -q -v ON_ERROR_STOP=1 -d tucker -f /opt/tucker/db/nightly_reset.sql
