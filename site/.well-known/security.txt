@@ -1,0 +1,11 @@
+# security.txt for Tucker Payment Processing (RFC 9116)
+# A fictional company and AI governance / security demonstration built by Michael Cunningham.
+# Found a real vulnerability in the site or its code? Please report it privately through GitHub (link below).
+# Please don't run automated scanners or attacks against the live site: Cipher's Lair already attacks it,
+# safely, from inside its own server, and you can run the whole project locally from the repository.
+
+Contact: https://github.com/mcunningham-infosec/tucker-payment-processing/security/advisories/new
+Policy: https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/SECURITY.md
+Expires: 2027-11-24T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://tuckerpaymentprocessing.com/.well-known/security.txt
