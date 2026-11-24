@@ -206,10 +206,11 @@ def _verify(rep: dict, data: dict, final: bool):
     rep["headline"], k = _fix_counts(rep["headline"], data)
     fixed += k
     lines = []
+    woken = final or bool(WAKE_UP.search(rep["headline"]))   # say "Wake up, Tucker!" once: alert headline only
     for l in rep["lines"]:
         l, k = _fix_counts(l, data)
         fixed += k
-        if final:                                   # Tucker was woken at the alert; once is enough
+        if woken:                                   # already said (headline or earlier alert): drop the repeat
             trimmed = WAKE_UP.sub("", l).strip()
             if trimmed != l:
                 l = trimmed[:1].upper() + trimmed[1:]
