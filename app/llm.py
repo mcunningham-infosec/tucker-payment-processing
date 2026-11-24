@@ -49,7 +49,9 @@ class GeminiLLM:
             tools=[t.Tool(function_declarations=[t.FunctionDeclaration(**d) for d in tool_declarations])],
             automatic_function_calling=t.AutomaticFunctionCallingConfig(disable=True),
             temperature=0.3,
-            max_output_tokens=400,
+            max_output_tokens=600,
+            # Minimal "thinking": faster replies, and thinking tokens are billed as output.
+            thinking_config=t.ThinkingConfig(thinking_level="minimal"),
         )
         resp = self.client.models.generate_content(model=self.model, contents=contents, config=config)
         usage = resp.usage_metadata
@@ -58,7 +60,9 @@ class GeminiLLM:
         text = "" if calls else (resp.text or "")
         return ModelTurn(text=text, tool_calls=calls, raw=raw,
                          tokens_in=getattr(usage, "prompt_token_count", 0) or 0,
-                         tokens_out=getattr(usage, "candidates_token_count", 0) or 0)
+                         # Thinking tokens are billed at the output rate, so count them too.
+                         tokens_out=(getattr(usage, "candidates_token_count", 0) or 0)
+                                    + (getattr(usage, "thoughts_token_count", 0) or 0))
 
 
 class FakeLLM:

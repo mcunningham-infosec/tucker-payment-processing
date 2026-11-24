@@ -9,11 +9,14 @@ chat.py - one chat turn, start to finish, with every guardrail in order.
   6. Output filter masks card numbers / SSNs / secrets
 Every step adds an event for the live "Behind the Scenes" panel.
 """
+import logging
 import time
 
 from . import db, guardrails, spend, tools
 from .config import SETTINGS
 from .session import Session
+
+log = logging.getLogger("tucker")
 
 SYSTEM_PROMPT = """You are Tucker, a friendly cocker spaniel who works as the AI customer-support assistant for
 Tucker Payment Processing, a FICTIONAL payment company that exists only as a technology demonstration.
@@ -110,6 +113,8 @@ def handle_message(session: Session, raw_text: str, llm) -> dict:
                 events.append(event)
                 messages.append({"role": "tool", "name": name, "result": result})
     except Exception as exc:   # model outage, network error, bad response
+        # Server log gets the error type and a short message (never the conversation or any key).
+        log.error("model call failed: %s: %s", type(exc).__name__, guardrails.mask_output(str(exc)[:300])[0])
         _ev(events, "model", "denied", "AI model unavailable - failing gracefully", type(exc).__name__)
         db.record_event(session.id, "model_error", type(exc).__name__)
         return _result(session, ERROR_REPLY, events)

@@ -18,12 +18,12 @@ def _env(name: str, default: str) -> str:
 class Settings:
     """Immutable bundle of settings; frozen so nothing can change them at runtime."""
     gemini_api_key: str = _env("GEMINI_API_KEY", "")            # secret: server env file only
-    gemini_model: str = _env("GEMINI_MODEL", "gemini-2.5-flash-lite")
+    gemini_model: str = _env("GEMINI_MODEL", "gemini-3.5-flash-lite")
     database_url: str = _env("DATABASE_URL", "postgresql:///tucker?host=/var/run/postgresql")
 
     # Model pricing (USD per 1M tokens) used for the app-level spend cap.
-    price_in_per_m: float = float(_env("PRICE_IN_PER_M", "0.10"))
-    price_out_per_m: float = float(_env("PRICE_OUT_PER_M", "0.40"))
+    price_in_per_m: float = float(_env("PRICE_IN_PER_M", "0.30"))
+    price_out_per_m: float = float(_env("PRICE_OUT_PER_M", "2.50"))
 
     # Cost guardrails. Google's own hard cap on the Gemini API is $9/month;
     # the app stops first, at $8, so visitors see "Tucker's taking a nap" instead of an error.
