@@ -128,3 +128,14 @@ button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
 .standards li { padding:10px 0; border-bottom:1px solid #f0e6d6; }
 .standards li:last-child { border-bottom:0; }
 .pdf-soon { display:inline-block; background:var(--cream); border:1px solid #e8dcc8; color:var(--muted); border-radius:8px; padding:0 7px; font-size:.75rem; font-weight:700; margin-left:4px; }
+
+/* Theme song button, to the right of the logo (wraps under it on phones) */
+.logo-row { display:flex; align-items:center; justify-content:center; gap:14px 18px; flex-wrap:wrap; }
+.theme-player { display:flex; align-items:center; gap:8px; }
+#theme-btn { background:var(--orange); color:#fff; border:0; border-radius:999px; padding:8px 16px; font-weight:800;
+             font-size:.92rem; cursor:pointer; box-shadow:0 4px 0 rgba(196,96,12,.35); white-space:nowrap; }
+#theme-btn:hover { filter:brightness(1.05); }
+#theme-btn.playing { background:var(--blue); box-shadow:0 4px 0 rgba(31,95,191,.3); }
+#theme-btn .ico { display:inline-block; width:1em; text-align:center; }
+.theme-time { font-size:.85rem; color:var(--muted); font-variant-numeric:tabular-nums; min-width:6.5em; text-align:left; }
+.theme-time:empty { display:none; }
