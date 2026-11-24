@@ -11,6 +11,7 @@
 #  4. Old packages and kernels are cleaned up so the 30 GB disk never fills.
 #  5. Logs are capped so they can't fill the disk either.
 #  6. The HTTPS certificate keeps renewing itself (certbot's timer).
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 set -euo pipefail
 
 echo "== 1. Start everything on boot"

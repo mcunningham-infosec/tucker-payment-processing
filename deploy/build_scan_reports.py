@@ -9,6 +9,8 @@ Output: site/scans/<date>/<scanner>.pdf  (one report per scanner)
 
 Each report shows the scanner, the exact scan times (UTC), the grade before and after any fixes, every check, what
 was fixed, and a link to run the same scan yourself, so a reader never has to take the PDF's word for it.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import json
 import pathlib
@@ -40,14 +42,17 @@ STATUS_COLOR = {"pass": OK, "fixed": OK, "fail": BAD, "info": MUTED, "recommenda
 
 
 def hx(c):
+    """A ReportLab color as a #rrggbb string (for inline <font> tags)."""
     return "#" + c.hexval()[2:]
 
 
 def esc(t):
+    """Escape text for ReportLab's mini-markup, so scanner text can never be read as tags."""
     return str(t).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def grade_box(label, grade, when, color):
+    """The boxed grade (BEFORE FIXES / FINAL) with its scan time underneath."""
     t = Table([[Paragraph(f'<font size="8" color="#5b6470">{esc(label)}</font>', S["cell"])],
                [Paragraph(f'<font name="Helvetica-Bold" size="24" color="{hx(color)}">{esc(grade)}</font>', S["grade"])],
                [Paragraph(f'<font size="7.5" color="#5b6470">{esc(when)}</font>', S["cell"])]],
@@ -58,12 +63,13 @@ def grade_box(label, grade, when, color):
 
 
 def checks_table(rows):
+    """Every check with its before and after status, color-coded, plus the detail."""
     body = [[Paragraph("<b>Check</b>", S["cell"]), Paragraph("<b>Before</b>", S["cell"]), Paragraph("<b>After</b>", S["cell"]),
              Paragraph("<b>Detail</b>", S["cell"])]]
     style = [("LINEBELOW", (0, 0), (-1, -1), 0.5, LINE), ("VALIGN", (0, 0), (-1, -1), "TOP"),
              ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f3f5f8")), ("TOPPADDING", (0, 0), (-1, -1), 3),
              ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]
-    for i, r in enumerate(rows, start=1):
+    for r in rows:
         b, a = r.get("before", ""), r.get("after", "")
         body.append([Paragraph(esc(r["check"]), S["cellb"]),
                      Paragraph(f'<font color="{hx(STATUS_COLOR.get(b.lower(), INK))}"><b>{esc(LABEL.get(b.lower(), b.upper()))}</b></font>', S["cell"]),
@@ -75,6 +81,7 @@ def checks_table(rows):
 
 
 def footer(canvas, doc, line):
+    """Footer on every page: what this report is, and the page number."""
     canvas.saveState()
     canvas.setFont("Helvetica", 7)
     canvas.setFillColor(MUTED)
@@ -84,6 +91,7 @@ def footer(canvas, doc, line):
 
 
 def header(story, title, subtitle):
+    """Report heading: site name, report title, subtitle and a blue rule."""
     story.append(Paragraph("Tucker Payment Processing - Independent Security Scan", S["org"]))
     story.append(Paragraph(esc(title), S["title"]))
     story.append(Paragraph(subtitle, S["sub"]))
@@ -94,6 +102,7 @@ def header(story, title, subtitle):
 
 
 def scanner_pdf(data, scan, out):
+    """One scanner's report: grades, what was fixed, every check, notes, and links to verify it live."""
     story = []
     header(story, scan["name"], f'Site tested: <b>{esc(data["site"])}</b> &nbsp;|&nbsp; Scan date: <b>{esc(data["date"])}</b> '
                                 f'&nbsp;|&nbsp; Scanner: {esc(scan["scanner"])}')
@@ -127,6 +136,7 @@ def scanner_pdf(data, scan, out):
 
 
 def summary_pdf(data, out):
+    """One page with every scanner's before and final grade, the fixes made and the known limits."""
     story = []
     header(story, "Security Scan Summary", f'Site tested: <b>{esc(data["site"])}</b> &nbsp;|&nbsp; Scan date: <b>{esc(data["date"])}</b>')
     story.append(Spacer(1, 8))
@@ -159,6 +169,7 @@ def summary_pdf(data, out):
 
 
 def main(date):
+    """Build every PDF for one scan date from docs/scans/<date>/results.json."""
     data = json.loads((ROOT / "docs" / "scans" / date / "results.json").read_text(encoding="utf-8"))
     out = ROOT / "site" / "scans" / date
     out.mkdir(parents=True, exist_ok=True)

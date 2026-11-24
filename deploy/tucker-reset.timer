@@ -1,5 +1,6 @@
 # Every night at midnight server time (America/New_York). Persistent: if the server was off at midnight,
 # the reset runs as soon as it's back.
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 [Unit]
 Description=Nightly reset of the Tucker's Treats demo data
 

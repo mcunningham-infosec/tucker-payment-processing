@@ -2,6 +2,7 @@
 # Web logs hold visitor IP addresses, so they are kept for at most two days: today's log, and yesterday's
 # until the next rotation. The owner's nightly report (11:50 PM Eastern) reads them before they go.
 # Install: sudo cp /opt/tucker/deploy/logrotate-apache2 /etc/logrotate.d/apache2
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 /var/log/apache2/*.log {
 	daily
 	missingok

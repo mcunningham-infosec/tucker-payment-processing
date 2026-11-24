@@ -1,4 +1,5 @@
 # Runs db/nightly_reset.sql: puts Tucker's Treats back to a known state (see that file for what's kept).
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 [Unit]
 Description=Tucker Payment Processing nightly demo reset
 After=postgresql.service

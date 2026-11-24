@@ -1,16 +1,29 @@
-# Origin lockdown: only Cloudflare can reach the web server
+# Google Cloud firewall: only Cloudflare can reach the web server
 
-Cloudflare's protection (DDoS absorption, firewall rules, bot defense) only works if attackers can't skip it by
-going straight to the server's own IP address (34.26.213.50). So the Google Cloud firewall allows web traffic
-(ports 80 and 443) ONLY from Cloudflare's published IPv4 ranges (https://www.cloudflare.com/ips/). Admin access
-(SSH on port 22) stays limited to Google's Identity-Aware Proxy range, 35.235.240.0/20, as before.
+Cloudflare's protection (DDoS absorption, web application firewall, bot defense) only works if attackers can't
+skip it by going straight to the server's own IP address. So the Google Cloud firewall lets web traffic
+(ports 80 and 443) in **only from Cloudflare's published IPv4 ranges** (https://www.cloudflare.com/ips/).
+Anyone who tries the server's IP directly gets no answer at all.
 
-    CF=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22
-    gcloud compute firewall-rules create allow-web-cloudflare-only --network=default --direction=INGRESS \
-        --action=ALLOW --rules=tcp:80,tcp:443 --source-ranges="$CF" --target-tags=http-server,https-server \
-        --description="Web traffic only via Cloudflare (origin lockdown)"
-    # then remove the old open-to-the-world web rules:
-    gcloud compute firewall-rules delete default-allow-http default-allow-https
+| Rule | Allows | From |
+|---|---|---|
+| `allow-web` | TCP 80, 443 (web) | Cloudflare's IPv4 ranges only |
+| `allow-ssh-iap-only` | TCP 22 (admin) | Google's Identity-Aware Proxy, `35.235.240.0/20`, only (no public SSH) |
 
-Cipher's attacks are unaffected: they run on the server against its own loopback address.
-If Cloudflare ever publishes new ranges, update this rule and deploy/apache-cloudflare.conf together.
+How `allow-web` was locked down (run in Cloud Shell). The ranges are fetched fresh from Cloudflare rather
+than typed by hand:
+
+    CF=$(curl -s https://www.cloudflare.com/ips-v4 | paste -sd,)
+    gcloud compute firewall-rules update allow-web --source-ranges="$CF"
+
+Check it:
+
+    gcloud compute firewall-rules describe allow-web --format="value(sourceRanges)"
+    curl -s -o /dev/null -w '%{http_code}\n' https://tuckerpaymentprocessing.com/      # 200 through Cloudflare
+    curl -s -m 5 -o /dev/null -w '%{http_code}\n' -k https://<server IP>/             # 000: no answer direct
+
+Notes:
+- Cipher's attacks are unaffected: they run on the server against its own address.
+- Apache trusts the visitor's real IP (the `CF-Connecting-IP` header) only from these same Cloudflare ranges
+  (`deploy/apache-cloudflare.conf`). If Cloudflare ever publishes new ranges, update both together.
+- Certificate renewals (Let's Encrypt) still work behind Cloudflare.

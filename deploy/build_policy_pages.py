@@ -11,6 +11,8 @@ It writes site/policies.html (the list) and one site/policy-<name>.html per poli
 
 The policies use a small, fixed subset of Markdown: "# Title", a subtitle line, "## Section" headings and
 paragraphs. Everything is HTML-escaped, so policy text can never inject markup into a page.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import html
 import pathlib
@@ -51,6 +53,7 @@ def page(title: str, description: str, body: str) -> str:
     return f"""<!doctype html>
 <!--
   {e(title)} - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 -->
 <html lang="en">
 <head>
@@ -89,8 +92,9 @@ def page(title: str, description: str, body: str) -> str:
 
 
 def policy_page(src: str, p: dict) -> str:
+    """One policy as a site page: title, policy id, each section, and a note that it's generated from the .md."""
     e = html.escape
-    parts = [f'    <section class="card policy">\n      <p class="crumb"><a href="policies.html">&larr; All policies</a></p>',
+    parts = ['    <section class="card policy">\n      <p class="crumb"><a href="policies.html">&larr; All policies</a></p>',
              f"      <h1>{e(p['title'])}</h1>"]
     if p["subtitle"]:
         parts.append(f'      <p class="muted-line">{e(p["subtitle"])}</p>')
@@ -103,6 +107,7 @@ def policy_page(src: str, p: dict) -> str:
 
 
 def index_page(items) -> str:
+    """The AI Policies page: the list of policies and the standards the site is built to."""
     e = html.escape
     rows = "\n".join(f'        <li><a href="{name}.html"><strong>{e(p["title"])}</strong></a><br>{e(summary)}</li>'
                      for name, p, summary in items)

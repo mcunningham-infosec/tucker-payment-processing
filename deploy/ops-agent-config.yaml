@@ -1,8 +1,9 @@
 # Google Cloud Ops Agent - ships ONLY the app's owner alerts (lines containing TUCKER_ALERT) to Cloud Logging.
-# A Cloud Monitoring alert policy on those lines emails the site owner (see deploy/alerts.md).
+# A Cloud Monitoring alert policy on those lines emails the site owner (see deploy/alert-policy.json).
 # Nothing else leaves the server: no system logs, no web logs, no metrics.
 # The VM's identity (tucker-log-writer) can only WRITE logs; it can't read or change anything in Google Cloud.
 # Install: sudo cp deploy/ops-agent-config.yaml /etc/google-cloud-ops-agent/config.yaml && sudo systemctl restart google-cloud-ops-agent
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 logging:
   receivers:
     tucker_journal:

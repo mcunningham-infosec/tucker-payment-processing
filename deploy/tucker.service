@@ -8,6 +8,7 @@
 #   the app starts. They are never in the repository.
 # - The sandboxing options below make most of the filesystem read-only and block
 #   privilege escalation, so even a compromised app process has very little to work with.
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 
 [Unit]
 Description=Tucker Payment Processing chat API

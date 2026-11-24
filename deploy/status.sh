@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # status.sh - one-screen health check:  sudo bash /opt/tucker/deploy/status.sh
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 for s in apache2 postgresql tucker fail2ban ufw unattended-upgrades certbot.timer; do
   printf '%-22s boot=%-8s now=%s\n' "$s" "$(systemctl is-enabled $s 2>/dev/null)" "$(systemctl is-active $s 2>/dev/null)"
 done
