@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var shown = { attacks: 0, soc: 0, actions: 0 }, timer = null, finished = false;
+  var shown = { attacks: 0, soc: 0, actions: 0 }, timer = null, finished = false, introduced = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -31,6 +31,19 @@
 
   function clock(t) { return t ? new Date(t * 1000).toLocaleTimeString([], { hour12: false }) : ""; }
 
+  // ---- the opening: Cipher announces the attack, Tucker answers right away
+  function intro(total) {
+    if (introduced) { return; }
+    introduced = true;
+    say("attack", "Mister Tucker. I am about to run " + total + " attacks against your little treat shop. " +
+                  "Let's see how long your defenses last.");
+    line("log-attack", "cipher.announce(attacks = " + total + ")", "big");
+    window.setTimeout(function () {
+      say("defense", "Incoming! " + total + " attacks headed our way. Shields up: I'm stopping every one as it comes in!");
+      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => blocking mode ON", "big");
+    }, 700);
+  }
+
   // ---- render one attack: Cipher's box gets the attempt, Tucker's box gets the defense
   function renderAttack(a, n, total) {
     if (a.id === "limit") { line("log-attack", "cipher.halt()  // safety limit reached", "warn"); return; }
@@ -40,8 +53,7 @@
     var cls = a.held === false ? "bad" : (a.check ? "warn" : "");
     line("log-defense", "tucker.defend(\"" + a.defense + "\")  => " + tag, cls);
     line("log-defense", "evidence: " + a.evidence + "  [" + a.owasp + "]", "sub");
-    if (n === 1) { say("attack", "Mister Tucker. Your little treat shop is about to have a very bad day."); }
-    if (n === 1) { say("defense", "Uh oh. Cipher's here. Hat on, eyes open!"); }
+    if (n === 1) { intro(total); }
     if (n === 12) { say("attack", "Locked doors everywhere. How... tedious."); }
     if (n === 25) { say("defense", "Not today, cat. Every door's still shut!"); }
     if (n === 36) { say("attack", "Fine. I'll just ask the chatbot nicely. Everyone falls for that."); }
@@ -135,7 +147,7 @@
     ["log-attack", "log-defense", "log-soc"].forEach(function (id) { $(id).textContent = ""; });
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
     $("report-link").hidden = true;
-    shown = { attacks: 0, soc: 0, actions: 0 }; finished = false;
+    shown = { attacks: 0, soc: 0, actions: 0 }; finished = false; introduced = false;
   }
 
   function start() {
@@ -148,6 +160,7 @@
       .then(function (d) {
         if (d.status === "started" || d.status === "running") {
           line("log-attack", "cipher.connect(\"tuckerpaymentprocessing.com\")  // from inside the server", "dim");
+          intro(d.total || 50);
           poll();
         } else if (d.status === "blocked") {
           blockedState();
