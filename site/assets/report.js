@@ -1,6 +1,8 @@
 /*
  * report.js - builds the SOC incident report from this visitor's Cipher run (/api/cipher/status).
  * Every value is inserted as text (never HTML). The "Download PDF" button is handled by report-pdf.js.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -14,19 +16,23 @@
     LLM06: "LLM06 Excessive Agency", LLM07: "LLM07 System Prompt Leakage", LLM10: "LLM10 Unbounded Consumption"
   };
 
+  // Create an element with an optional class and TEXT content (never HTML).
   function el(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) { e.className = cls; }
     if (text !== undefined && text !== null) { e.textContent = String(text); }
     return e;
   }
+  // Append a child and return it, so the report can be built in one readable flow.
   function add(parent, child) { parent.appendChild(child); return child; }
+  // A server timestamp as a local time with milliseconds (and the date, if asked).
   function fmt(t, withDate) {
     if (!t) { return ""; }
     var d = new Date(t * 1000);
     var time = d.toLocaleTimeString([], { hour12: false }) + "." + String(d.getMilliseconds()).padStart(3, "0");
     return withDate ? d.toLocaleDateString() + " " + time : time;
   }
+  // A data table; cellClass can color individual cells (e.g. red for GOT THROUGH).
   function table(parent, headers, rows, cellClass) {
     var t = add(parent, el("table"));
     var hr = add(add(t, el("thead")), el("tr"));
@@ -38,6 +44,7 @@
     });
     return t;
   }
+  // A two-column label/value table.
   function kv(parent, pairs) {
     var t = add(parent, el("table", "kv"));
     pairs.forEach(function (p) {
@@ -45,6 +52,7 @@
     });
   }
 
+  // Build the whole incident report from this visitor's run, section by section.
   function build(st) {
     var root = document.getElementById("report");
     root.textContent = "";
@@ -229,6 +237,7 @@
       "\u00a9 2026 Michael Cunningham. All rights reserved."));
   }
 
+  // Count attempts, blocks and failures per OWASP category.
   function byCat(attacks) {
     var out = {};
     attacks.forEach(function (a) {
@@ -238,6 +247,7 @@
     return out;
   }
 
+  // Fetch this visitor's run (only their own; it is kept for one hour) and build the report.
   function init() {
     fetch("api/cipher/status", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.json(); })

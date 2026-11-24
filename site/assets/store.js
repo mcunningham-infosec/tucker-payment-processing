@@ -8,6 +8,8 @@
  * - All text from the server is inserted with textContent, never as HTML.
  * - The cart lives in sessionStorage (cleared when the browser session ends); if storage is blocked,
  *   it falls back to memory for this page. Nothing is sent anywhere until you check out.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -262,6 +264,8 @@
     document.getElementById("ship-to").textContent = s.address;
   }
 
+  // Fill the 'shopping as' list with the fictional demo customers; if this browser verified as one in Tucker's
+  // chat, pre-select them (the server decides who that is, never the page).
   function loadShoppers() {
     fetch("api/shoppers", { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
@@ -299,6 +303,7 @@
 
   // ---------- start ----------
 
+  // Set up whichever parts of the store this page has: cart badge, product grid or checkout.
   function init() {
     updateBadge();
     var page = document.body.getAttribute("data-page");

@@ -10,6 +10,8 @@
  *
  * No cookies, nothing sent anywhere, no third-party code. sessionStorage only remembers "already offered the tour"
  * for this browser tab. All text is set with textContent, never as HTML.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -78,6 +80,7 @@
   var bubble, picEl, textEl, tipEl, countEl, backBtn, nextBtn, launcher, spotted = null, current = -1;
   var note = null;   // set while Tucker shows a one-off tip (not a tour step): where its button goes
 
+  // Create an element with an optional class and TEXT content (never HTML).
   function el(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) { e.className = cls; }
@@ -85,9 +88,11 @@
     return e;
   }
 
+  // Has Tucker already offered the tour in this browser tab?
   function offeredAlready() {
     try { return sessionStorage.getItem(OFFERED) === "1"; } catch (e) { return false; }
   }
+  // Remember (for this tab only) that the tour was offered, so it doesn't pop up again.
   function markOffered() {
     try { sessionStorage.setItem(OFFERED, "1"); } catch (e) { /* storage blocked: the offer may show again */ }
   }
@@ -138,6 +143,7 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !bubble.hidden) { end(); } });
   }
 
+  // Switch the bubble's guide: Tucker, or Cipher inside his Lair.
   function guide(who) {
     var g = GUIDES[who] || GUIDES.tucker;
     if (picEl.getAttribute("src") !== g.pic) { picEl.src = g.pic; }
@@ -145,11 +151,13 @@
     bubble.classList.toggle("tour-cipher", who === "cipher");
   }
 
+  // The first tour step that happens on the given page.
   function firstOn(page) {
     for (var i = 0; i < STEPS.length; i++) { if (STEPS[i].page === page) { return i; } }
     return 0;
   }
 
+  // Remove the highlight from whatever the guide was pointing at.
   function unspot() {
     if (watcher) { watcher.disconnect(); }
     if (spotted) { spotted.classList.remove("tour-spot"); spotted = null; }
@@ -254,8 +262,10 @@
     place(null);
   }
 
+  // The file name for a tour page ('home' is the site root).
   function pageFile(page) { return page === "home" ? "./" : page + ".html"; }
 
+  // Next button: go to the next step, to the next page, or follow a tip's link.
   function next() {
     var s = STEPS[current];
     if (note) { location.href = note; return; }
@@ -264,6 +274,7 @@
     show(current + 1);
   }
 
+  // Back button: the previous step, on this page or the previous one.
   function back() {
     if (current <= 0) { return; }
     var prev = STEPS[current - 1];
@@ -271,6 +282,7 @@
     show(current - 1);
   }
 
+  // Close the bubble (the X, Escape or Done).
   function end() {
     note = null;
     unspot();
@@ -288,6 +300,7 @@
     return STEPS[i] && STEPS[i].page === PAGE ? i : -1;
   }
 
+  // Build the bubble, resume a step passed in the address, or offer the tour on a first home-page visit.
   function start() {
     build();
     if (!PAGE) { return; }        // e.g. checkout and the policy pages: just the "Restart the Tour" button

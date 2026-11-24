@@ -7,6 +7,8 @@
  * The PDF library (pdfmake, MIT license) is self-hosted in assets/vendor/ - no third-party scripts, in line with
  * the site's Content-Security-Policy - and is only loaded when the button is pressed. If anything goes wrong,
  * it falls back to the browser's own print-to-PDF.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -15,6 +17,7 @@
   var C = { ink: "#1b1f24", muted: "#5b6470", line: "#d7dce2", brand: "#1f5fbf", ok: "#1e7d46", bad: "#b3261e",
             warn: "#9a6700", head: "#f3f5f8", banner: "#eef5ff", quote: "#f6f9ff", info: "#4b5563" };
 
+  // An element's visible text with whitespace tidied.
   function txt(node) { return (node.textContent || "").replace(/\s+/g, " ").trim(); }
 
   // Load the PDF library on first use (one script after the other: the fonts file needs pdfmake first).
@@ -35,6 +38,7 @@
 
   // ---- turn each part of the on-screen report into pdfmake content --------------------------------------------
 
+  // Map a table cell's color class (ok / bad / warn / mono) to PDF text styling.
   function cellStyle(td) {
     var st = { text: txt(td) };
     if (td.classList.contains("bad")) { st.color = C.bad; st.bold = true; }
@@ -50,6 +54,7 @@
              paddingRight: function () { return 4; }, paddingTop: function () { return 3; }, paddingBottom: function () { return 3; } };
   }
 
+  // A two-column 'label: value' table from the report page as a PDF table.
   function kvTable(t) {
     var body = [].map.call(t.querySelectorAll("tr"), function (tr) {
       var th = tr.querySelector("th"), td = tr.querySelector("td");
@@ -58,6 +63,7 @@
     return { table: { widths: [120, "*"], body: body }, layout: lineTable(), margin: [0, 2, 0, 6] };
   }
 
+  // A full data table (timeline, findings) as a PDF table that repeats its header on each page.
   function dataTable(t) {
     var heads = [].map.call(t.querySelectorAll("thead th"), function (th) { return { text: txt(th), bold: true, fillColor: C.head }; });
     var rows = [].map.call(t.querySelectorAll("tbody tr"), function (tr) { return [].map.call(tr.children, cellStyle); });
@@ -78,6 +84,7 @@
                        paddingTop: function () { return 6; }, paddingBottom: function () { return 6; } } };
   }
 
+  // The report header: organization, title, classification and the incident details on the right.
   function header(h) {
     var left = h.children[0], meta = h.querySelector(".meta");
     var org = left.querySelector(".org"), title = left.querySelector("h1"), classif = left.querySelector(".classif");
@@ -93,6 +100,7 @@
     ];
   }
 
+  // The colored status badges (CONTAINED, SEVERITY, BLOCKED) as one row of filled cells.
   function badges(b) {
     var cells = [].map.call(b.querySelectorAll(".badge"), function (s) {
       var fill = s.classList.contains("ok") ? C.ok : s.classList.contains("bad") ? C.bad : C.info;
@@ -104,6 +112,7 @@
                        hLineColor: function () { return "#ffffff"; }, vLineColor: function () { return "#ffffff"; } } };
   }
 
+  // Walk the on-screen report from top to bottom and convert each part to PDF content.
   function convert(root) {
     var out = [];
     [].forEach.call(root.children, function (n) {
@@ -137,12 +146,14 @@
     return out;
   }
 
+  // The incident ID from the report header, used as the PDF's file name.
   function incidentId(root) {
     var meta = root.querySelector(".rhead .meta");
     var m = /Incident ID:\s*([A-Z0-9-]+)/.exec(meta && meta.firstElementChild ? meta.firstElementChild.textContent : "");
     return m ? m[1] : "SOC-incident-report";
   }
 
+  // Build the PDF (Letter size, page numbers and incident ID in the footer) and start the download.
   function makePdf() {
     var root = document.getElementById("report");
     var id = incidentId(root);
@@ -165,6 +176,7 @@
     window.pdfMake.createPdf(doc).download(id + ".pdf");
   }
 
+  // Wire up the Download PDF button; falls back to the browser's print-to-PDF if anything fails.
   function init() {
     var btn = document.getElementById("save-pdf");
     if (!btn) { return; }

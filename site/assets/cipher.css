@@ -1,5 +1,8 @@
 /* Cipher's Lair: standard TPP header, tabs and footer; the Lair itself is a big black box with
-   Matrix-green "terminal" text in dark grey boxes. */
+   Matrix-green "terminal" text in dark grey boxes.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+ */
 /* The Lair is one big black box inside the normal cream page, so it still feels like part of TPP. */
 .lair-zone { background:#000; color:#d7ffe0; max-width:1440px; margin:6px auto 0; padding:26px 0 10px; border-radius:28px;
              box-shadow:0 0 0 4px #fff, 0 10px 30px rgba(0,0,0,.18); }

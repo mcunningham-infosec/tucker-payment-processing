@@ -2,6 +2,8 @@
  * theme.js - the "Play the Theme Song!" button: Play starts the song, Stop stops it and rewinds.
  * Self-hosted MP3, no third-party player (so the site's strict Content Security Policy stays intact).
  * Nothing plays or downloads until the visitor clicks.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";

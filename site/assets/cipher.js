@@ -2,6 +2,8 @@
  * cipher.js - Cipher's Lair. One button; then it only SHOWS what the server reports about the run.
  * The visitor sends nothing but the button press (no payloads, no targets). Everything is inserted as text
  * (textContent), never HTML. Polls /api/cipher/status about once a second while a run is in progress.
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -12,7 +14,9 @@
   // apart, so the squirrel's lines never jump ahead of the attacks a reader is looking at.
   var queue = [], pumping = false, finishQueued = false, displayed = 0;
   var PACE = { attack: 450, rule: 700, soc: 1100, action: 600 };
+  // Reading-pace queue: every line goes on screen one at a time with a short pause, so people can follow along.
   function q(fn, ms) { queue.push([fn, ms]); if (!pumping) { pump(); } }
+  // Show the next queued item, then wait its pause before the one after.
   function pump() {
     var item = queue.shift();
     if (!item) { pumping = false; return; }
@@ -23,6 +27,7 @@
 
   function $(id) { return document.getElementById(id); }
 
+  // Add one line to a log box (text only, never HTML) and keep the box scrolled to the newest line.
   function line(logId, text, cls) {
     var li = document.createElement("li");
     if (cls) { li.className = cls; }
@@ -54,6 +59,7 @@
     return li;
   }
 
+  // Show a speech bubble for Cipher, Tucker or the squirrel (text only).
   function say(who, text) {
     var b = $("bubble-" + who);
     b.hidden = false;
@@ -81,13 +87,16 @@
     s.async = true;
     document.head.appendChild(s);
   }
+  // Clear the human-check token after it is used (each Turnstile token works once).
   function resetTurnstile() {
     tsToken = "";
     if (window.turnstile && tsWidget !== null) { window.turnstile.reset(tsWidget); }
   }
 
+  // The status line under the button.
   function setStatus(text) { $("lair-status").textContent = text; }
 
+  // Server time (seconds) as a local HH:MM:SS clock.
   function clock(t) { return t ? new Date(t * 1000).toLocaleTimeString([], { hour12: false }) : ""; }
 
   // ---- the opening: Cipher announces the attack, Tucker answers right away
@@ -122,9 +131,11 @@
 
   // ---- the requester: shown by code (never sent to the AI), highlighted so it doesn't get lost in the log
   var youShown = false;
+  // City, region, country from Cloudflare's location headers, skipping any that are blank.
   function place(v) {
     return [v.city, v.region, v.country].filter(function (x) { return x; }).join(", ");
   }
+  // The gold 'Attack requested by: that's you' card, shown once per run.
   function showYou(v) {
     if (youShown || !v || !v.ip) { return; }
     youShown = true;
@@ -154,6 +165,7 @@
     }
   }
 
+  // Cipher's one retry after the block: proof that the block really holds.
   function renderRetry(r) {
     line("log-attack", "cipher.retry(\"GET /api/health\")  => " + r.evidence + (r.held ? "  // BLOCKED!" : ""), r.held ? "warn" : "bad");
     say("attack", r.held ? "Hey! Why can't I get back in?!" : "Heh. Still got a way in...");
@@ -178,12 +190,14 @@
     }, PACE.rule);
   }
 
+  // A response action (block, alert) with who took it: the AI only proposes, code enforces.
   function renderAction(x) {
     var cls = x.outcome && x.outcome.indexOf("rejected") === 0 ? "bad" : "";
     line("log-soc", "action " + x.action + "  by " + x.actor + "  => " + x.outcome, cls);
     if (x.expires) { line("log-soc", "block expires " + new Date(x.expires * 1000).toLocaleString(), "sub"); }
   }
 
+  // The run is over: closing lines from all three, the 24-hour block note and the report link.
   function finish(st) {
     finished = true;
     var s = st.summary || {};
@@ -209,6 +223,7 @@
     setStatus("Run complete in " + s.seconds + "s: " + held + ". Your SOC report is ready.");
   }
 
+  // Queue everything new since the last poll, in time order (attacks, defenses, rules, AI check-ins).
   function render(st) {
     var total = st.total || 50, fresh = [];
     // Collect everything new since the last poll, then show it in time order through the reading-pace queue.
@@ -256,6 +271,7 @@
     }
   }
 
+  // Ask the server for this visitor's run about once a second until it's done.
   function poll() {
     fetch("api/cipher/status", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.json(); })
@@ -269,6 +285,7 @@
       .catch(function () { timer = window.setTimeout(poll, 2500); });
   }
 
+  // This browser or network already had its run today: show the block instead of the button.
   function blockedState() {
     $("attack").disabled = true;
     $("attack").textContent = "Cipher is blocked";
@@ -277,6 +294,7 @@
     setStatus("The AI SOC Squirrel blocked this browser and network from attacking for 24 hours.");
   }
 
+  // Testing mode only: empty the three boxes before another run.
   function clearBoxes() {
     ["log-attack", "log-defense", "log-soc"].forEach(function (id) { $(id).textContent = ""; });
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
@@ -286,6 +304,7 @@
     queue = []; finishQueued = false; displayed = 0;
   }
 
+  // The button press: send the human-check token (the only thing sent) and start polling.
   function start() {
     var btn = $("attack");
     if (tsKey && !tsToken) { setStatus("One quick check first: confirm you're human (the box next to the button)."); return; }
@@ -317,6 +336,7 @@
       });
   }
 
+  // Wire up the button and resume a run already in progress (e.g. after a page reload).
   function init() {
     $("attack").addEventListener("click", start);
     poll();                                     // resume a run in progress, or show the blocked state

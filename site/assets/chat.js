@@ -7,6 +7,8 @@
  *   so nothing typed or returned can run as code (no cross-site scripting).
  * - The only cookie is the server's session cookie (HttpOnly: this script can't even read it).
  * - No third-party scripts, no tracking. Same-origin requests only (enforced by the site's CSP).
+ *
+ * Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
  */
 (function () {
   "use strict";
@@ -154,6 +156,7 @@
     if (status) { setStatus(verifiedAs ? "helping " + verifiedAs + " (verified)" : defaultStatus); }
   };
 
+  // Wire up the chat box: send button, quick-try buttons, Start over, and the Behind the Scenes panel.
   function init() {
     var box = document.querySelector("[data-chat-page]");
     page = box ? box.getAttribute("data-chat-page") : "home";
