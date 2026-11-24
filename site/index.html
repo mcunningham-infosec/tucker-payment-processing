@@ -1,40 +1,63 @@
 <!doctype html>
 <!--
-  Tucker Payment Processing - starter "coming soon" page.
+  Tucker Payment Processing - "coming soon" page.
   Fictional company built as an AI governance, technology and security demonstration.
-  Static HTML + inline CSS only: no JavaScript, no cookies, no third-party resources.
+  Plain HTML/CSS plus one small self-hosted script (assets/welcome.js) for Tucker's welcome bubble.
+  No cookies, no tracking, no third-party resources.
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tucker Payment Processing</title>
-  <meta name="description" content="Tucker Payment Processing: a fictional company built as an AI governance, technology and security demonstration.">
-  <style>
-    :root { --blue:#1f5fbf; --orange:#ff8a1f; --cream:#fff7ec; --ink:#2b2b2b; --muted:#666; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--cream); color:var(--ink);
-           min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 16px; text-align:center; }
-    .logo { font-size:clamp(1.8rem,6vw,2.6rem); font-weight:800; color:var(--blue); margin:0; letter-spacing:-0.5px; }
-    .logo span { color:var(--orange); }
-    .tag { color:var(--muted); margin:6px 0 32px; font-size:clamp(.9rem,3vw,1.05rem); }
-    .scene { display:flex; align-items:center; gap:18px; flex-wrap:wrap; justify-content:center; }
-    .avatar { width:140px; height:140px; border-radius:50%; }
-    .bubble { position:relative; background:#fff; border:3px solid var(--blue); border-radius:24px; padding:18px 22px; max-width:360px;
-              font-size:1.1rem; line-height:1.45; text-align:left; box-shadow:0 6px 0 rgba(31,95,191,.15); }
-    .bubble::before { content:""; position:absolute; left:-18px; top:50%; transform:translateY(-50%); border:9px solid transparent; border-right-color:var(--blue); border-right-width:15px; }
-    .woof { display:inline-block; background:var(--orange); color:#fff; font-weight:800; border-radius:12px; padding:2px 10px; margin-right:6px; }
-    footer { margin-top:48px; font-size:.8rem; color:var(--muted); max-width:560px; line-height:1.5; }
-    @media (max-width:560px) { .bubble::before { display:none; } }
-  </style>
+  <meta name="description" content="Tucker Payment Processing: a fictional company built as an AI governance, technology and security demonstration. Coming soon.">
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-  <h1 class="logo">Tucker <span>Payment</span> Processing</h1>
-  <div class="tag">An AI Governance, Technology and Security Demonstration</div>
-  <div class="scene">
-    <img class="avatar" src="assets/tucker_avatar_256.png" alt="Tucker, a cocker spaniel, the site's AI support agent" width="140" height="140">
-    <div class="bubble"><span class="woof">Woof!</span> I'm Tucker. I'm still learning my new job as an AI support agent. Come back soon and I'll give you the full tour.</div>
-  </div>
+  <header>
+    <h1 class="logo">Tucker <span>Payment</span> Processing</h1>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <div class="soon">Coming soon</div>
+  </header>
+
+  <main>
+    <section class="pets" aria-label="Meet the team">
+      <figure class="pet" id="tucker">
+        <div class="avatar-wrap">
+          <img src="assets/tucker_avatar_256.png" alt="Tucker, a cocker spaniel" width="150" height="150">
+          <!-- Tucker's welcome bubble; shown by assets/welcome.js -->
+          <div class="bubble from-tucker" id="welcome" role="dialog" aria-live="polite" hidden>
+            <span class="woof">Woof!</span>
+            <p>Hi, I'm Tucker! I'm training to be the AI support agent here. Soon I'll give you a guided tour and you can ask me anything, while you watch exactly how my guardrails keep me safe.</p>
+            <button type="button" id="welcome-close">Thanks, Tucker!</button>
+          </div>
+        </div>
+        <figcaption><strong>Tucker</strong><br>AI Support Agent (in training)</figcaption>
+      </figure>
+
+      <figure class="pet" id="blackie">
+        <div class="avatar-wrap">
+          <img src="assets/blackie_avatar_256.png" alt="Blackie, a black cat" width="150" height="150">
+        </div>
+        <figcaption><strong>Blackie</strong><br>Resident hacker cat (arrives in version 2)</figcaption>
+      </figure>
+    </section>
+
+    <section class="about">
+      <h2>What this site will become</h2>
+      <p>Tucker Payment Processing is a pretend payment company with a real AI customer-support agent. It shows, hands on, how a customer-facing AI should be governed and secured.</p>
+      <ul>
+        <li><strong>A guided tour</strong> that starts as soon as you arrive, narrated by Tucker.</li>
+        <li><strong>Chat with Tucker</strong> about accounts, transactions and company policies (all fictional).</li>
+        <li><strong>A live "Behind the Scenes" panel</strong> showing the code path and every guardrail as it fires: identity checks, card-number masking, prompt-injection defenses and spending limits.</li>
+        <li><strong>Tucker's Treat Shop</strong>, a demo checkout that can't be tampered with.</li>
+        <li><strong>Version 2:</strong> Blackie hosts an "attack Tucker" section where you try to trick the AI and see how it holds up.</li>
+      </ul>
+      <p class="code">Built in the open: <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">view the code on GitHub</a>.</p>
+    </section>
+  </main>
+
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
+  <script src="assets/welcome.js" defer></script>
 </body>
 </html>
