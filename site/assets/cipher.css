@@ -1,8 +1,8 @@
-/* Cipher's Lair: the logo and tabs keep the standard site theme; below them a white line, then a black
-   "lair" with Matrix-green "terminal" text in dark grey boxes and a small white footer. */
-body.lair { padding-bottom:0; }
-/* Full-width black band: cancel the body's side padding, then put it back inside. */
-.lair-zone { background:#000; color:#d7ffe0; border-top:6px solid #fff; margin:18px -16px 0; padding:24px 0 0; }
+/* Cipher's Lair: standard TPP header, tabs and footer; the Lair itself is a big black box with
+   Matrix-green "terminal" text in dark grey boxes. */
+/* The Lair is one big black box inside the normal cream page, so it still feels like part of TPP. */
+.lair-zone { background:#000; color:#d7ffe0; max-width:1440px; margin:6px auto 0; padding:26px 0 10px; border-radius:28px;
+             box-shadow:0 0 0 4px #fff, 0 10px 30px rgba(0,0,0,.18); }
 
 .lair-main { max-width:1400px; margin:0 auto; padding:0 16px 24px; }
 .lair-sign { display:flex; flex-direction:column; align-items:center; gap:10px; margin:4px 0 16px; }
