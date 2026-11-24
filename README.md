@@ -36,7 +36,7 @@ flowchart LR
 - **The model never decides authorization.** Tucker's tools are read-only lookups; who is verified and whose data can be read is decided in Python.
 - **Card output is last-4 only**, masked again on the way out even if the model tries otherwise.
 - **Prompt-injection and topic checks** before the model sees a message.
-- **Rate limits by IP and session**, keyed by a daily-rotating HMAC so no raw IP is stored; daily and monthly AI spend caps with a graceful "Tucker's taking a nap" fallback.
+- **Rate limits by IP and session** (an IPv6 visitor counts as their whole /64 network, so rotating addresses doesn't dodge them), keyed by a daily-rotating HMAC so no raw IP is stored; daily and monthly AI spend caps with a graceful "Tucker's taking a nap" fallback.
 - **Visitor IP addresses are never sent to the AI.**
 - **Nightly reset** wipes the day's demo data and logs older than two days.
 
