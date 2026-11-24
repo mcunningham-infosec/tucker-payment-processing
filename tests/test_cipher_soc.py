@@ -103,8 +103,8 @@ def test_payloads_are_defanged_before_reaching_the_visitor():
     assert "1111" in out and "script" in out          # still readable to a person
 
 
-def test_halfway_squirrel_cannot_act_or_claim_a_block():
-    """Halfway, the AI only gets its read tool, can't propose actions, and any line claiming a block is
+def test_alert_squirrel_cannot_act_or_claim_a_block():
+    """At the alert check-in, the AI only gets its read tool, can't propose actions, and any line claiming a block is
     dropped. The injection flag comes from the actual logs, not the AI's word."""
     half = ATTACKS[:2]                         # no planted log line yet, run not finished
     seen = {}
@@ -125,3 +125,29 @@ def test_halfway_squirrel_cannot_act_or_claim_a_block():
 
 def test_squirrel_can_attribute_the_attacker_from_evidence():
     assert "Cipher/1.0" in soc.timeline(ATTACKS)["attacker"]["user_agent"]
+
+
+def test_detection_rules_count_only_real_blocks():
+    """The SOC wakes at 15 blocked attacks (not on one, that's noise) and blocks the source at 50.
+    Attacks that got through never count toward the block."""
+    from app.cipher import detect
+    st = {"run_id": "abcdef0123456789", "detections": []}
+    fired = []
+    for i in range(60):
+        fired += [(i + 1, f) for f in detect.observe(st, {"held": True if i % 7 else False})]
+    blocked_attacks = [i + 1 for i in range(60) if i % 7]
+    assert fired[0] == (blocked_attacks[detect.ALERT_AFTER - 1], "alert")
+    assert fired[1] == (blocked_attacks[detect.BLOCK_AFTER - 1], "block")
+    assert st["blocked_count"] == len(blocked_attacks)
+
+
+def test_a_blocked_source_really_gets_403():
+    from fastapi.testclient import TestClient
+    from app import cipher
+    from app.main import app
+    run_id, token = cipher.new_run_token()
+    c = TestClient(app)
+    assert c.get("/api/health", headers={cipher.HEADER: token}).status_code == 200
+    cipher.block_run(run_id)
+    assert c.get("/api/health", headers={cipher.HEADER: token}).status_code == 403
+    assert c.get("/api/health").status_code == 200          # everyone else is unaffected
