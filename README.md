@@ -23,7 +23,19 @@ Google Cloud (Always Free e2-micro, Ubuntu 24.04) · Apache · Python (FastAPI) 
 - Secrets live only on the server, never in this repository.
 
 ## Repository layout
-- `site/` - public web content (currently the starter page)
+- `site/` - public web pages (currently the coming-soon page)
+- `app/` - the Python (FastAPI) application behind Tucker's chat:
+  - `chat.py` - one chat turn through every guardrail, in order
+  - `guardrails.py` - input checks, prompt-injection detection, output masking
+  - `tools.py` - Tucker's only abilities: read-only lookups, authorized in Python
+  - `session.py` - who is verified (the AI never chooses whose data to read)
+  - `spend.py` - the app-level AI spending cap
+  - `policies.py` - small retrieval (RAG) over the policy documents
+  - `llm.py` - swappable model adapter (Google Gemini, plus a fake model for tests)
+  - `db.py` - all database access, parameterized queries only
+- `db/` - schema, least-privilege database role, fictional seed data
+- `policies/` - the company's (fictional) policies that Tucker answers from
+- `tests/` - automated tests proving the guardrails work (run with `pytest`)
 
 Built by **Michael Cunningham**, information security leader (25+ years, payments and PCI), with AI-assisted development.
 LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
