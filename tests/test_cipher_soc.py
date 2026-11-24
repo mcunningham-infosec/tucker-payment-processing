@@ -189,3 +189,7 @@ def test_code_corrects_a_wrong_count_and_wake_up_appears_only_once():
     alert = {"headline": "Alert", "lines": ["Wake up, Tucker! 15 blocked attacks across 4 categories."]}
     soc._verify(alert, {"categories_seen": 4, "raw_web_log_lines": []}, final=False)
     assert alert["lines"][0].startswith("Wake up") and "corrected_claims" not in alert
+    # At the alert, if the headline already says it, the bullet underneath doesn't repeat it.
+    both = {"headline": "Wake up, Tucker! Cipher is hammering us", "lines": ["Wake up, Tucker! Our rule just woke us up."]}
+    soc._verify(both, {"categories_seen": 2, "raw_web_log_lines": []}, final=False)
+    assert both["headline"].startswith("Wake up") and both["lines"][0] == "Our rule just woke us up."
