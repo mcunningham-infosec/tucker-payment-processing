@@ -51,6 +51,7 @@ def test_planted_log_line_is_shown_as_data():
 
 def _fake_runner(monkeypatch):
     from app.cipher import runner
+    monkeypatch.setenv("CIPHER_ENABLED", "1")
     started = []
     monkeypatch.setattr(runner, "busy", lambda: False)
     monkeypatch.setattr(runner, "start", lambda **kw: started.append(1) or f"run{len(started)}")
@@ -82,3 +83,10 @@ def test_cipher_blocks_survive_the_nightly_reset(monkeypatch, admin):
                     "-f", "db/nightly_reset.sql"], check=True)
     fresh = TestClient(main.app, base_url="https://testserver")
     assert fresh.post("/api/cipher/start").json()["status"] == "blocked"
+
+
+def test_lair_is_closed_until_switched_on(monkeypatch):
+    from fastapi.testclient import TestClient
+    from app import main
+    monkeypatch.delenv("CIPHER_ENABLED", raising=False)
+    assert TestClient(main.app, base_url="https://testserver").post("/api/cipher/start").json()["status"] == "closed"
