@@ -41,6 +41,7 @@ class Settings:
     chat_per_ip_per_minute: int = int(_env("CHAT_PER_IP_PER_MINUTE", "15"))
     chat_per_ip_per_day: int = int(_env("CHAT_PER_IP_PER_DAY", "300"))
     purchases_per_day: int = int(_env("PURCHASES_PER_DAY", "25"))      # per IP and per cookie
+    verify_fails_per_ip_per_hour: int = int(_env("VERIFY_FAILS_PER_IP_PER_HOUR", "10"))  # stops ZIP guessing across cookies
     max_cart_items: int = int(_env("MAX_CART_ITEMS", "25"))             # total items in one cart
     # Secret used to turn IPs/cookies into anonymous daily codes. Set on the server (env file).
     hash_salt: str = _env("HASH_SALT", "dev-only-salt-change-me")

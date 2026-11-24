@@ -29,6 +29,7 @@ class Session:
     page_history: dict = field(default_factory=dict)  # separate short histories for the store and cart chats
     current_cart: list = field(default_factory=list)  # the cart the browser sent with the latest cart-page message
     order_refs: list = field(default_factory=list)  # Treats orders placed in THIS visit (cart chat may show only these)
+    client_ip: str | None = None  # the current request's IP, kept in memory only, for per-network limits (never stored)
 
     def locked_out(self) -> bool:
         """True after too many failed identity checks (stops guessing)."""

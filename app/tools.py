@@ -12,7 +12,8 @@ Each function returns (result_for_the_ai, event_for_behind_the_scenes).
 from datetime import date, datetime
 from decimal import Decimal
 
-from . import db, policies
+from . import db, limits, policies
+from .config import SETTINGS
 from .session import Session, MAX_VERIFY_ATTEMPTS
 
 # Tool descriptions handed to the AI model (function calling). Plain JSON schema.
@@ -90,6 +91,12 @@ def verify_identity(session: Session, customer_number: str = "", zip_code: str =
         return ({"verified": False, "error": "locked", "message": "Too many failed attempts in this session."},
                 {"type": "authz", "status": "denied", "label": "Identity check locked",
                  "detail": f"{MAX_VERIFY_ATTEMPTS} failed attempts: further guesses are refused."})
+    # A new cookie must not mean fresh guesses: failures are also counted per network (anonymous daily code).
+    n = SETTINGS.verify_fails_per_ip_per_hour
+    if session.client_ip and limits.over_limit("verify_fail_ip", session.client_ip, n, 3600):
+        return ({"verified": False, "error": "locked", "message": "Too many failed attempts from this network."},
+                {"type": "authz", "status": "denied", "label": "Identity check locked for this network",
+                 "detail": f"{n} failed attempts in an hour from your network: starting a new session doesn't reset it."})
     row = db.find_customer_for_verification(str(customer_number))
     if row and str(zip_code).strip() == row["zip"]:
         session.customer_id = row["id"]
@@ -99,6 +106,8 @@ def verify_identity(session: Session, customer_number: str = "", zip_code: str =
                  "detail": f"Session is now bound to customer {str(customer_number).upper()}. "
                            "All account lookups use this session, never an id from the AI."})
     session.verify_attempts += 1
+    if session.client_ip:
+        limits.record("verify_fail_ip", session.client_ip)
     left = max(0, MAX_VERIFY_ATTEMPTS - session.verify_attempts)
     return ({"verified": False, "message": "Customer number and ZIP code don't match.", "attempts_left": left},
             {"type": "authz", "status": "denied", "label": "Identity check failed",

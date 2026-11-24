@@ -99,6 +99,7 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     """Run one chat turn through every guardrail; return the reply, events and session status.
     client_ip is used only to count per-IP limits, as an anonymous daily code; it is never stored."""
     events = []
+    session.client_ip = client_ip        # memory only, for per-network limits inside tools
     text = guardrails.clean_input(raw_text)
 
     problem = guardrails.check_length(text)
