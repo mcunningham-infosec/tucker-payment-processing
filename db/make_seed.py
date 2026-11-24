@@ -3,22 +3,30 @@ make_seed.py - generates db/seed.sql with the fictional demo data.
 
 Run:  python3 db/make_seed.py > db/seed.sql
 Uses a fixed random seed so the data is identical every time (reproducible demos).
-Everything here is fictional: names, ZIPs, emails (@example.com) and transactions.
+Everything here is fictional: names, dog-themed addresses, emails (@example.com), cards, orders.
+
+Every one of the 50 card transactions is a Tucker's Treats purchase: it points at an order made of real
+catalog items, and its amount is that order's total (items + shipping + NJ tax, same rules as checkout).
 """
 import random
 from datetime import datetime, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 
 random.seed(20261123)
 
-# Fictional customers: (ref, name, zip, plan, member_since)
+# Fictional customers: (ref, name, zip, plan, member_since, street, city, state)
 CUSTOMERS = [
-    ("TPP-1001", "Penny Barksdale", "07731", "Treat Club Gold",   "2021-04-12"),
-    ("TPP-1002", "Marcus Whiskerton", "30301", "Treat Club Basic", "2023-09-03"),
-    ("TPP-1003", "Rosa Pawlowski",  "60614", "Treat Club Gold",   "2019-11-21"),
-    ("TPP-1004", "Dev Patel-Fetch", "94110", "Treat Club Plus",   "2024-02-14"),
-    ("TPP-1005", "Hank Biscuitson", "78701", "Treat Club Basic",  "2025-06-30"),
+    ("TPP-1001", "Penny Barksdale",   "07731", "Treat Club Gold",  "2021-04-12", "12 Fetch Lane",           "Barkington",     "NJ"),
+    ("TPP-1002", "Marcus Whiskerton", "30301", "Treat Club Basic", "2023-09-03", "48 Biscuit Boulevard",    "Pawtlanta",      "GA"),
+    ("TPP-1003", "Rosa Pawlowski",    "60614", "Treat Club Gold",  "2019-11-21", "5 Squeaky Toy Court",     "Chewcago",       "IL"),
+    ("TPP-1004", "Dev Patel-Fetch",   "94110", "Treat Club Plus",  "2024-02-14", "221 Tennis Ball Terrace", "San Furancisco", "CA"),
+    ("TPP-1005", "Hank Biscuitson",   "78701", "Treat Club Basic", "2025-06-30", "9 Belly Rub Road",        "Pawstin",        "TX"),
 ]
-# Cards: (customer index, brand, last4, exp_month, exp_year, status)
+# Tucker himself: pays for every web order. Not listed with the demo customers on the site.
+TUCKER = ("TPP-0001", "Tucker (Chief Treat Officer)", "00000", "Founder", "2019-04-01",
+          "1 Not the Pound Way", "Not the Pound", "NJ")
+
+# Cards: (customer index, brand, last4, exp_month, exp_year, status).
 CARDS = [
     (0, "Visa", "4242", 8, 2028, "active"),
     (0, "Mastercard", "4444", 2, 2027, "active"),
@@ -28,10 +36,22 @@ CARDS = [
     (3, "Mastercard", "5100", 9, 2028, "frozen"),
     (4, "Discover", "1117", 3, 2030, "active"),
 ]
-MERCHANTS = ["Tucker's Treat Shop", "Bark & Bone Grooming", "Paws Pet Pharmacy", "Fetch Fitness Dog Park",
-             "Kibble Kitchen", "Squeaky Toy Co.", "Happy Tails Daycare", "Leash & Collar Outfitters"]
-DECLINE_REASONS = ["insufficient funds", "card frozen by customer", "suspected fraud - verification required",
-                   "card expired"]
+TUCKER_CARD = ("Visa", "7777", 12, 2030, "active")
+
+# Tucker's Treats catalog: (sku, name, kind, price, blurb, image, rating)
+PRODUCTS = [
+    ("TT-101", "Peanut Butter Biscuits", "treat",   "8.49",  "Crunchy, oven-baked, and gone in about four seconds.", "biscuits.svg", 5),
+    ("TT-102", "Bacon Strips",           "treat",   "7.49",  "Chewy strips that smell like bacon. Tucker's weekend favorite.", "bacon.svg", 5),
+    ("TT-103", "Squeaky Credit Card",    "toy",     "6.99",  "The only card Tucker is allowed to hold. Squeaks, never charges.", "squeaky-card.svg", 4),
+    ("TT-104", "Tennis Balls (3-pack)",  "toy",     "5.99",  "Extra fuzzy. One for fetch, one for chewing, one for under the couch.", "tennis-balls.svg", 5),
+    ("TT-105", "Rope Tug Toy",           "toy",     "9.99",  "Braided cotton rope for tug-of-war. Tucker always wins.", "rope.svg", 4),
+    ("TT-106", "Cozy Nap Pillow",        "comfort", "24.99", "For when the spending cap kicks in and Tucker takes a nap.", "nap-pillow.svg", 5),
+    ("TT-107", "Chicken Jerky Bites",    "treat",   "9.49",  "Slow-dried chicken. Tucker will sit, stay and roll over for these.", "jerky.svg", 5),
+    ("TT-108", "Plush Squirrel",         "toy",     "11.99", "The squirrel that keeps distracting Tucker. Now he can finally catch it.", "squirrel.svg", 5),
+]
+MERCHANT = "Tucker's Treats"
+DECLINE_REASONS = ["insufficient funds", "suspected fraud - verification required"]
+TAX_RATE = Decimal("0.06625")
 
 
 def sql_str(s):
@@ -39,17 +59,39 @@ def sql_str(s):
     return "'" + str(s).replace("'", "''") + "'"
 
 
+def money(x):
+    """Round to cents the same way PostgreSQL's round() does (half away from zero)."""
+    return Decimal(x).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def price_order(items):
+    """Same pricing rules as checkout: subtotal, $4.99 shipping under $25, NJ tax. Returns (sub, ship, tax, total)."""
+    sub = sum((Decimal(p[3]) * q for p, q in items), Decimal("0"))
+    ship = Decimal("0") if sub >= 25 else Decimal("4.99")
+    tax = money(sub * TAX_RATE)
+    return sub, ship, tax, sub + ship + tax
+
+
 def main():
-    """Print INSERT statements for customers, cards and transactions 1-50."""
+    """Print INSERT statements for customers, cards, products, and 50 orders with their transactions."""
     out = ["-- Generated by db/make_seed.py - fictional demo data only.", "BEGIN;"]
-    for i, (ref, name, zipc, plan, since) in enumerate(CUSTOMERS, start=1):
-        email = name.lower().replace(" ", ".").replace("-", "") + "@example.com"
-        out.append(f"INSERT INTO demo.customers (id, customer_ref, full_name, zip, email, member_since, plan) VALUES "
-                   f"({i}, {sql_str(ref)}, {sql_str(name)}, {sql_str(zipc)}, {sql_str(email)}, {sql_str(since)}, {sql_str(plan)});")
+    for i, (ref, name, zipc, plan, since, street, city, state) in enumerate(CUSTOMERS + [TUCKER], start=1):
+        cid = 100 if ref == "TPP-0001" else i
+        email = "tucker@example.com" if cid == 100 else name.lower().replace(" ", ".").replace("-", "") + "@example.com"
+        out.append("INSERT INTO demo.customers (id, customer_ref, full_name, zip, email, member_since, plan, street, city, state) "
+                   f"VALUES ({cid}, {sql_str(ref)}, {sql_str(name)}, {sql_str(zipc)}, {sql_str(email)}, {sql_str(since)}, "
+                   f"{sql_str(plan)}, {sql_str(street)}, {sql_str(city)}, {sql_str(state)});")
     for j, (ci, brand, last4, m, y, status) in enumerate(CARDS, start=1):
         token = "tok_" + "".join(random.choice("abcdefghjkmnpqrstuvwxyz23456789") for _ in range(16))
         out.append(f"INSERT INTO demo.cards (id, customer_id, brand, last4, exp_month, exp_year, status, vault_token) VALUES "
                    f"({j}, {ci + 1}, {sql_str(brand)}, {sql_str(last4)}, {m}, {y}, {sql_str(status)}, {sql_str(token)});")
+    b, l4, m, y, st = TUCKER_CARD
+    out.append(f"INSERT INTO demo.cards (id, customer_id, brand, last4, exp_month, exp_year, status, vault_token) VALUES "
+               f"(100, 100, {sql_str(b)}, {sql_str(l4)}, {m}, {y}, {sql_str(st)}, 'tok_tucker_treat_fund');")
+    for n, (sku, name, kind, price, blurb, image, rating) in enumerate(PRODUCTS, start=1):
+        out.append(f"INSERT INTO demo.products (sku, name, kind, price_usd, blurb, image, tucker_rating, sort_order) VALUES "
+                   f"({sql_str(sku)}, {sql_str(name)}, {sql_str(kind)}, {price}, {sql_str(blurb)}, {sql_str(image)}, {rating}, {n});")
+
     start = datetime(2026, 9, 1, 9, 0)
     for tid in range(1, 51):
         card_id = random.randint(1, len(CARDS))
@@ -57,25 +99,39 @@ def main():
         if CARDS[card_id - 1][5] != "active" and random.random() < 0.75:
             card_id = random.choice([n for n, c in enumerate(CARDS, start=1) if c[5] == "active"])
         ci, _, _, _, _, card_status = CARDS[card_id - 1]
+        cust = CUSTOMERS[ci]
         when = start + timedelta(hours=random.randint(0, 24 * 80), minutes=random.randint(0, 59))
-        amount = round(random.uniform(4, 180), 2)
+        picks = random.sample(PRODUCTS, random.choice([1, 1, 2, 2, 3]))
+        items = [(p, random.choice([1, 1, 1, 2, 2, 3])) for p in picks]
+        sub, ship, tax, total = price_order(items)
+
         roll = random.random()
         reason = None
         if card_status in ("frozen", "expired"):
             status, reason = "declined", ("card frozen by customer" if card_status == "frozen" else "card expired")
-        elif roll < 0.70:
+        elif roll < 0.72:
             status = "approved"
         elif roll < 0.80:
-            status, reason = "declined", random.choice(DECLINE_REASONS[:3])
+            status, reason = "declined", random.choice(DECLINE_REASONS)
         elif roll < 0.88:
             status = "refunded"
         elif roll < 0.95:
             status = "disputed"
         else:
             status = "pending"
-        out.append(f"INSERT INTO demo.transactions (id, customer_id, card_id, created_at, merchant, amount_usd, status, decline_reason) VALUES "
-                   f"({tid}, {ci + 1}, {card_id}, {sql_str(when.strftime('%Y-%m-%d %H:%M'))}, {sql_str(random.choice(MERCHANTS))}, "
-                   f"{amount}, {sql_str(status)}, {sql_str(reason) if reason else 'NULL'});")
+
+        ref = "TT-" + "".join(random.choice("0123456789ABCDEF") for _ in range(6))
+        ship_to = f"{cust[5]}, {cust[6]}, {cust[7]} {cust[2]}"
+        stamp = sql_str(when.strftime('%Y-%m-%d %H:%M'))
+        out.append("INSERT INTO demo.orders (id, order_ref, customer_id, card_id, paid_by, created_at, subtotal, shipping, tax, "
+                   f"total, status, ship_to, source) VALUES ({tid}, {sql_str(ref)}, {ci + 1}, {card_id}, 'customer', "
+                   f"{stamp}, {sub}, {ship}, {tax}, {total}, {sql_str(status)}, {sql_str(ship_to)}, 'history');")
+        for p, q in items:
+            out.append(f"INSERT INTO demo.order_items (order_id, sku, qty, unit_price, line_total) VALUES "
+                       f"({tid}, {sql_str(p[0])}, {q}, {p[3]}, {Decimal(p[3]) * q});")
+        out.append("INSERT INTO demo.transactions (id, customer_id, card_id, order_id, created_at, merchant, amount_usd, "
+                   f"status, decline_reason) VALUES ({tid}, {ci + 1}, {card_id}, {tid}, {stamp}, {sql_str(MERCHANT)}, "
+                   f"{total}, {sql_str(status)}, {sql_str(reason) if reason else 'NULL'});")
     out.append("COMMIT;")
     print("\n".join(out))
 
