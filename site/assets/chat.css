@@ -122,3 +122,9 @@ button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
 .narrow { max-width:640px; margin:0 auto; }
 .center { text-align:center; }
 .round { border-radius:50%; }
+
+/* Standards list (home page) */
+.standards { list-style:none; padding:0; }
+.standards li { padding:10px 0; border-bottom:1px solid #f0e6d6; }
+.standards li:last-child { border-bottom:0; }
+.pdf-soon { display:inline-block; background:var(--cream); border:1px solid #e8dcc8; color:var(--muted); border-radius:8px; padding:0 7px; font-size:.75rem; font-weight:700; margin-left:4px; }
