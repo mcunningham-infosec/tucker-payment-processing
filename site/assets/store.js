@@ -16,7 +16,7 @@
   var memoryCart = {};           // fallback if sessionStorage is unavailable
   var KINDS = {
     input: "Input check", tamper: "Tamper check", pricing: "Server-side pricing", authz: "Card on file",
-    payment: "Payment authorization (simulated)", privacy: "Privacy", catalog: "Database read (read-only)",
+    payment: "Payment authorization (simulated)", privacy: "Privacy", catalog: "Database read (read-only)", database: "Database write (one locked door)",
     browser: "Your browser only", server: "Sent to server"
   };
   var localSteps = [];   // running list of steps on pages where clicks happen without a server call
