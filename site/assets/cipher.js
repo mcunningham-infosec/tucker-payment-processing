@@ -13,6 +13,7 @@
   // ---- Reading pace: everything the server reports goes into one queue and is shown in time order, a beat
   // apart, so the squirrel's lines never jump ahead of the attacks a reader is looking at.
   var queue = [], pumping = false, finishQueued = false, displayed = 0;
+  var live = false;                          // true while the run we're showing is still running on the server
   var PACE = { attack: 450, rule: 700, soc: 1100, action: 600 };
   // Reading-pace queue: every line goes on screen one at a time with a short pause, so people can follow along.
   function q(fn, ms) { queue.push([fn, ms]); if (!pumping) { pump(); } }
@@ -278,11 +279,22 @@
       .then(function (st) {
         if (st.turnstile_sitekey && !st.run_id) { loadTurnstile(st.turnstile_sitekey); }
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
-        if (st.status === "none") { return; }
+        if (st.status === "none") { if (live) { lost(); } return; }
+        live = st.status === "running";
         render(st);
         if (st.status === "running") { timer = window.setTimeout(poll, 900); }
       })
       .catch(function () { timer = window.setTimeout(poll, 2500); });
+  }
+
+  // The run we were watching is gone (the server restarted mid-attack; runs live only in its memory).
+  // Say so plainly and let the visitor start again, instead of waiting forever.
+  function lost() {
+    live = false; finished = true;
+    queue = [];
+    line("log-attack", "Connection lost: the server restarted, so this run ended early.", "warn");
+    setStatus("This attack was interrupted by a server restart. Sorry about that! Press the button to run it again.");
+    $("attack").disabled = false; $("attack").textContent = "Attack Tucker's Treats!";
   }
 
   // This browser or network already had its run today: show the block instead of the button.
