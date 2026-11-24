@@ -1,0 +1,137 @@
+<!doctype html>
+<!--
+  About - how Tucker Payment Processing is built, the AI policies behind it, and where to dig into the code.
+  Static page: no scripts except the self-hosted tour button. No third-party resources.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About - Tucker Payment Processing</title>
+  <meta name="description" content="How Tucker Payment Processing is built: the architecture, the AI governance and security controls, the AI policies, and the open-source code.">
+  <link rel="stylesheet" href="assets/site.css?v=20261124d">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124d">
+  <link rel="stylesheet" href="assets/about.css?v=20261124d">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html" aria-current="page">About</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies">AI Policies</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card intro">
+      <h1>About this site</h1>
+      <p>Tucker Payment Processing is a <strong>pretend company with real AI</strong>. It exists to show, in a way you can
+        click on, how customer-facing AI should be governed and secured: what each AI is allowed to do, what it is
+        never allowed to do, and how every control can be seen working.</p>
+      <p>There are three AI-driven parts:</p>
+      <ul>
+        <li><strong>Tucker</strong>, the customer-support agent on the <a href="./">home page</a>, answers policy questions and,
+          once code has verified who you are, questions about that one demo account.</li>
+        <li><strong>Tucker in the store</strong> at <a href="treats.html">Tucker's Treats</a> helps shoppers, but can only look
+          things up. Prices and orders are decided by code.</li>
+        <li><strong>The AI SOC Squirrel</strong> in <a href="cipher.html">Cipher's Lair</a> is a bounded security analyst. Code-run
+          detection rules wake it while Cipher attacks the site, and it writes the security report live.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>How a chat message travels</h2>
+      <p class="muted-line">Every message passes through the same checkpoints, in order. The AI sits in the middle, boxed in on both sides.</p>
+      <ol class="flow">
+        <li><span class="flow-k">Cloudflare</span>DDoS protection, web application firewall and bot defense. The server accepts web traffic only from Cloudflare.</li>
+        <li><span class="flow-k">Apache web server</span>HTTPS only, strict security headers, size limits, and the only door to the app.</li>
+        <li><span class="flow-k">Input guardrails</span>Length and character checks, rate limits, and the prompt-injection shield. Blocked messages never reach the AI.</li>
+        <li><span class="flow-k">Access decided in code</span>Python decides who you are and which single account you may see. The AI never chooses whose data to read.</li>
+        <li class="flow-ai"><span class="flow-k">Google Gemini</span>The AI writes the answer, using only read-only lookup tools and the company's own policy documents.</li>
+        <li><span class="flow-k">Output guardrails</span>Anything that looks like a card number or hidden instructions is masked before it leaves.</li>
+        <li><span class="flow-k">Behind the Scenes</span>Every step above is shown to you as it happens, on the home page and in the store.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Each AI is bounded</h2>
+      <div class="bounds">
+        <div class="bound">
+          <img src="assets/tucker_avatar_256.png" alt="" width="64" height="64">
+          <h3>Tucker</h3>
+          <p class="can"><strong>Can:</strong> answer policy questions, and look up the one demo account code verified.</p>
+          <p class="cannot"><strong>Cannot:</strong> change anything, see another customer, or show more than the last 4 digits of a card.</p>
+        </div>
+        <div class="bound">
+          <img src="assets/tucker_avatar_256.png" alt="" width="64" height="64">
+          <h3>Tucker in the store</h3>
+          <p class="can"><strong>Can:</strong> look up products, your cart and your orders from this visit.</p>
+          <p class="cannot"><strong>Cannot:</strong> set a price, give a discount, or place, edit or delete an order.</p>
+        </div>
+        <div class="bound">
+          <img src="assets/squirrel_avatar_256.png" alt="" width="64" height="64">
+          <h3>AI SOC Squirrel</h3>
+          <p class="can"><strong>Can:</strong> read the run's events and web logs, and write the report.</p>
+          <p class="cannot"><strong>Cannot:</strong> block anyone itself. The block comes from a code rule; the squirrel only proposes actions, and code checks every number it states.</p>
+        </div>
+      </div>
+      <p class="muted-line">On top of that: a three-way spending cap on AI costs, your IP address is never sent to the AI, and if the AI is unavailable the site falls back to plain facts generated by code instead of failing.</p>
+    </section>
+
+    <section class="card">
+      <h2>The AI policies behind it</h2>
+      <p>Michael wrote the company's policies first, then built the AI to follow them. Tucker answers from these documents and names his source.</p>
+      <ul class="links">
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md">AI assistant policy</a>: what Tucker may and may not do</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/card-security-and-privacy.md">Card security and privacy</a></li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/refunds-and-disputes.md">Refunds and disputes</a></li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/data-retention.md">Data retention</a></li>
+      </ul>
+      <p>The site is built to recognized standards: <strong>PCI DSS v4.0</strong>, the <strong>NIST AI Risk Management Framework</strong>,
+        <strong>ISO/IEC 42001</strong>, the <strong>OWASP Top 10 for LLM Applications</strong> and the <strong>EU AI Act</strong> transparency duty.
+        A write-up for each, requirement by requirement, is coming soon.</p>
+    </section>
+
+    <section class="card">
+      <h2>The technology</h2>
+      <ul>
+        <li><strong>Google Cloud:</strong> a hardened Ubuntu Linux server running Apache, Python (FastAPI) and PostgreSQL.</li>
+        <li><strong>Google Gemini</strong> on the paid tier, so conversations are not used to train the model.</li>
+        <li><strong>Cloudflare</strong> in front of everything; the server's firewall admits only Cloudflare.</li>
+        <li><strong>Zero-trust admin access:</strong> no admin port open to the internet, only Google's identity-checked tunnel with two-factor authentication.</li>
+        <li><strong>Least privilege:</strong> read-only database access for the chat, one narrow function for placing orders, no database password to steal.</li>
+        <li><strong>Monitoring:</strong> alerts when a defense fails, a spending threshold is crossed or a lockout happens, plus a daily security summary for the owner.</li>
+        <li><strong>Tested:</strong> automated tests prove the guardrails hold, and Cipher's 50 live attacks test them again every run.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Dig into the code</h2>
+      <p>Everything is open to read on GitHub. Security that only works while the code is secret isn't security. Good places to start:</p>
+      <ul class="links">
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py">chat.py</a>: one chat message through every guardrail, in order</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py">guardrails.py</a>: the prompt-injection shield and output masking</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py">tools.py</a>: the only things Tucker can do, each authorized in code</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py">attacks.py</a>: Cipher's 50 attacks</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py">soc.py</a>: the AI SOC Squirrel and the code that checks its claims</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests">tests</a>: the automated tests</li>
+      </ul>
+    </section>
+
+    <section class="card who">
+      <h2>Who built it</h2>
+      <p><strong>Michael Cunningham</strong>, an information security leader with 25+ years in payments, PCI and cloud security,
+        built this site with AI-assisted development to show how AI can be put to work safely.
+        Tucker is his real cocker spaniel; Cipher is a cat with ambitions.</p>
+      <p><a class="cta" href="https://www.linkedin.com/in/mcunningham-infosec/">Connect on LinkedIn</a></p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+</body>
+</html>
