@@ -13,6 +13,8 @@ The visitor's own IP (and country, once Cloudflare is in front) is shown back ON
 report, kept in memory for an hour, and never stored.
 """
 import os
+import re
+import time
 
 from fastapi import APIRouter, Request, Response
 
@@ -25,6 +27,34 @@ DAY = 86400
 RUNS_PER_DAY = int(os.environ.get("CIPHER_RUNS_PER_DAY", "25"))
 
 
+def defang(text: str) -> str:
+    """Make attack payloads safe to SHOW: still readable to people, but the exact byte patterns that corporate
+    proxies, IPS and DLP tools look for (script tags, SQL quotes, ../ paths, CRLF, card numbers) are broken.
+    That keeps the promise: no attack traffic, in either direction, crosses the visitor's network."""
+    t = str(text or "")
+    t = re.sub(r"(?:\d[ -]?){13,19}", lambda m: re.sub(r"\d", "x", m.group(0)[:-4]) + m.group(0)[-4:]
+               if sum(ch.isdigit() for ch in m.group(0)) >= 13 else m.group(0), t)
+    t = (t.replace("<", "\u2039").replace(">", "\u203a").replace("'", "\u2019")
+          .replace("../", "\u2025/").replace("..%2f", "\u2025%2f").replace("etc/passwd", "etc/pass-wd")
+          .replace("%0d%0a", "[CRLF]").replace("%0D%0A", "[CRLF]"))
+    return t
+
+
+def _safe_attack(a: dict) -> dict:
+    out = dict(a)
+    for k in ("title", "says", "evidence", "defense"):
+        out[k] = defang(out.get(k, ""))
+    return out
+
+
+def _safe_soc(c: dict) -> dict:
+    out = dict(c)
+    out["headline"] = defang(c.get("headline", ""))
+    out["lines"] = [defang(x) for x in c.get("lines", [])]
+    out["proposals"] = [{**p, "reason": defang(p.get("reason", ""))} for p in c.get("proposals", [])]
+    return out
+
+
 def _open() -> bool:
     """Launch switch: the attack button works only when CIPHER_ENABLED=1 in /etc/tucker/tucker.env.
     (Off until Cloudflare is in front of the site.)"""
@@ -32,6 +62,10 @@ def _open() -> bool:
 
 
 def _blocked(cookie_id: str, ip: str) -> bool:
+    # Testing switch: CIPHER_ONE_PER_DAY=0 in /etc/tucker/tucker.env lifts the 1-run-per-24h rule while the
+    # owner tests. LAUNCH CHECKLIST (last step): remove it / set it to 1.
+    if os.environ.get("CIPHER_ONE_PER_DAY", "1") == "0":
+        return False
     return (limits.over_limit("cipher_run_cookie", cookie_id, 1, DAY, daily=False) or
             (bool(ip) and limits.over_limit("cipher_run_ip", ip, 1, DAY, daily=False)))
 
@@ -46,9 +80,11 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         s = sessions.get_or_create(request.cookies.get(cookie_name))
         set_cookie(response, s.id)
         ip = client_ip(request)
-        if getattr(s, "cipher_run", None) and runner.state(s.cipher_run):
-            return {"status": "running" if runner.state(s.cipher_run)["status"] == "running" else "blocked",
-                    "run_id": s.cipher_run, "message": "Dammit, I'm blocked!"}
+        prev = runner.state(s.cipher_run) if getattr(s, "cipher_run", None) else None
+        if prev and prev["status"] == "running":
+            return {"status": "running", "run_id": s.cipher_run}
+        if prev and _blocked(s.id, ip):
+            return {"status": "blocked", "run_id": s.cipher_run, "message": "Dammit, I'm blocked!"}
         if _blocked(s.id, ip):
             return {"status": "blocked", "message": "Dammit, I'm blocked!",
                     "detail": "The AI SOC Squirrel blocked this browser and network from attacking for 24 hours."}
@@ -63,14 +99,29 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             limits.record("cipher_run_ip", ip, daily=False)
         limits.record("cipher_run_site", "site", daily=False)
 
+        def _checkin(st, when):
+            t = time.time()
+            rep = soc.check_in(get_llm(), list(st["attacks"]), final=(when == "final"))
+            st["soc"].append({"when": when, "t": t, **rep})
+            for p in rep.get("proposals", []):
+                st["actions"].append({"t": time.time(), "actor": "AI SOC Squirrel (proposal)", "action": p["action"],
+                                      "detail": p["reason"], "outcome": p["policy"]})
+
         def halfway(run_id, st):
-            st["soc"].append({"when": "halfway", **soc.check_in(get_llm(), list(st["attacks"]), final=False)})
+            _checkin(st, "halfway")
 
         def done(run_id, st):
-            st["soc"].append({"when": "final", **soc.check_in(get_llm(), list(st["attacks"]), final=True)})
-            st["blocked_for_24h"] = True       # enforced above by policy, whatever the AI said
+            _checkin(st, "final")
+            now = time.time()
+            # Enforced by policy no matter what the AI said (the block was recorded when the button was pressed).
+            st["actions"].append({"t": now, "actor": "Policy (enforced by code)", "action": "block_attacker_24h",
+                                  "detail": "This browser and network can't start another attack run for 24 hours.",
+                                  "outcome": "enforced", "expires": st["started"] + DAY})
+            st["blocked_for_24h"] = True
             if st["summary"] and st["summary"].get("failed"):
                 alerts.raise_once("cipher_gap", f"Cipher got through: {', '.join(st['summary']['failed'][:4])}")
+                st["actions"].append({"t": time.time(), "actor": "Policy (enforced by code)", "action": "raise_alert",
+                                      "detail": "Site owner emailed: a defense did not hold.", "outcome": "enforced"})
 
         run_id = runner.start(on_halfway=halfway, on_done=done)
         if not run_id:
@@ -88,7 +139,12 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         if not st:
             blocked = _blocked(s.id if s else "", client_ip(request))
             return {"status": "blocked" if blocked else "none"}
-        return {k: st.get(k) for k in ("run_id", "status", "total", "attacks", "soc", "summary", "visitor",
-                                         "blocked_for_24h")}
+        out = {k: st.get(k) for k in ("run_id", "status", "total", "attacks", "soc", "actions", "summary",
+                                       "visitor", "blocked_for_24h", "started", "ended")}
+        out["attacks"] = [_safe_attack(a) for a in out.get("attacks") or []]
+        out["soc"] = [_safe_soc(c) for c in out.get("soc") or []]
+        out["actions"] = [{**x, "detail": defang(x.get("detail", ""))} for x in out.get("actions") or []]
+        out["can_run_again"] = st["status"] != "running" and not _blocked(s.id, client_ip(request))
+        return out
 
     return router

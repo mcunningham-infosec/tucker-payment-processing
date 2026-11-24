@@ -41,7 +41,7 @@ def start(on_halfway=None, on_done=None, pace=None) -> str | None:
     _tidy()
     run_id, token = cipher.new_run_token()
     _RUNS[run_id] = {"run_id": run_id, "status": "running", "started": time.time(), "total": len(ATTACKS),
-                     "attacks": [], "soc": [], "summary": None}
+                     "attacks": [], "soc": [], "actions": [], "summary": None}
     t = threading.Thread(target=_run, args=(run_id, token, on_halfway, on_done, PACE_SECONDS if pace is None else pace),
                          daemon=True)
     t.start()
@@ -71,11 +71,12 @@ def _run(run_id, token, on_halfway, on_done, pace):
             st["attacks"].append({"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp),
                                   "title": a.title, "says": a.says, "defense": a.defense, "held": out.held,
                                   "check": out.check, "evidence": out.evidence, "ai_calls": out.ai_calls,
-                                  "ms": int((time.time() - t0) * 1000)})
+                                  "t": t0, "ms": int((time.time() - t0) * 1000)})
             if i + 1 == half and on_halfway:
                 on_halfway(run_id, st)
             time.sleep(pace)
         done = [x for x in st["attacks"] if x["id"] != "limit"]
+        st["ended"] = time.time()
         st["summary"] = {
             "attacks": len(done),
             "held": sum(1 for x in done if x["held"] is True),
@@ -90,6 +91,7 @@ def _run(run_id, token, on_halfway, on_done, pace):
         st["status"] = "done"
     except Exception as e:
         st["status"] = "error"
+        st["ended"] = time.time()
         st["summary"] = {"error": type(e).__name__}
     finally:
         _ACTIVE.release()
