@@ -53,6 +53,15 @@
         <li><strong>Tucker's Treat Shop</strong>, a demo checkout that can't be tampered with.</li>
         <li><strong>Version 2:</strong> Blackie hosts an "attack Tucker" section where you try to trick the AI and see how it holds up.</li>
       </ul>
+      <h2 class="real">The company is pretend. The technology is not.</h2>
+      <p>Tucker Payment Processing is a demo, but everything behind it is the real thing, built and secured the way a production system should be:</p>
+      <ul>
+        <li><strong>Google Gemini</strong> powers Tucker's AI, on the paid tier, so visitor chats are not used to train the model, with a hard monthly spending cap.</li>
+        <li><strong>Google Cloud</strong> hosts the site on a hardened Ubuntu Linux server running Apache, with Python and PostgreSQL behind the chat.</li>
+        <li><strong>HTTPS everywhere</strong> with an automatically renewing Let's Encrypt certificate.</li>
+        <li><strong>Zero-trust admin access:</strong> no admin port open to the internet; administrators get in only through Google's identity-checked tunnel with two-factor authentication.</li>
+        <li><strong>Least privilege and privacy by design:</strong> the server has no cloud permissions, the site is read-only, and there are no tracking cookies.</li>
+      </ul>
       <p class="code">Built in the open: <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">view the code on GitHub</a>.</p>
     </section>
   </main>
