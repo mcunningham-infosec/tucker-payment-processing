@@ -5,6 +5,10 @@ Endpoints:
   GET  /api/health  - simple "is the app up" check
   POST /api/chat    - one message to Tucker; returns his reply plus Behind the Scenes events
   POST /api/reset   - start a fresh chat (forgets the verified customer)
+  GET  /api/products        - Tucker's Treats catalog, straight from the database
+  POST /api/quote           - price a cart on the server (the browser never sets prices)
+  GET  /api/shoppers        - demo customers a visitor can shop as (number and name only)
+  POST /api/checkout        - price + simulated charge to Tucker's card on file; nothing is stored
 The only cookie is the session id: HttpOnly (JavaScript can't read it), Secure (HTTPS only),
 SameSite=Lax, and it expires when the browser closes.
 """
@@ -12,6 +16,7 @@ from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
 
 from . import session as sessions
+from . import store
 from .chat import handle_message
 from .config import SETTINGS
 from .llm import GeminiLLM
@@ -59,3 +64,47 @@ def reset(request: Request, response: Response):
     sessions.reset(request.cookies.get(COOKIE))
     response.delete_cookie(COOKIE, path="/api")
     return {"ok": True}
+
+
+# ---------- Tucker's Treats ----------
+
+class CartIn(BaseModel):
+    """A cart as the browser sends it: a list of {sku, qty}. Extra fields are allowed so tampering can be shown."""
+    items: list = []
+
+
+class CheckoutIn(CartIn):
+    """Checkout takes the cart and which demo customer you're shopping as. Anything else (a card number,
+    a price) is reported and ignored."""
+    model_config = {"extra": "allow"}
+    customer_ref: str = ""
+
+
+@app.get("/api/products")
+def products():
+    """The store catalog, exactly as stored in the database."""
+    return {"products": store.catalog()}
+
+
+@app.post("/api/quote")
+def quote(body: CartIn):
+    """Price a cart on the server and explain each step."""
+    events = []
+    return {"order": store.quote(body.items[:20], events), "events": events}
+
+
+@app.get("/api/shoppers")
+def shoppers():
+    """Fictional demo customers to shop as (customer number and name only)."""
+    return {"shoppers": store.shoppers()}
+
+
+@app.post("/api/checkout")
+def checkout(body: CheckoutIn, request: Request, response: Response):
+    """Place a demo order: server-side pricing, simulated charge to Tucker's card on file."""
+    s = sessions.get_or_create(request.cookies.get(COOKIE))
+    _set_cookie(response, s.id)
+    events = []
+    extra = list((body.model_extra or {}).keys())
+    result = store.checkout(body.items[:20], s.id, events, extra, body.customer_ref)
+    return {**result, "events": events}

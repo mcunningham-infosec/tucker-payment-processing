@@ -83,3 +83,27 @@ def record_event(session_id: str, event_type: str, detail: str = ""):
     with connect() as c:
         c.execute("INSERT INTO ops.chat_events (session_id, event_type, detail) VALUES (%s,%s,%s)",
                   (session_id, event_type, detail[:200]))
+
+
+# ---------- Tucker's Treats (store) ----------
+
+def products():
+    """The store catalog, in display order. Prices here are the only prices that count."""
+    with connect() as c:
+        return c.execute("SELECT sku, name, kind, price_usd, blurb, image, tucker_rating "
+                         "FROM demo.products ORDER BY sort_order").fetchall()
+
+
+def tucker_card(customer_ref: str):
+    """Tucker's card on file (brand, last 4, expiry, status) - the only card the store ever charges."""
+    with connect() as c:
+        return c.execute("SELECT ca.brand, ca.last4, ca.exp_month, ca.exp_year, ca.status FROM demo.cards ca "
+                         "JOIN demo.customers cu ON cu.id = ca.customer_id "
+                         "WHERE cu.customer_ref = %s ORDER BY ca.id LIMIT 1", (customer_ref,)).fetchone()
+
+
+def demo_shoppers():
+    """The demo customers a visitor can shop as (number and name only; Tucker himself is excluded)."""
+    with connect() as c:
+        return c.execute("SELECT customer_ref, full_name, street, city, state, zip FROM demo.customers "
+                         "WHERE customer_ref <> 'TPP-0001' ORDER BY customer_ref").fetchall()
