@@ -127,8 +127,12 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         if not run_id:
             return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
         st = runner.state(run_id)
+        # Shown back ONLY to this visitor, by code (never sent to the AI). Location comes from Cloudflare's
+        # visitor-location headers once Cloudflare is in front of the site.
+        h = request.headers
         st["visitor"] = {"ip": ip if ip and not ip.startswith("cipher-run:") else "",
-                         "country": request.headers.get("cf-ipcountry", "")}
+                         "country": h.get("cf-ipcountry", "")[:4], "region": h.get("cf-region", "")[:60],
+                         "city": h.get("cf-ipcity", "")[:60]}
         s.cipher_run = run_id
         return {"status": "started", "run_id": run_id, "total": st["total"]}
 
