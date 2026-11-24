@@ -1,0 +1,67 @@
+<!--
+  Checkout - the server prices the cart from the database and runs a simulated card authorization.
+  Nothing to type: every order is paid by Tucker's card on file. Orders ship to the chosen demo customer's (fictional, dog-themed) address.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Tucker's Treats</title>
+  <meta name="description" content="Checkout for Tucker's Treats, a demo store. Prices are set by the server, not your browser.">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/chat.css">
+  <link rel="stylesheet" href="assets/store.css">
+</head>
+<body class="home-page" data-page="checkout">
+  <header class="top">
+    <a class="cart-link" href="checkout.html" aria-label="Your cart">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/></svg>
+      <span class="cart-text">Cart</span><span class="cart-count" id="cart-count" hidden>0</span>
+    </a>
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies">AI Policies</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
+    </nav>
+  </header>
+  <main class="checkout-grid">
+    <section class="card" aria-label="Your order">
+      <h2>Your cart</h2>
+      <p class="result" id="result" role="status" hidden></p>
+      <p id="empty" class="muted" hidden>Your cart is empty. <a href="treats.html">Browse Tucker's Treats</a>.</p>
+      <ul class="lines" id="lines"></ul>
+      <div class="totals" id="totals"></div>
+      <p class="muted small">Prices and totals are calculated on the server from the database. Your browser only says what you want and how many.</p>
+    </section>
+
+    <section class="card" id="pay" aria-label="Payment and shipping">
+      <label class="field">Shopping as (pick a demo customer)
+        <select id="shopper"></select>
+      </label>
+      <div class="on-tucker">
+        <img src="assets/tucker_avatar_256.png" alt="" width="72" height="72">
+        <p><strong>Congratulations, this purchase is on Tucker!</strong> He's already put his credit card on file, so this doesn't cost you a dime.</p>
+      </div>
+      <p class="muted small">That's also why there's nothing to type here: no card number ever leaves your browser, because your browser never has one. The server charges Tucker's card on file (simulated).</p>
+      <h3>Ship to</h3>
+      <p class="ship"><strong id="ship-name">Pick a shopper above</strong><br><span id="ship-to"></span></p>
+      <p class="muted small">Ships from Tucker's Treats, 1 Not the Pound Way, Not the Pound, NJ. All addresses are fictional.</p>
+      <button type="button" class="place" id="place">Place order</button>
+      <button type="button" class="tamper" id="tamper">Try to cheat: $0.01 prices + my own card</button>
+    </section>
+
+    <aside class="bts" aria-label="Behind the Scenes">
+      <h2>Behind the Scenes</h2>
+      <p class="bts-intro" id="bts-intro">Every check the server runs on your order appears here.</p>
+      <ol class="steps" id="steps"></ol>
+      <p class="bts-foot">No order is stored: the store is read-only like the rest of the site. No real money moves.</p>
+    </aside>
+  </main>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
+  <script src="assets/store.js" defer></script>
+</body>
+</html>

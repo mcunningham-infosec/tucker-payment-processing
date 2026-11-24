@@ -17,11 +17,15 @@
 </head>
 <body class="home-page">
   <header class="top">
+    <a class="cart-link" href="checkout.html" aria-label="Your cart">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/></svg>
+      <span class="cart-text">Cart</span><span class="cart-count" id="cart-count" hidden>0</span>
+    </a>
     <h1 class="logo">Tucker <span>Payment</span> Processing</h1>
     <div class="tag">An AI Governance, Technology and Security Demonstration</div>
     <nav class="tabs" aria-label="Site">
       <a href="./" aria-current="page">Home</a>
-      <a href="treats.html">Tucker's Treats <span class="soon-dot">soon</span></a>
+      <a href="treats.html">Tucker's Treats</a>
       <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies">AI Policies</a>
       <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
     </nav>
@@ -85,7 +89,7 @@
         <h2>Built in the open</h2>
         <p>The code, database design, guardrail tests and server configuration are all public: <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">view the code on GitHub</a>. Security that depends on secret code isn't security; the protections here hold even when you can read every line.</p>
         <p>Built by Michael Cunningham with AI-assisted development.</p>
-        <p class="coming"><strong>Coming next:</strong> a guided tour narrated by Tucker, Tucker's Treats (a demo checkout that can't be tampered with), and in version 2, Cipher's "attack Tucker" challenge.</p>
+        <p class="coming"><strong>Coming next:</strong> a guided tour narrated by Tucker, and in version 2, Cipher's "attack Tucker" challenge.</p>
       </div>
     </section>
 
@@ -144,5 +148,6 @@
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
   <script src="assets/chat.js" defer></script>
+  <script src="assets/store.js" defer></script>
 </body>
 </html>
