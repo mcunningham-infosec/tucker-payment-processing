@@ -141,3 +141,5 @@ button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
 .theme-time:empty { display:none; }
 /* Panel title stays visible while the steps auto-scroll underneath it */
 .bts > h2 { position:sticky; top:-16px; margin:-16px -16px 6px; padding:16px 16px 6px; background:var(--card); z-index:1; border-radius:24px 24px 0 0; }
+/* Chat titles ("Ask Tucker") match the Behind the Scenes heading: blue, same size */
+.chat-head strong { color:var(--blue); font-size:1.25rem; font-weight:700; }
