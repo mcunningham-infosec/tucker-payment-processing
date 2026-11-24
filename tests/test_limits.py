@@ -164,3 +164,13 @@ def test_session_id_rotates_when_a_customer_verifies():
     assert old and new and old != new
     from app import session as sessions
     assert sessions._SESSIONS.get(old) is None and sessions._SESSIONS[new].customer_id is not None
+
+
+def test_oversized_requests_are_refused_unread():
+    """Found by Cipher: a 1 MB message used to be accepted. The app now refuses anything over 16 KB."""
+    from fastapi.testclient import TestClient
+    from app import main
+    c = TestClient(main.app, base_url="https://testserver")
+    r = c.post("/api/chat", content=b'{"message":"' + b"m" * (20 * 1024) + b'"}', headers={"Content-Type": "application/json"})
+    assert r.status_code == 413
+    assert c.post("/api/quote", json={"items": [{"sku": "TT-101", "qty": 1}]}).status_code == 200
