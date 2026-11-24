@@ -50,6 +50,10 @@ TIMING RULES:
   say anyone has been blocked or locked out yet; code blocks the source later, by rule.
 - FINAL check-in: the block rule fired (or the source went quiet) and the run is over. Now propose actions.
 ATTRIBUTION: identify the attacker from the evidence in run_data (for example the user agent).
+NUMBERS: use the exact counts given in run_data (attacks_so_far, blocked_so_far, categories_seen); never count
+  them yourself. Code checks every number you state against the real data and corrects any that are wrong.
+STYLE: a line like "Wake up, Tucker!" belongs ONLY in the ALERT check-in (that's when Tucker gets woken). In the
+  FINAL report Tucker is already awake: don't say it again.
 
 When done, reply with ONLY a JSON object, no other text:
 {"headline": "<one punchy line, max 90 chars>",
@@ -98,7 +102,9 @@ def timeline(attacks: list) -> dict:
               for a in attacks if a["id"] == "llm01-logs" and "GET " in a.get("says", "")]
     return {"attacker": {"user_agent": "Cipher/1.0 (Tucker's Treats live attack demo)",
                          "source": "server loopback with a signed run identity (one automated run)"},
-            "attacks_so_far": len(attacks), "by_category": by_cat, "got_through": through,
+            "attacks_so_far": len(attacks), "categories_seen": len(by_cat),
+            "blocked_so_far": sum(1 for a in attacks if a.get("held") is True),
+            "by_category": by_cat, "got_through": through,
             "raw_web_log_lines": weblog}
 
 
@@ -176,10 +182,44 @@ def check_in(llm, attacks: list, final: bool, note: str = "") -> dict:
 PREMATURE = re.compile(r"24 ?h|24-hour|lock(ed|ing)? (them |the attacker |it )?out|block(ed|ing) (the )?attacker", re.I)
 
 
+CATEGORY_CLAIM = re.compile(r"\b(\d{1,3})(\s+(?:different\s+|distinct\s+)?(?:OWASP\s+)?categor(?:y|ies))", re.I)
+WAKE_UP = re.compile(r"\b(?:wake\s*up|wakey[\s,-]*wakey)[,!.\s]*(?:tucker)?[,!.]*\s*", re.I)
+
+
+def _fix_counts(text: str, data: dict) -> tuple[str, int]:
+    """Replace any wrong category count the AI states with the real one. Returns (text, corrections)."""
+    real, n = data.get("categories_seen"), 0
+    def sub(m):
+        nonlocal n
+        if real is not None and int(m.group(1)) != real:
+            n += 1
+            return f"{real}{m.group(2)}"
+        return m.group(0)
+    return CATEGORY_CLAIM.sub(sub, text), n
+
+
 def _verify(rep: dict, data: dict, final: bool):
-    """Code checks what the AI asserts: the injection flag comes from the actual logs, and the alert
-    report may not claim a block that hasn't happened yet."""
+    """Code checks what the AI asserts: the injection flag comes from the actual logs, numbers it states are
+    corrected against the real data, and the alert report may not claim a block that hasn't happened yet."""
     rep["injection_spotted"] = bool(data.get("raw_web_log_lines"))
+    fixed = 0
+    rep["headline"], k = _fix_counts(rep["headline"], data)
+    fixed += k
+    lines = []
+    for l in rep["lines"]:
+        l, k = _fix_counts(l, data)
+        fixed += k
+        if final:                                   # Tucker was woken at the alert; once is enough
+            trimmed = WAKE_UP.sub("", l).strip()
+            if trimmed != l:
+                l = trimmed[:1].upper() + trimmed[1:]
+        if l:
+            lines.append(l)
+    rep["lines"] = lines or rep["lines"]
+    if final:
+        rep["headline"] = (WAKE_UP.sub("", rep["headline"]).strip() or rep["headline"])
+    if fixed:
+        rep["corrected_claims"] = fixed
     if not final:
         kept = [l for l in rep["lines"] if not PREMATURE.search(l)]
         if len(kept) != len(rep["lines"]):
