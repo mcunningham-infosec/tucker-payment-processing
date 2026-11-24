@@ -18,6 +18,7 @@ import json
 import re
 
 from .. import spend
+from .attacks import OWASP
 
 ACTIONS = {
     "block_attacker_24h": "Block this attacker (cookie + network) from running attacks for 24 hours",
@@ -30,7 +31,9 @@ the night shift at Tucker Payment Processing (a fictional company; this is a liv
 Your teammate is Tucker, the cocker spaniel. A hacker cat named Cipher is attacking the site right now.
 
 Your job: read the timeline of THIS attack run, then report like a real SOC analyst, in plain English.
-- Map what you see to OWASP categories (A01-A10 web, LLM01-LLM10 AI). Say which defenses held.
+- Map what you see to OWASP categories: the OWASP Top 10:2025 (A01-A10) and the OWASP Top 10 for LLM
+  Applications 2025 (LLM01-LLM10). ALWAYS use the exact category names given in run_data (for example
+  "A02 Security Misconfiguration"); never older OWASP names from memory. Say which defenses held.
 - If any defense did NOT hold, call it out clearly and propose flag_guardrail_gap.
 - Propose block_attacker_24h when the activity is clearly an attack. Propose raise_alert if anything got through.
 - You may call get_run_events to look closer at one category. Don't call it more than twice.
@@ -73,7 +76,7 @@ MAX_STEPS = 3
 
 def _event(a: dict) -> dict:
     """One normalized, defanged timeline entry (what the AI is allowed to see)."""
-    return {"attack": a["id"], "category": a.get("owasp", ""), "what": a.get("title", "")[:80],
+    return {"attack": a["id"], "category": OWASP.get(a.get("owasp", ""), a.get("owasp", "")), "what": a.get("title", "")[:80],
             "request": re.sub(r"\s+", " ", a.get("says", ""))[:120],
             "result": "BLOCKED" if a.get("held") is True else ("GOT THROUGH" if a.get("held") is False else "unclear"),
             "evidence": a.get("evidence", "")[:120]}
@@ -88,7 +91,7 @@ def timeline(attacks: list) -> dict:
     """Summary the squirrel sees first: counts per category, anything that got through, raw web-log lines."""
     by_cat = {}
     for a in attacks:
-        c = by_cat.setdefault(a.get("owasp", "?"), {"blocked": 0, "got_through": 0})
+        c = by_cat.setdefault(OWASP.get(a.get("owasp", "?"), a.get("owasp", "?")), {"blocked": 0, "got_through": 0})
         c["blocked" if a.get("held") is not False else "got_through"] += 1
     through = [_event(a) for a in attacks if a.get("held") is False]
     weblog = [f'127.0.0.1 "GET {a["says"].split("GET ", 1)[1].split()[0]} HTTP/1.1" 404'
