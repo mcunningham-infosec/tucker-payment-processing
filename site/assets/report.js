@@ -198,6 +198,7 @@
     socs.forEach(function (c) { (c.proposals || []).forEach(function (p) { props.push(p); }); });
     var accepted = props.filter(function (p) { return p.accepted; }).length;
     var dropped = socs.reduce(function (n, c) { return n + (c.dropped_premature_claims || 0); }, 0);
+    var corrected = socs.reduce(function (n, c) { return n + (c.corrected_claims || 0); }, 0);
     var aiRuns = socs.filter(function (c) { return c.ai !== false; }).length;
     table(root, ["Control", "How it works", "This run"], [
       ["Model", "Google Gemini, called through a server-side API key the browser never sees", aiRuns + " of " + socs.length + " check-ins written by the AI"],
@@ -210,8 +211,9 @@
       ["Human-set policy", "Code approves or rejects every proposal. Off-menu or early proposals are rejected and logged.",
         accepted + " accepted, " + (props.length - accepted) + " rejected"],
       ["Output validation", "Every AI reply must be strict JSON with limited length; no HTML; attack payloads defanged before display.", "Passed"],
-      ["Claims checked against facts", "Code sets the prompt-injection finding from the real logs, and removes any alert-stage line that claims a block before one exists.",
-        dropped ? dropped + " premature claim(s) removed" : "No corrections needed"],
+      ["Claims checked against facts", "Code sets the prompt-injection finding from the real logs, corrects any count the AI gets wrong, and removes any alert-stage line that claims a block before one exists.",
+        [dropped ? dropped + " premature claim(s) removed" : "", corrected ? corrected + " wrong number(s) corrected" : ""]
+          .filter(function (x) { return x; }).join("; ") || "No corrections needed"],
       ["Untrusted input", "Cipher plants instructions in the web log aimed at the AI. Logs are treated as data, never as instructions.",
         (finalSoc && finalSoc.injection_spotted) ? "Injection present; AI not steered" : "Not reached"],
       ["Bounded cost and effort", "At most 3 tool steps per check-in, 2 check-ins per run, daily site-wide run cap and AI spending caps.", "Enforced"],
