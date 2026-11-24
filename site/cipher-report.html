@@ -1,0 +1,23 @@
+<!doctype html>
+<!--
+  SOC incident report for the visitor's own Cipher run, built from /api/cipher/status (only that visitor's
+  session can see it). "Save as PDF" uses the browser's print-to-PDF; the print styles lay it out as pages.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SOC Incident Report - Tucker Payment Processing</title>
+  <link rel="stylesheet" href="assets/report.css">
+</head>
+<body>
+  <div class="toolbar no-print">
+    <a href="cipher.html">&larr; Back to Cipher's Lair</a>
+    <button type="button" id="save-pdf">Save as PDF</button>
+  </div>
+  <main class="paper" id="report">
+    <p class="loading">Loading your report...</p>
+  </main>
+  <script src="assets/report.js" defer></script>
+</body>
+</html>
