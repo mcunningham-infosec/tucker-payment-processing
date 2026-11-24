@@ -10,9 +10,9 @@ TAMPERED = [{"sku": "TT-106", "qty": 1, "price": "0.01"}]
 
 
 def test_catalog_comes_from_database():
-    """The store shows exactly the six products stored in the database."""
+    """The store shows exactly the eight products stored in the database."""
     items = store.catalog()
-    assert len(items) == 6 and items[0]["sku"] == "TT-101"
+    assert len(items) == 8 and items[0]["sku"] == "TT-101"
 
 
 def test_browser_prices_are_ignored():
