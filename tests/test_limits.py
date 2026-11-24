@@ -96,3 +96,30 @@ def test_zip_guessing_is_locked_per_network_even_with_new_cookies(admin):
     other = Session(id="other-network")
     other.client_ip = "203.0.113.77"
     assert tools.verify_identity(other, "TPP-1001", "07731")[0]["verified"] is True   # other networks unaffected
+
+
+def test_one_network_cannot_use_up_the_daily_ai_budget(admin):
+    """An abusive network hits its own fair-share limit and gets a friendly message; the next visitor,
+    on a different network, still gets a real AI answer."""
+    from app import spend
+    abuser, recruiter = "198.51.100.66", "203.0.113.20"
+    n = SETTINGS.ai_questions_per_ip_per_day
+    for _ in range(n):
+        assert spend.fair_share(abuser)[0] is True
+    ok, why = spend.fair_share(abuser)
+    assert ok is False and "Other visitors are unaffected" in why
+    llm = FakeLLM([ModelTurn(text="Refunds come from the merchant.", tokens_in=100, tokens_out=10)])
+    out = handle_message(Session(id="recruiter"), "What is your refund policy?", llm, recruiter)
+    assert out["reply"] == "Refunds come from the merchant." and not out["napping"]
+
+
+def test_fair_share_tightens_when_the_day_is_busy(admin):
+    """Once half the day's budget is spent, each network's share drops (busy mode)."""
+    from app import spend
+    admin.execute("INSERT INTO ops.ai_usage (model, input_tokens, output_tokens, cost_usd) VALUES ('load', 1, 1, %s)",
+                  (SETTINGS.daily_cap_usd / 2 + 0.01,))
+    ip = "198.51.100.88"
+    for _ in range(SETTINGS.ai_questions_per_ip_when_busy):
+        assert spend.fair_share(ip)[0] is True
+    ok, why = spend.fair_share(ip)
+    assert ok is False and "busy" in why
