@@ -155,6 +155,20 @@ def test_a_blocked_source_really_gets_403():
     assert c.get("/api/health").status_code == 200          # everyone else is unaffected
 
 
+def test_health_tells_deploys_when_an_attack_run_is_in_progress():
+    """update.sh waits for cipher_busy to clear before restarting the app, so a deploy never cuts off a run."""
+    from fastapi.testclient import TestClient
+    from app.cipher import runner
+    from app.main import app
+    c = TestClient(app)
+    assert c.get("/api/health").json()["cipher_busy"] is False
+    assert runner._ACTIVE.acquire(blocking=False)
+    try:
+        assert c.get("/api/health").json()["cipher_busy"] is True
+    finally:
+        runner._ACTIVE.release()
+
+
 def test_turnstile_is_required_when_configured(monkeypatch):
     """With Turnstile keys set, an attack run needs a valid human token; Cloudflare's answer decides."""
     from app.cipher import api
