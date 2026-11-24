@@ -79,7 +79,8 @@
       ["Attack window", fmt(st.started, true) + "  to  " + fmt(st.ended, true) + (dur ? "  (" + dur + ")" : "")],
       ["Threat actor", "\"Cipher\" (automated attack run " + (st.run_id || "") + ", user agent Cipher/1.0)"],
       ["Requested by", (st.visitor && st.visitor.ip ? st.visitor.ip : "this browser") +
-        (st.visitor && st.visitor.country ? " (" + st.visitor.country + ")" : "") + "  - the visitor who pressed the button"],
+        (st.visitor ? (function (v) { var l = [v.city, v.region, v.country].filter(function (x) { return x; }).join(", ");
+          return l ? " (" + l + ")" : ""; })(st.visitor) : "") + "  - the visitor who pressed the button"],
       ["Origin of traffic", "Server loopback (127.0.0.1) through Apache: no attack traffic crossed the visitor's network"],
       ["Targets", "tuckerpaymentprocessing.com: web server, /api/*, AI support chatbot, PostgreSQL"],
       ["Result", (s.held || 0) + " of " + (s.attacks || attacks.length) + " attacks blocked; " + through.length + " got through",

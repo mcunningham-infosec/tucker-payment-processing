@@ -37,6 +37,12 @@
           font-size:.95rem; animation:pop-in .25s ease-out; }
 .lair-bubble::before { content:""; position:absolute; left:20px; top:-9px; border:9px solid transparent; border-bottom-color:#f5fff7; border-top:0; }
 
+.you-card { margin:10px 0 2px; padding:10px 14px; border:2px solid #ffd166; border-radius:14px; background:#221a05;
+            display:flex; flex-direction:column; gap:2px; animation:pop-in .25s ease-out; box-shadow:0 0 16px rgba(255,209,102,.35); }
+.you-label { color:#ffd166; font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.6px; }
+.you-ip { color:#fff; font-family:ui-monospace, "Cascadia Mono", Consolas, monospace; font-size:1.35rem; font-weight:900; overflow-wrap:anywhere; }
+.you-loc { color:#ffe7a8; font-size:.95rem; font-weight:700; }
+.you-loc.pending { color:#b9a26a; font-weight:400; font-style:italic; font-size:.85rem; }
 .term { list-style:none; margin:10px 0 0; padding:10px; background:#0a0a0a; border-radius:12px; flex:1; overflow-y:auto; max-height:460px;
         font-family:ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace; font-size:.8rem; line-height:1.45; color:#38ff7a; }
 .term li { margin:0 0 6px; white-space:pre-wrap; overflow-wrap:anywhere; animation:pop-in .2s ease-out; }
@@ -44,7 +50,7 @@
 .term .sub { color:#8fd9a6; padding-left:12px; }
 .term .bad { color:#ff6b57; }
 .term .warn { color:#ffd166; }
-.term .you { color:#000; background:#38ff7a; padding:0 4px; border-radius:4px; }
+.term .you { color:#000; background:#ffd166; font-weight:900; padding:0 4px; border-radius:4px; }
 .term .num { display:inline-block; min-width:2.6em; padding:0 5px; margin-right:4px; border-radius:5px; background:#38ff7a; color:#000; font-weight:900; text-align:center; }
 .term .bad .num { background:#ff6b57; }
 .term .warn .num { background:#ffd166; }

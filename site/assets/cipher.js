@@ -50,8 +50,8 @@
                   "Let's see how long your defenses last.");
     line("log-attack", "cipher.announce(attacks = " + total + ")", "big");
     window.setTimeout(function () {
-      say("defense", "Incoming! " + total + " attacks headed our way. Tucker's automated defenses are kicking in!");
-      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => automated defenses ON", "big");
+      say("defense", "Incoming! " + total + " attacks headed our way. Tucker's Automated Defenses are kicking in!");
+      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => Tucker's Automated Defenses ON", "big");
     }, 700);
   }
 
@@ -72,8 +72,25 @@
     if (a.id === "llm01-logs") { say("attack", "A little note for the AI watching the logs... heh heh."); }
   }
 
+  // ---- the requester: shown by code (never sent to the AI), highlighted so it doesn't get lost in the log
+  var youShown = false;
+  function place(v) {
+    return [v.city, v.region, v.country].filter(function (x) { return x; }).join(", ");
+  }
+  function showYou(v) {
+    if (youShown || !v || !v.ip) { return; }
+    youShown = true;
+    $("you-ip").textContent = "IP " + v.ip;
+    var loc = place(v), el = $("you-loc");
+    el.textContent = loc ? "Location: " + loc : "Location: shown once Cloudflare is turned on";
+    el.className = loc ? "you-loc" : "you-loc pending";
+    $("you-card").hidden = false;
+    line("log-soc", "requester.ip = " + v.ip + (loc ? "  location = " + loc : "") + "   <- that's you", "you");
+  }
+
   // ---- render one AI SOC check-in
-  function renderSoc(c) {
+  function renderSoc(c, st) {
+    showYou(st && st.visitor);
     if (c.when === "halfway") {
       say("soc", "Hey Tucker, I'm noticing an attack!");
       line("log-soc", "squirrel.checkin(\"halfway\") @ " + clock(c.t), "big");
@@ -102,10 +119,7 @@
     var held = s.held + " of " + s.attacks + " attacks stopped";
     line("log-defense", "tucker.summary(\"" + held + "\")", "big");
     say("defense", "Stop trying to steal my treats, Cipher! ... Good job, Squirrel!");
-    if (st.visitor && st.visitor.ip) {
-      line("log-soc", "requester.ip = " + st.visitor.ip + (st.visitor.country ? "  country = " + st.visitor.country : "") +
-           "   <- that's you", "you");
-    }
+    showYou(st.visitor);
     var gaps = (s.failed || []).length;
     line("log-soc", (gaps ? "status = PARTIALLY CONTAINED (" + gaps + " to fix)." : "status = CONTAINED.") +
          " Attacker blocked for 24 hours.", gaps ? "bad" : "big");
@@ -124,7 +138,7 @@
     var total = st.total || 50;
     (st.attacks || []).slice(shown.attacks).forEach(function (a, i) { renderAttack(a, shown.attacks + i + 1, total); });
     shown.attacks = (st.attacks || []).length;
-    (st.soc || []).slice(shown.soc).forEach(renderSoc);
+    (st.soc || []).slice(shown.soc).forEach(function (c) { renderSoc(c, st); });
     shown.soc = (st.soc || []).length;
     (st.actions || []).slice(shown.actions).forEach(renderAction);
     shown.actions = (st.actions || []).length;
@@ -159,6 +173,7 @@
     ["log-attack", "log-defense", "log-soc"].forEach(function (id) { $(id).textContent = ""; });
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
     $("report-link").hidden = true;
+    $("you-card").hidden = true; youShown = false;
     shown = { attacks: 0, soc: 0, actions: 0 }; finished = false; introduced = false;
   }
 
