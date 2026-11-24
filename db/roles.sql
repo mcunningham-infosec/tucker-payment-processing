@@ -19,7 +19,7 @@ REVOKE ALL ON ALL TABLES IN SCHEMA demo, ops FROM tucker_app, tucker_store, orde
 -- Chat: read-only on the fictional company data (including orders), append-only on its own logs.
 GRANT USAGE ON SCHEMA demo, ops TO tucker_app;
 GRANT SELECT ON ALL TABLES IN SCHEMA demo TO tucker_app;
-GRANT SELECT, INSERT ON ops.ai_usage, ops.chat_events TO tucker_app;
+GRANT SELECT, INSERT ON ops.ai_usage, ops.chat_events, ops.usage_events TO tucker_app;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA ops TO tucker_app;
 
 -- order_writer: just enough to build an order.

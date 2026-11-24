@@ -111,6 +111,18 @@ CREATE TABLE ops.chat_events (
 );
 
 
+-- Limit counters (purchases per day, chat messages per IP...). The "subject" is an anonymous code:
+-- an HMAC of the visitor's IP or cookie with a secret that changes every day, so the same visitor
+-- can't be recognized from one day to the next and no IP address is ever stored here.
+-- Wiped every night at midnight by db/nightly_reset.sql.
+CREATE TABLE ops.usage_events (
+    id          BIGSERIAL PRIMARY KEY,
+    kind        TEXT NOT NULL,                -- 'chat_ip', 'purchase_ip', 'purchase_cookie', ...
+    subject     TEXT NOT NULL,                -- anonymous daily code, never a raw IP
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX usage_events_lookup ON ops.usage_events (kind, subject, created_at);
+
 -- The ONLY way to add an order. It re-prices every item from demo.products, computes shipping and NJ tax,
 -- checks the shopper is a real demo customer, and charges Tucker's card on file. Runs with the rights of
 -- the order_writer role (which owns it), so the store's own login needs no direct table access at all.
@@ -145,6 +157,9 @@ BEGIN
              WHERE (i->>'qty') ~ '^[0-9]{1,2}$' AND (i->>'qty')::INT > 0
              GROUP BY p.sku, p.price_usd) x;
     IF v_cart IS NULL THEN RAISE EXCEPTION 'empty cart'; END IF;
+    IF (SELECT SUM((c->>'qty')::INT) FROM jsonb_array_elements(v_cart) c) > 25 THEN
+        RAISE EXCEPTION 'cart over 25 items';      -- same generous cap the app enforces
+    END IF;
 
     v_ship := CASE WHEN v_sub >= 25 THEN 0 ELSE 4.99 END;
     v_tax  := round(v_sub * 0.06625, 2);
