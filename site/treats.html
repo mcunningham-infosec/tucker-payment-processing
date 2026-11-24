@@ -30,7 +30,15 @@
   </header>
   <main class="shop">
     <div class="shop-intro">
-      <h2 class="sign-heading"><img class="treats-sign" src="assets/treats-sign.png" alt="Tucker's Treats" width="317" height="184"></h2>
+      <div class="sign-row-shop">
+        <h2 class="sign-heading"><img class="treats-sign" src="assets/treats-sign.png" alt="Tucker's Treats" width="317" height="184"></h2>
+        <!-- Theme song: plays only when clicked; nothing downloads until then (preload="none"). -->
+        <div class="theme-player">
+          <button type="button" id="theme-btn" aria-pressed="false"><span class="ico" aria-hidden="true">&#9835;</span> <span class="lbl">Play the Theme Song!</span></button>
+          <span class="theme-time" id="theme-time" aria-live="off"></span>
+          <audio id="theme-audio" preload="none" src="assets/audio/tuckers-treats-theme.mp3"></audio>
+        </div>
+      </div>
       <p>Tucker's personal picks. A demo store, so nothing real is sold and nothing is charged: watch how the checkout refuses to be tricked.</p>
     </div>
     <div class="shop-grid">
@@ -45,5 +53,6 @@
   </main>
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
   <script src="assets/store.js" defer></script>
+  <script src="assets/theme.js" defer></script>
 </body>
 </html>
