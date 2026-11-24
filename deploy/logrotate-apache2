@@ -1,0 +1,22 @@
+# /etc/logrotate.d/apache2 for tuckerpaymentprocessing.com
+# Web logs hold visitor IP addresses, so they are kept for at most two days: today's log, and yesterday's
+# until the next rotation. The owner's nightly report (11:50 PM Eastern) reads them before they go.
+# Install: sudo cp /opt/tucker/deploy/logrotate-apache2 /etc/logrotate.d/apache2
+/var/log/apache2/*.log {
+	daily
+	missingok
+	rotate 1
+	notifempty
+	create 640 root adm
+	sharedscripts
+	prerotate
+		if [ -d /etc/logrotate.d/httpd-prerotate ]; then
+			run-parts /etc/logrotate.d/httpd-prerotate
+		fi
+	endscript
+	postrotate
+		if pgrep -f ^/usr/sbin/apache2 > /dev/null; then
+			invoke-rc.d apache2 reload 2>&1 | logger -t apache2.logrotate
+		fi
+	endscript
+}

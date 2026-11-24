@@ -1,0 +1,13 @@
+# The owner's nightly security & activity summary (app/report.py), emailed just before the midnight reset.
+# Runs as the app's own read-only database user; the adm group lets it read the web server log, nothing more.
+[Unit]
+Description=Tucker Payment Processing daily report email
+After=postgresql.service network-online.target
+
+[Service]
+Type=oneshot
+User=tucker_app
+SupplementaryGroups=adm
+EnvironmentFile=/etc/tucker/tucker.env
+WorkingDirectory=/opt/tucker
+ExecStart=/opt/tucker-venv/bin/python -m app.report

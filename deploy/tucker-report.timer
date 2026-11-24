@@ -1,0 +1,10 @@
+# 11:50 PM Eastern every night: ten minutes before tucker-reset.timer wipes the day's demo data.
+[Unit]
+Description=Tucker Payment Processing daily report (11:50 PM Eastern)
+
+[Timer]
+OnCalendar=*-*-* 23:50:00 America/New_York
+Persistent=false
+
+[Install]
+WantedBy=timers.target
