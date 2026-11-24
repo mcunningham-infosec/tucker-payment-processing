@@ -9,6 +9,7 @@ Something outside the app (see deploy/alerts.md) watches for that prefix and ema
 - Never raises: alerting must not break the site.
 """
 import logging
+import threading
 
 from . import limits
 
@@ -25,6 +26,17 @@ KINDS = {
 }
 
 
+def _notify(kind: str, text: str):
+    """Record the alert for the nightly report and email a short warning now, in the background so the
+    visitor's request never waits on email. Same once-a-day limit as the log line above."""
+    try:
+        from . import db, report
+        db.record_event("system", "alert", f"{kind}: {text}")
+        threading.Thread(target=report.warn, args=(kind, text), daemon=True).start()
+    except Exception:
+        pass
+
+
 def raise_once(kind: str, detail: str = "", who: str = ""):
     """Log one alert line, at most once per day for this kind (and this network, if given)."""
     try:
@@ -33,8 +45,9 @@ def raise_once(kind: str, detail: str = "", who: str = ""):
             return False
         limits.record("alert", key)
         code = limits.subject(who) if who else "-"
-        log.warning('TUCKER_ALERT kind=%s who=%s detail="%s"', kind, code,
-                    (detail or KINDS.get(kind, kind)).replace('"', "'")[:200])
+        text = (detail or KINDS.get(kind, kind)).replace('"', "'")[:200]
+        log.warning('TUCKER_ALERT kind=%s who=%s detail="%s"', kind, code, text)
+        _notify(kind, text)
         return True
     except Exception:          # alerting is best-effort; the site keeps working
         return False
