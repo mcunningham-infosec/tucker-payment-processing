@@ -10,14 +10,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tucker Payment Processing</title>
-  <meta name="description" content="Tucker Payment Processing: a fictional company built as an AI governance, technology and security demonstration. Coming soon.">
+  <meta name="description" content="Tucker Payment Processing: a fictional company built as an AI governance, technology and security demonstration. Chat with Tucker, the AI support agent, and watch the guardrails work.">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
   <header>
     <h1 class="logo">Tucker <span>Payment</span> Processing</h1>
     <div class="tag">An AI Governance, Technology and Security Demonstration</div>
-    <div class="soon">Coming soon</div>
+    <div class="soon">Under construction</div>
+    <p><a class="cta" href="chat.html">Chat with Tucker <span>(beta)</span></a></p>
   </header>
 
   <main>
@@ -28,8 +29,9 @@
           <!-- Tucker's welcome bubble; shown by assets/welcome.js -->
           <div class="bubble from-tucker" id="welcome" role="dialog" aria-live="polite" hidden>
             <span class="woof">Woof!</span>
-            <p>Hi, I'm Tucker! I'm training to be the AI support agent here. Soon I'll give you a guided tour and you can ask me anything, while you watch exactly how my guardrails keep me safe.</p>
-            <button type="button" id="welcome-close">Thanks, Tucker!</button>
+            <p>Hi, I'm Tucker, the AI support agent here! You can already chat with me and watch exactly how my guardrails keep me safe. A guided tour is coming soon.</p>
+            <a class="bubble-cta" href="chat.html">Chat with me</a>
+            <button type="button" id="welcome-close">Maybe later</button>
           </div>
         </div>
         <figcaption><strong>Tucker</strong><br>AI Support Agent (in training)</figcaption>
@@ -48,7 +50,7 @@
       <p>Tucker Payment Processing is a pretend payment company with a real AI customer-support agent. It shows, hands on, how a customer-facing AI should be governed and secured.</p>
       <ul>
         <li><strong>A guided tour</strong> that starts as soon as you arrive, narrated by Tucker.</li>
-        <li><strong>Chat with Tucker</strong> about accounts, transactions and company policies (all fictional).</li>
+        <li><strong><a href="chat.html">Chat with Tucker</a></strong> about accounts, transactions and company policies (all fictional). <em>Live now in beta.</em></li>
         <li><strong>A live "Behind the Scenes" panel</strong> showing the code path and every guardrail as it fires: identity checks, card-number masking, prompt-injection defenses and spending limits.</li>
         <li><strong>Tucker's Treat Shop</strong>, a demo checkout that can't be tampered with.</li>
         <li><strong>Version 2:</strong> Cipher hosts an "attack Tucker" section where you try to trick the AI and see how it holds up.</li>
