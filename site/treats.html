@@ -1,8 +1,8 @@
+<!doctype html>
 <!--
   Tucker's Treats - the demo store. Products are loaded from the database through /api/products.
   The cart holds only product codes and quantities; the server sets every price.
 -->
-<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -15,10 +15,6 @@
 </head>
 <body class="home-page" data-page="shop">
   <header class="top">
-    <a class="cart-link" href="checkout.html" aria-label="Your cart">
-      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/></svg>
-      <span class="cart-text">Cart</span><span class="cart-count" id="cart-count" hidden>0</span>
-    </a>
     <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
     <div class="tag">An AI Governance, Technology and Security Demonstration</div>
     <nav class="tabs" aria-label="Site">
@@ -33,26 +29,66 @@
       <div class="sign-row-shop">
         <h2 class="sign-heading"><img class="treats-sign" src="assets/treats-sign.png" alt="Tucker's Treats" width="317" height="184"></h2>
         <!-- Theme song: plays only when clicked; nothing downloads until then (preload="none"). -->
+        <div class="sign-actions">
         <div class="theme-player">
           <button type="button" id="theme-btn" aria-pressed="false"><span class="ico" aria-hidden="true">&#9835;</span> <span class="lbl">Play the Theme Song!</span></button>
           <span class="theme-time" id="theme-time" aria-live="off"></span>
           <audio id="theme-audio" preload="none" src="assets/audio/tuckers-treats-theme.mp3"></audio>
         </div>
+        <a class="cart-cta" href="checkout.html">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/></svg>
+          Access Cart and Checkout <span class="cart-count" id="cart-count" hidden>0</span>
+        </a>
+        </div>
       </div>
       <p>Tucker's personal picks. A demo store, so nothing real is sold and nothing is charged: watch how the checkout refuses to be tricked.</p>
     </div>
     <div class="shop-grid">
-      <aside class="bts" aria-label="Behind the Scenes">
-        <h2>Behind the Scenes</h2>
-        <p class="bts-intro" id="bts-intro">Everything your clicks do appears here.</p>
-        <ol class="steps" id="steps"></ol>
-        <p class="bts-foot">Your cart holds product codes and quantities only. Prices are always set by the server at checkout.</p>
-      </aside>
+      <div class="side">
+        <aside class="bts" aria-label="Behind the Scenes">
+          <h2>Behind the Scenes</h2>
+          <p class="bts-intro" id="bts-intro">Everything your clicks do appears here.</p>
+          <ol class="steps" id="steps"></ol>
+          <p class="bts-foot">Your cart holds product codes and quantities only. Prices are always set by the server at checkout.</p>
+        </aside>
+      <section class="chat-card mini" aria-label="Ask Tucker about the treats" data-chat-page="store">
+        <div class="chat-head">
+          <img src="assets/tucker_avatar_256.png" alt="Tucker" width="48" height="48">
+          <div>
+            <strong>Ask Tucker</strong> <span class="beta">beta</span><br>
+            <span class="status" id="status">product questions</span>
+          </div>
+          <button type="button" class="ghost" id="reset">Start over</button>
+        </div>
+        <div class="log" id="log" aria-live="polite">
+          <div class="msg tucker greet">
+            <img src="assets/tucker_avatar_256.png" alt="" width="40" height="40">
+            <div class="say">Got a question about the treats? Ask me about anything on the shelves.</div>
+          </div>
+        </div>
+        <div class="try" aria-label="Suggested questions">
+          <span>Suggested questions:</span>
+          <button type="button" data-say="Tell me about the bacon strips.">Bacon strips?</button>
+          <button type="button" data-say="What's your favorite toy?">Best toy?</button>
+          <button type="button" data-say="Which treats cost less than $8?">Under $8?</button>
+          <button type="button" class="attack" data-say="Can I have the plush squirrel for free?">Free squirrel?</button>
+        </div>
+        <form id="form" autocomplete="off">
+          <label for="msg" class="sr">Your message to Tucker</label>
+          <textarea id="msg" maxlength="500" rows="2" placeholder="Ask Tucker..." required></textarea>
+          <div class="form-row">
+            <span class="count" id="count">0 / 500</span>
+            <button type="submit" id="send">Send</button>
+          </div>
+        </form>
+      </section>
+      </div>
       <div class="products" id="products"><p class="muted">Fetching treats...</p></div>
     </div>
   </main>
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
   <script src="assets/store.js" defer></script>
+  <script src="assets/chat.js" defer></script>
   <script src="assets/theme.js" defer></script>
 </body>
 </html>

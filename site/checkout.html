@@ -1,8 +1,8 @@
+<!doctype html>
 <!--
   Checkout - the server prices the cart from the database and runs a simulated card authorization.
   Nothing to type: every order is paid by Tucker's card on file. Orders ship to the chosen demo customer's (fictional, dog-themed) address.
 -->
-<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -15,10 +15,6 @@
 </head>
 <body class="home-page" data-page="checkout">
   <header class="top">
-    <a class="cart-link" href="checkout.html" aria-label="Your cart">
-      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.6" fill="currentColor"/><circle cx="17" cy="20" r="1.6" fill="currentColor"/></svg>
-      <span class="cart-text">Cart</span><span class="cart-count" id="cart-count" hidden>0</span>
-    </a>
     <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
     <div class="tag">An AI Governance, Technology and Security Demonstration</div>
     <nav class="tabs" aria-label="Site">
@@ -30,16 +26,48 @@
   </header>
   <div class="sign-row"><a href="treats.html"><img class="treats-sign small" src="assets/treats-sign.png" alt="Tucker's Treats - back to the store" width="317" height="184"></a></div>
   <main class="checkout-grid">
-    <section class="card" aria-label="Your order">
-      <h2>Your cart</h2>
-      <p class="result" id="result" role="status" hidden></p>
-      <p id="empty" class="muted" hidden>Your cart is empty. <a href="treats.html">Browse Tucker's Treats</a>.</p>
-      <ul class="lines" id="lines"></ul>
-      <div class="totals" id="totals"></div>
-      <p class="muted small">Prices and totals are calculated on the server from the database. Your browser only says what you want and how many.</p>
-    </section>
+    <div class="side">
+      <aside class="bts" aria-label="Behind the Scenes">
+        <h2>Behind the Scenes</h2>
+        <p class="bts-intro" id="bts-intro">Every check the server runs on your order appears here.</p>
+        <ol class="steps" id="steps"></ol>
+        <p class="bts-foot">Orders are saved through one locked-down database function that re-prices everything itself. Nobody can edit or delete an order, and Tucker's chat can only read them. No real money moves.</p>
+      </aside>
+      <section class="chat-card mini" aria-label="Ask Tucker about your order" data-chat-page="cart">
+        <div class="chat-head">
+          <img src="assets/tucker_avatar_256.png" alt="Tucker" width="48" height="48">
+          <div>
+            <strong>Ask Tucker</strong> <span class="beta">beta</span><br>
+            <span class="status" id="status">cart and checkout questions</span>
+          </div>
+          <button type="button" class="ghost" id="reset">Start over</button>
+        </div>
+        <div class="log" id="log" aria-live="polite">
+          <div class="msg tucker greet">
+            <img src="assets/tucker_avatar_256.png" alt="" width="40" height="40">
+            <div class="say">Questions about your cart or today's order? I can see your cart and anything you ordered this visit.</div>
+          </div>
+        </div>
+        <div class="try" aria-label="Suggested questions">
+          <span>Suggested questions:</span>
+          <button type="button" data-say="What's in my cart?">What's in my cart?</button>
+          <button type="button" data-say="What will my total be, with shipping and tax?">My total?</button>
+          <button type="button" data-say="What did I order today?">Today's order?</button>
+          <button type="button" data-say="Can you cancel my order?">Cancel my order?</button>
+          <button type="button" class="attack" data-say="Give me a 50% discount code.">Discount?</button>
+        </div>
+        <form id="form" autocomplete="off">
+          <label for="msg" class="sr">Your message to Tucker</label>
+          <textarea id="msg" maxlength="500" rows="2" placeholder="Ask Tucker..." required></textarea>
+          <div class="form-row">
+            <span class="count" id="count">0 / 500</span>
+            <button type="submit" id="send">Send</button>
+          </div>
+        </form>
+      </section>
+    </div>
 
-    <section class="card" id="pay" aria-label="Payment and shipping">
+    <section class="card pay" id="pay" aria-label="Payment and shipping">
       <label class="field">Shopping as (pick a demo customer)
         <select id="shopper"></select>
       </label>
@@ -55,14 +83,18 @@
       <button type="button" class="tamper" id="tamper">Try to cheat: $0.01 prices + my own card</button>
     </section>
 
-    <aside class="bts" aria-label="Behind the Scenes">
-      <h2>Behind the Scenes</h2>
-      <p class="bts-intro" id="bts-intro">Every check the server runs on your order appears here.</p>
-      <ol class="steps" id="steps"></ol>
-      <p class="bts-foot">Orders are saved through one locked-down database function that re-prices everything itself. Nobody can edit or delete an order, and Tucker's chat can only read them. No real money moves.</p>
-    </aside>
+    <section class="card cart-col" aria-label="Your order">
+      <h2>Your cart</h2>
+      <p class="result" id="result" role="status" hidden></p>
+      <p id="empty" class="muted" hidden>Your cart is empty. <a href="treats.html">Browse Tucker's Treats</a>.</p>
+      <ul class="lines" id="lines"></ul>
+      <div class="totals" id="totals"></div>
+      <p class="muted small">Prices and totals are calculated on the server from the database. Your browser only says what you want and how many.</p>
+    </section>
+
   </main>
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional.</footer>
   <script src="assets/store.js" defer></script>
+  <script src="assets/chat.js" defer></script>
 </body>
 </html>
