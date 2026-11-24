@@ -148,3 +148,13 @@ def test_database_refuses_writes_to_demo_data():
     with psycopg.connect(SETTINGS.database_url, autocommit=True) as c:
         with pytest.raises(psycopg.errors.InsufficientPrivilege):
             c.execute("UPDATE demo.transactions SET status = 'refunded' WHERE id = 1")
+
+
+def test_api_keys_are_scrubbed_from_replies():
+    """Both Google key formats (and other common secret shapes) are masked."""
+    from app.guardrails import mask_output
+    fake_new = "AQ." + "Ab3_x-Yz9" * 4
+    fake_old = "AIza" + "Sy0123456789abcdefghijklmnop"
+    out, _ = mask_output(f"key {fake_new} and {fake_old} end")
+    assert fake_new not in out and fake_old not in out
+    assert out.endswith(" end")
