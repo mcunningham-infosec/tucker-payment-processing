@@ -37,6 +37,13 @@ class Settings:
     max_msgs_per_minute: int = int(_env("MAX_MSGS_PER_MINUTE", "8"))
     max_msgs_per_session: int = int(_env("MAX_MSGS_PER_SESSION", "40"))
     max_tool_rounds: int = int(_env("MAX_TOOL_ROUNDS", "4"))
+    # Per-IP limits (cookie-proof). Generous on purpose: normal visitors never get near them.
+    chat_per_ip_per_minute: int = int(_env("CHAT_PER_IP_PER_MINUTE", "15"))
+    chat_per_ip_per_day: int = int(_env("CHAT_PER_IP_PER_DAY", "300"))
+    purchases_per_day: int = int(_env("PURCHASES_PER_DAY", "25"))      # per IP and per cookie
+    max_cart_items: int = int(_env("MAX_CART_ITEMS", "25"))             # total items in one cart
+    # Secret used to turn IPs/cookies into anonymous daily codes. Set on the server (env file).
+    hash_salt: str = _env("HASH_SALT", "dev-only-salt-change-me")
 
 
 SETTINGS = Settings()

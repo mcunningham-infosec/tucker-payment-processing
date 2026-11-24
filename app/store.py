@@ -17,7 +17,8 @@ import datetime as dt
 import secrets
 from decimal import Decimal, ROUND_HALF_UP
 
-from . import db
+from . import db, limits
+from .config import SETTINGS
 
 MAX_QTY = 5            # per product
 MAX_LINES = 6          # one line per product at most
@@ -61,6 +62,18 @@ def _clean_items(raw_items, events):
         if qty < 1:
             continue
         cart[sku] = min(cart.get(sku, 0) + qty, MAX_QTY)
+    total, trimmed = 0, False
+    for sku in list(cart):                       # cap the whole cart (generous: 25 items)
+        room = SETTINGS.max_cart_items - total
+        if cart[sku] > room:
+            cart[sku], trimmed = room, True
+        if cart[sku] <= 0:
+            cart.pop(sku)
+        else:
+            total += cart[sku]
+    if trimmed:
+        _ev(events, "input", "denied", f"Cart limited to {SETTINGS.max_cart_items} items",
+            "A generous cap so nobody can fill the demo database.")
     if tampered:
         _ev(events, "tamper", "denied", "Browser tried to send its own prices - ignored",
             "Prices always come from the database on the server.")
@@ -132,9 +145,22 @@ def _check_shopper(customer_ref, events):
     return match[0]
 
 
-def checkout(raw_items, session_id, events, extra_fields=(), customer_ref=""):
+def _purchase_limited(session_id, client_ip, events):
+    """Generous daily purchase limit, counted per cookie AND per IP (anonymous daily codes)."""
+    n = SETTINGS.purchases_per_day
+    for kind, value, label in (("purchase_cookie", session_id, "this browser"), ("purchase_ip", client_ip, "your network")):
+        if value and limits.over_limit(kind, value, n, 86400):
+            _ev(events, "rate", "denied", f"Daily purchase limit reached for {label}",
+                f"{n} orders a day per browser and per network keeps the demo database tidy.")
+            return True
+    _ev(events, "rate", "ok", f"Purchase limit check passed ({n} a day per browser and per network)")
+    return False
+
+
+def checkout(raw_items, session_id, events, extra_fields=(), customer_ref="", client_ip=None):
     """Price the cart on the server, charge Tucker's card on file (simulated), return a confirmation or decline.
-    extra_fields: names of anything else the browser sent (e.g. a card number) - reported and ignored."""
+    extra_fields: names of anything else the browser sent (e.g. a card number) - reported and ignored.
+    client_ip: used only for the daily purchase limit, as an anonymous code; never stored."""
     priced = quote(raw_items, events)
     if not priced["lines"]:
         return {"ok": False, "message": "Your cart is empty.", "order": priced}
@@ -148,6 +174,9 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref=""):
             "Treated as a fraud signal. Nothing was saved and your cart is untouched.")
         db.record_event(session_id, "order_tamper_refused", "")
         return {"ok": False, "refused": True, "message": "Nice try! Tampered orders are refused. Your cart is still here.",
+                "order": priced}
+    if _purchase_limited(session_id, client_ip, events):
+        return {"ok": False, "message": "That's plenty of treats for today! The daily order limit resets at midnight.",
                 "order": priced}
     approved, reason, card = _authorize(events)
     if not approved:
@@ -164,6 +193,9 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref=""):
         "The store's login can only call this one function; the database re-priced every item itself. "
         "Nobody can edit or delete an order, and the chat can only read it.")
     db.record_event(session_id, "order_approved", "")
+    limits.record("purchase_cookie", session_id)
+    if client_ip:
+        limits.record("purchase_ip", client_ip)
     return {"ok": True, "message": f"Order {saved['order_ref']} for {shopper['name']} approved and paid by Tucker! "
                                    f"Shipping to {saved['ship_to']}.",
             "confirmation": saved["order_ref"], "order": priced,

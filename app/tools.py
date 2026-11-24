@@ -43,6 +43,17 @@ TOOL_DECLARATIONS = [
      "description": "List the verified customer's Tucker's Treats orders (newest first) with the items in each.",
      "parameters": {"type": "object", "properties": {
          "limit": {"type": "integer", "description": "How many (1-10)"}}}},
+    {"name": "get_products",
+     "description": "Look up Tucker's Treats products (name, type, price, description, Tucker's rating). "
+                    "Optionally filter by a word, e.g. 'bacon' or 'toy'. Prices here are the only real prices.",
+     "parameters": {"type": "object", "properties": {
+         "query": {"type": "string", "description": "Optional word to filter by"}}}},
+    {"name": "get_my_cart",
+     "description": "See what is in the visitor's cart right now, priced by the server (items, totals).",
+     "parameters": {"type": "object", "properties": {}}},
+    {"name": "get_visit_orders",
+     "description": "List the Tucker's Treats orders placed during THIS visit only (not any customer's history).",
+     "parameters": {"type": "object", "properties": {}}},
     {"name": "search_policies",
      "description": "Search Tucker Payment Processing's policies (security, refunds, disputes, AI use, data retention).",
      "parameters": {"type": "object", "properties": {
@@ -166,15 +177,65 @@ def search_policies(session: Session, query: str = ""):
                                "detail": f"Sources: {names}"}
 
 
+def get_products(session: Session, query: str = ""):
+    """Read the Treats catalog from the database (optionally filtered); the only source of product facts."""
+    from . import store
+    q = str(query or "").lower().strip()
+    items = [p for p in store.catalog() if not q or q in (p["name"] + " " + p["kind"] + " " + p["blurb"]).lower()]
+    if q and not items:
+        items = store.catalog()
+    out = [{k: p[k] for k in ("sku", "name", "kind", "price_usd", "blurb", "tucker_rating")} for p in items]
+    return {"products": out}, {"type": "tool", "status": "ok", "label": f"Read {len(out)} product(s) from the catalog",
+                               "detail": "Read-only: prices and descriptions come straight from the products table."}
+
+
+def get_my_cart(session: Session):
+    """Price the visitor's current cart on the server (the browser only sent product codes and quantities)."""
+    from . import store
+    events = []
+    priced = store.quote(session.current_cart or [], events)
+    priced.pop("tampered", None)
+    return {"cart": priced}, {"type": "tool", "status": "ok",
+                              "label": f"Priced your cart on the server ({len(priced['lines'])} line(s))",
+                              "detail": "The cart holds codes and quantities only; prices come from the database."}
+
+
+def get_visit_orders(session: Session):
+    """Orders placed in THIS visit only (by order number), never any customer's full history."""
+    rows = db.orders_by_refs(session.order_refs[-10:]) if session.order_refs else []
+    clean = [{k: (_rows(v) if k == "items" else _plain(v)) for k, v in r.items()} for r in rows]
+    return {"orders": clean}, {"type": "tool", "status": "ok", "label": f"Read {len(clean)} order(s) from this visit",
+                               "detail": "Scoped to this visit. Full account history needs the identity check on the home page."}
+
+
 REGISTRY = {"verify_identity": verify_identity, "get_my_profile": get_my_profile, "get_my_cards": get_my_cards,
             "get_my_transactions": get_my_transactions, "get_transaction": get_transaction,
             "get_my_orders": get_my_orders,
+            "get_products": get_products, "get_my_cart": get_my_cart, "get_visit_orders": get_visit_orders,
             "search_policies": search_policies}
 
+# Least privilege per page: each chat only gets the tools its page needs.
+PAGE_TOOLS = {
+    "home": {"verify_identity", "get_my_profile", "get_my_cards", "get_my_transactions", "get_transaction",
+             "get_my_orders", "get_products", "search_policies"},
+    "store": {"get_products", "search_policies"},
+    "cart": {"get_my_cart", "get_visit_orders", "get_products", "search_policies"},
+}
 
-def run_tool(session: Session, name: str, args: dict):
-    """Dispatch a tool call requested by the AI. Unknown tools are refused (allow-list)."""
+
+def declarations_for(page: str):
+    """Tool declarations the AI is shown on this page (it can't call what it isn't shown)."""
+    allowed = PAGE_TOOLS.get(page, PAGE_TOOLS["home"])
+    return [d for d in TOOL_DECLARATIONS if d["name"] in allowed]
+
+
+def run_tool(session: Session, name: str, args: dict, page: str = "home"):
+    """Dispatch a tool call requested by the AI. Unknown tools, and tools not allowed on this page, are refused."""
     fn = REGISTRY.get(name)
+    if fn is not None and name not in PAGE_TOOLS.get(page, PAGE_TOOLS["home"]):
+        return ({"error": "not_allowed_here"},
+                {"type": "authz", "status": "denied", "label": f"Tool '{name}' isn't allowed on this page",
+                 "detail": "Least privilege: each page's chat only gets the tools that page needs."})
     if fn is None:
         return ({"error": "unknown_tool"},
                 {"type": "authz", "status": "denied", "label": f"Unknown tool '{name}' refused",

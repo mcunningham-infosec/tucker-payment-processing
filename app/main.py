@@ -35,8 +35,17 @@ def get_llm():
 
 
 class ChatIn(BaseModel):
-    """Shape of a chat request: just the visitor's message."""
+    """Shape of a chat request: the visitor's message, which page's chat it came from, and (cart page only)
+    the cart's product codes and quantities so Tucker can talk about it. Prices are never accepted."""
     message: str
+    page: str = "home"
+    cart: list = []
+
+
+def client_ip(request: Request) -> str:
+    """The visitor's IP as seen by the app (Apache forwards it; uvicorn trusts only the local proxy).
+    Used only to count limits as an anonymous daily code; never stored or logged by the app."""
+    return request.client.host if request.client else ""
 
 
 def _set_cookie(response: Response, sid: str):
@@ -55,7 +64,7 @@ def chat(body: ChatIn, request: Request, response: Response):
     """Handle one chat message for this visitor's session."""
     s = sessions.get_or_create(request.cookies.get(COOKIE))
     _set_cookie(response, s.id)
-    return handle_message(s, body.message[:2000], get_llm())
+    return handle_message(s, body.message[:2000], get_llm(), client_ip(request), body.page[:10], body.cart[:20])
 
 
 @app.post("/api/reset")
@@ -106,5 +115,7 @@ def checkout(body: CheckoutIn, request: Request, response: Response):
     _set_cookie(response, s.id)
     events = []
     extra = list((body.model_extra or {}).keys())
-    result = store.checkout(body.items[:20], s.id, events, extra, body.customer_ref)
+    result = store.checkout(body.items[:20], s.id, events, extra, body.customer_ref, client_ip(request))
+    if result.get("ok"):
+        s.order_refs.append(result["confirmation"])
     return {**result, "events": events}

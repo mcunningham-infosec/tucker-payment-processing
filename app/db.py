@@ -144,3 +144,31 @@ def demo_shoppers():
     with connect() as c:
         return c.execute("SELECT customer_ref, full_name, street, city, state, zip FROM demo.customers "
                          "WHERE customer_ref <> 'TPP-0001' ORDER BY customer_ref").fetchall()
+
+
+# ---------- Limits (anonymous daily codes only, never raw IPs) ----------
+
+def usage_count(kind: str, subject: str, window_seconds: int) -> int:
+    """How many times this anonymous visitor code did `kind` within the window."""
+    with connect() as c:
+        return c.execute("SELECT count(*) AS n FROM ops.usage_events WHERE kind = %s AND subject = %s "
+                         "AND created_at > now() - make_interval(secs => %s)",
+                         (kind, subject, window_seconds)).fetchone()["n"]
+
+
+def record_usage(kind: str, subject: str):
+    """Append one usage event for an anonymous visitor code."""
+    with connect() as c:
+        c.execute("INSERT INTO ops.usage_events (kind, subject) VALUES (%s, %s)", (kind, subject))
+
+
+def orders_by_refs(refs: list):
+    """Orders by order number (used for 'orders placed this visit'), newest first, with items. Read-only."""
+    with connect() as c:
+        orders = c.execute("SELECT id, order_ref, created_at, total, status, ship_to FROM demo.orders "
+                           "WHERE order_ref = ANY(%s) ORDER BY created_at DESC", (list(refs),)).fetchall()
+        for o in orders:
+            o["items"] = c.execute("SELECT p.name, i.qty, i.unit_price FROM demo.order_items i "
+                                   "JOIN demo.products p ON p.sku = i.sku WHERE i.order_id = %s",
+                                   (o.pop("id"),)).fetchall()
+        return orders
