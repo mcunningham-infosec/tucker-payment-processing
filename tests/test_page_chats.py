@@ -64,3 +64,35 @@ def test_store_chat_knows_a_verified_visitors_first_name_but_nothing_else():
     handle_message(s, "who am i?", Spy([]), "203.0.113.50", page="store")
     assert "first name is Penny" in seen["system"]
     assert not any(n in seen["tools"] for n in ("get_my_cards", "get_my_transactions", "get_my_profile"))
+
+
+def _verified_client(main, FakeLLM, ModelTurn):
+    """A browser that verified as Penny (TPP-1001) in the home chat."""
+    from fastapi.testclient import TestClient
+    main.get_llm = lambda: FakeLLM([
+        ModelTurn(tool_calls=[("verify_identity", {"customer_number": "TPP-1001", "zip_code": "07731"})], tokens_in=10, tokens_out=5),
+        ModelTurn(text="Hi Penny!", tokens_in=10, tokens_out=5)])
+    c = TestClient(main.app, base_url="https://testserver")
+    c.post("/api/chat", json={"message": "I'm TPP-1001, ZIP 07731"})
+    return c
+
+
+def test_verified_person_follows_the_visitor_and_shopping_as_yourself_keeps_it():
+    from app import main
+    from app.llm import FakeLLM, ModelTurn
+    c = _verified_client(main, FakeLLM, ModelTurn)
+    assert c.get("/api/whoami").json() == {"verified_as": "Penny", "customer_ref": "TPP-1001"}
+    d = c.post("/api/checkout", json={"items": [{"sku": "TT-101", "qty": 1}], "customer_ref": "TPP-1001"}).json()
+    assert d["ok"] and d["verified_as"] == "Penny"
+
+
+def test_shopping_as_someone_else_signs_you_out_never_in():
+    """Picking Hank at checkout proves nothing: it must not grant Hank's account, so Penny is signed out."""
+    from app import main
+    from app.llm import FakeLLM, ModelTurn
+    c = _verified_client(main, FakeLLM, ModelTurn)
+    d = c.post("/api/checkout", json={"items": [{"sku": "TT-101", "qty": 1}], "customer_ref": "TPP-1005"}).json()
+    assert d["ok"] and d["verified_as"] is None
+    assert any("Verified as Penny, bought as Hank: signed out" in e["label"] for e in d["events"])
+    assert "Hit the home page to verify again" in d["message"]
+    assert c.get("/api/whoami").json()["verified_as"] is None
