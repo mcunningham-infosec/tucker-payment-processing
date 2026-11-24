@@ -29,6 +29,7 @@ figcaption strong { color:var(--ink); font-size:1.1rem; }
 .about h2 { margin:0 0 8px; color:var(--blue); font-size:1.35rem; }
 .about ul { padding-left:20px; margin:10px 0; }
 .about li { margin:6px 0; }
+.about h2.real { margin-top:22px; }
 .code a { color:var(--blue); font-weight:700; }
 footer { margin:40px auto 0; font-size:.8rem; color:var(--muted); max-width:560px; text-align:center; }
 /* Phones: bubble sits centered above Tucker so it never runs off-screen */
