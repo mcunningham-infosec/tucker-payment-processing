@@ -3,7 +3,8 @@
  *
  * A small Tucker with a speech bubble walks the visitor through the three things to try (in Cipher's Lair, Cipher
  * takes over as guide). Nothing is forced: Next just moves on, whether or not the visitor tries anything.
- *   1. the AI chat on the home page, 2. the treat store and its AI chat, 3. Cipher's Lair.
+ *   1. the AI chat on the home page, 2. the treat store and its AI chat, 3. Cipher's Lair,
+ * and finishes on About Us, section by section, ending with an invitation to connect with Michael.
  * Each "Next" highlights the next thing on the page; when the next stop is on another page, Next goes there
  * (the step travels in the address, e.g. treats.html?tour=5, so it works even if browser storage is blocked).
  *
@@ -15,7 +16,7 @@
 
   // Which page we're on: "home", "treats" or "cipher" (from the file name; "/" is the home page).
   var file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-  var PAGE = file === "treats.html" ? "treats" : file === "cipher.html" ? "cipher" : file === "index.html" ? "home" : "";
+  var PAGE = { "index.html": "home", "treats.html": "treats", "cipher.html": "cipher", "about.html": "about" }[file] || "";
 
   // The tour. page = where the step happens; spot = what to highlight (a CSS selector, or none);
   // go = for the last step on a page, where Next takes the visitor.
@@ -46,8 +47,23 @@
       say: "When you're ready, press this and I'll start my attack (one per day). Watch all three boxes. It takes about 2½ minutes." },
     { page: "cipher", spot: ".lair-box.soc", who: "cipher",
       say: "That's the AI SOC Squirrel, a bounded Gemini security analyst. A detection rule wakes it, it writes your security report live, and code checks every fact it states. Annoying little rodent." },
-    { page: "cipher", spot: null, last: true, who: "cipher",
-      say: "That's the tour! Go on, unleash me whenever you like. When it's over, Tucker will point you to the About Us page: how this site is built, the AI policies behind it, and the code on GitHub." }
+    { page: "cipher", spot: null, who: "cipher", go: "about.html", label: "Show me how it's built",
+      say: "That's my Lair! Unleash me whenever you're ready. When you're done here, Tucker will walk you through how this whole site is built." },
+
+    { page: "about", spot: "#about-intro",
+      say: "Welcome back, it's Tucker! This is the About Us page: how everything you just saw actually works." },
+    { page: "about", spot: "#about-flow",
+      say: "This is the path every chat message takes: seven checkpoints, with the AI boxed in by code on both sides." },
+    { page: "about", spot: "#about-bounds",
+      say: "Each AI here is bounded: what it can do, and what it can never do. Code enforces the limits, not the AI." },
+    { page: "about", spot: "#about-policies",
+      say: "Michael wrote the company's policies first, then built me to follow them. You can read every one on the AI Policies tab." },
+    { page: "about", spot: "#about-tech",
+      say: "The technology underneath: Google Cloud, Gemini, Cloudflare, zero-trust admin access and least privilege everywhere." },
+    { page: "about", spot: "#about-code",
+      say: "Want to dig deeper? Every line of code is open on GitHub. These are good places to start." },
+    { page: "about", spot: "#about-who", last: true,
+      say: "That's the tour, thanks for visiting! If you'd like to learn more about Michael, connect with him on LinkedIn." }
   ];
 
   // Who is talking in the bubble. Tucker guides, except in Cipher's Lair, where Cipher takes over.
@@ -123,6 +139,11 @@
     bubble.classList.toggle("tour-cipher", who === "cipher");
   }
 
+  function firstOn(page) {
+    for (var i = 0; i < STEPS.length; i++) { if (STEPS[i].page === page) { return i; } }
+    return 0;
+  }
+
   function unspot() {
     if (watcher) { watcher.disconnect(); }
     if (spotted) { spotted.classList.remove("tour-spot"); spotted = null; }
@@ -147,7 +168,7 @@
     textEl.textContent = s.say;
     countEl.textContent = (i + 1) + " of " + STEPS.length;
     backBtn.hidden = i === 0;
-    nextBtn.textContent = s.last ? "Done" : s.go ? "Take me there" : "Next";
+    nextBtn.textContent = s.last ? "Done" : s.label || (s.go ? "Take me there" : "Next");
     bubble.hidden = false;
     place(target);
     markOffered();
@@ -261,14 +282,14 @@
 
   function start() {
     build();
-    if (!PAGE) { return; }        // e.g. About Us and checkout: just the "Restart the Tour" button
+    if (!PAGE) { return; }        // e.g. checkout and the policy pages: just the "Restart the Tour" button
     // After Cipher's attack finishes (cipher.js fires "cipher-done"), Tucker recommends the About Us page.
     if (PAGE === "cipher") {
       document.addEventListener("cipher-done", function () {
         setTimeout(function () {
           tip("Nice work, you survived Cipher! Want to see how all of this is built? The About Us page covers the " +
               "architecture, the AI policies behind me, and the code on GitHub if you really want to dig in.",
-              "Show me", "about.html");
+              "Show me", "about.html?tour=" + firstOn("about"));
         }, 4000);
       });
     }
