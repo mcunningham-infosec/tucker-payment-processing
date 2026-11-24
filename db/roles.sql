@@ -1,5 +1,7 @@
 -- Least-privilege database role for the web app. Run once as the postgres superuser.
--- The password is set separately on the server (never stored in this repository).
+-- No password at all: the app runs as the Linux user 'tucker_app' and connects over the local
+-- Unix socket, where PostgreSQL's peer authentication checks the OS user. Nothing to steal or leak,
+-- and the database is never reachable over the network.
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'tucker_app') THEN
     CREATE ROLE tucker_app LOGIN;
