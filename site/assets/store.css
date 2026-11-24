@@ -67,3 +67,6 @@
 .treats-sign { width:min(300px,78vw); height:auto; filter:drop-shadow(0 6px 6px rgba(0,0,0,.12)); }
 .treats-sign.small { width:min(190px,50vw); }
 .sign-row { text-align:center; margin:-4px 0 10px; }
+.sign-row-shop { display:flex; align-items:center; justify-content:center; gap:10px 22px; flex-wrap:wrap; }
+.sign-row-shop .theme-player { flex-direction:column; align-items:flex-start; gap:4px; }
+@media (max-width:560px) { .sign-row-shop .theme-player { align-items:center; } }
