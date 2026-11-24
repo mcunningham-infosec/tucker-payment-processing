@@ -74,3 +74,51 @@ button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
 .steps .kind { display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:700; }
 .steps .label { display:block; font-weight:600; font-size:.95rem; }
 .steps .detail { display:block; color:var(--muted); font-size:.85rem; overflow-wrap:anywhere; }
+
+/* ===== Home page: tabs + three-column layout ===== */
+.top { text-align:center; margin-bottom:18px; }
+.home .logo, .top .logo { display:inline-block; }
+.tabs { display:flex; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.tabs a { text-decoration:none; color:var(--blue); font-weight:700; padding:7px 16px; border-radius:999px; background:var(--card);
+          border:2px solid #e8dcc8; font-size:.95rem; }
+.tabs a:hover, .tabs a:focus-visible { border-color:var(--blue); outline:none; }
+.tabs a[aria-current="page"] { background:var(--blue); color:#fff; border-color:var(--blue); }
+.soon-dot { background:var(--orange); color:#fff; border-radius:8px; padding:0 6px; font-size:.7rem; vertical-align:2px; margin-left:3px; }
+
+/* Phones: chat first, then Behind the Scenes, then the reading material */
+.home-grid { max-width:1440px; margin:0 auto; display:grid; gap:18px;
+             grid-template-columns:minmax(0,1fr); grid-template-areas:"chat" "bts" "info"; }
+.home-grid .chat-card { grid-area:chat; }
+.home-grid .bts { grid-area:bts; }
+.home-grid .info { grid-area:info; display:flex; flex-direction:column; gap:18px; }
+
+/* Tablets: Behind the Scenes and chat side by side, reading material below */
+@media (min-width:820px) {
+  .home-grid { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); grid-template-areas:"bts chat" "info info"; align-items:start; }
+}
+/* Desktops: Behind the Scenes | reading | chat, with both side panels staying in view while you scroll */
+@media (min-width:1200px) {
+  .home-grid { grid-template-columns:300px minmax(0,1fr) 420px; grid-template-areas:"bts info chat"; }
+  .home-grid .bts, .home-grid .chat-card { position:sticky; top:12px; max-height:calc(100vh - 24px); overflow-y:auto; }
+  .home-grid .log { height:max(220px, calc(100vh - 490px)); }
+}
+
+.card { background:var(--card); border-radius:24px; padding:20px 22px; box-shadow:0 6px 0 rgba(0,0,0,.05); }
+.card h2 { margin:0 0 8px; color:var(--blue); font-size:1.25rem; }
+.card ul { padding-left:20px; margin:8px 0; }
+.card li { margin:6px 0; }
+.card p { margin:8px 0; }
+.card a { color:var(--blue); font-weight:600; }
+.docs, .coming { font-size:.92rem; color:var(--muted); }
+.team { display:flex; gap:28px; justify-content:center; flex-wrap:wrap; margin:6px 0 4px; }
+.team figure { margin:0; text-align:center; }
+.team img { width:96px; height:96px; border-radius:50%; display:block; margin:0 auto; }
+.team figcaption { margin-top:6px; font-size:.88rem; }
+
+/* Tucker's greeting pops out shortly after the page loads */
+.greet .say { animation:pop-in .35s ease-out .5s both; }
+
+/* Simple centered pages (Tucker's Treats placeholder) */
+.narrow { max-width:640px; margin:0 auto; }
+.center { text-align:center; }
+.round { border-radius:50%; }
