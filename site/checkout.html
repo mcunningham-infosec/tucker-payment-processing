@@ -83,6 +83,23 @@
       <button type="button" class="tamper" id="tamper">Try to cheat: $0.01 prices + my own card</button>
     </section>
 
+    <!-- Shown in the middle instead of the payment panel when the cart is empty (or right after an order). -->
+    <section class="card pay pay-empty" id="pay-empty" aria-label="Find some treats" hidden>
+      <div class="on-tucker">
+        <img src="assets/tucker_avatar_256.png" alt="" width="72" height="72">
+        <p><strong id="pay-empty-title">Your cart is empty... for now!</strong>
+          <span id="pay-empty-text">Pick out a few treats and come back here to check out. Everything is on Tucker, so it won't cost you a dime.</span></p>
+      </div>
+      <h3>Tucker's picks</h3>
+      <div class="picks">
+        <a class="pick" href="treats.html"><img src="assets/products/bacon.svg" alt="" width="120" height="90"><span>Bacon Strips</span></a>
+        <a class="pick" href="treats.html"><img src="assets/products/squirrel.svg" alt="" width="120" height="90"><span>Plush Squirrel</span></a>
+        <a class="pick" href="treats.html"><img src="assets/products/nap-pillow.svg" alt="" width="120" height="90"><span>Cozy Nap Pillow</span></a>
+      </div>
+      <a class="cart-cta shop-cta" href="treats.html">Shop Tucker's Treats</a>
+      <p class="muted small">Then come back and try the checkout's security for yourself, including the "Try to cheat" button.</p>
+    </section>
+
     <section class="card cart-col" aria-label="Your order">
       <h2>Your cart</h2>
       <p class="result" id="result" role="status" hidden></p>
