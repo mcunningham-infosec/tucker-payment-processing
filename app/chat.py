@@ -56,6 +56,8 @@ change or cancel orders, change prices, or show any customer's order history bey
 identity check in the home page chat).""",
 }
 
+FAIR_SHARE_REPLY = ("You've asked me a LOT today! I'm saving some treats for the other visitors. "
+                    "Come back tomorrow and I'll be all ears.")
 INJECTION_REPLY = ("Nice try! I can't change my rules or look at other customers' information. "
                    "I'm happy to help with your own account or our policies.")
 NAP_REPLY = ("Zzz... Tucker's taking a nap right now (he's used up his treat budget for now). "
@@ -129,6 +131,13 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
         db.record_event(session.id, "nap", caps["reason"])
         return _result(session, NAP_REPLY, events, napping=True)
     _ev(events, "spend", "ok", f"Spend check: ${caps['month_usd']:.2f} of ${caps['month_cap']:.2f} this month")
+    fair, why = spend.fair_share(client_ip)
+    if not fair:
+        _ev(events, "spend", "denied", "Fair-share limit for your network", why)
+        db.record_event(session.id, "fair_share", "")
+        return _result(session, FAIR_SHARE_REPLY, events)
+    if why:
+        _ev(events, "spend", "ok", "Fair-share check passed", why)
 
     page = page if page in PAGE_PROMPTS else "home"
     if page == "cart":

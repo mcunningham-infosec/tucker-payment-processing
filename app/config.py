@@ -31,6 +31,9 @@ class Settings:
     # the app stops first, at $8, so visitors see "Tucker's taking a nap" instead of an error.
     monthly_cap_usd: float = float(_env("MONTHLY_CAP_USD", "8.00"))
     daily_cap_usd: float = float(_env("DAILY_CAP_USD", "0.75"))
+    # Fair share: no single network can use up the shared daily AI budget for everyone else.
+    ai_questions_per_ip_per_day: int = int(_env("AI_QUESTIONS_PER_IP_PER_DAY", "40"))
+    ai_questions_per_ip_when_busy: int = int(_env("AI_QUESTIONS_PER_IP_WHEN_BUSY", "15"))  # once half the day's budget is used
 
     # Abuse guardrails.
     max_message_chars: int = int(_env("MAX_MESSAGE_CHARS", "500"))

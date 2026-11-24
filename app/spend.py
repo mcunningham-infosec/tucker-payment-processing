@@ -5,7 +5,7 @@ Every model call's tokens are priced and recorded. Before each new call we check
 month-to-date and day-to-date totals. Over the cap -> Tucker "takes a nap" instead of calling
 the model. Google's own hard cap on the Gemini API ($9/month) sits behind this as a backstop.
 """
-from . import db
+from . import db, limits
 from .config import SETTINGS
 
 
@@ -32,3 +32,18 @@ def record(model: str, tokens_in: int, tokens_out: int) -> float:
     cost = cost_of(tokens_in, tokens_out)
     db.record_ai_usage(model, tokens_in, tokens_out, cost)
     return cost
+
+
+def fair_share(client_ip):
+    """Per-network share of the shared daily AI budget, so one abuser can't make Tucker nap for everyone.
+    Normally 40 AI-answered questions a day per network; once half the day's budget is spent, new
+    questions are limited to 15 per network. Only that network is affected. Returns (ok, details)."""
+    if not client_ip:
+        return True, ""
+    busy = db.ai_spend_since("day") >= SETTINGS.daily_cap_usd / 2
+    n = SETTINGS.ai_questions_per_ip_when_busy if busy else SETTINGS.ai_questions_per_ip_per_day
+    if limits.over_limit("ai_ip_day", client_ip, n, 86400):
+        return False, (f"Your network has used its fair share today ({n} AI answers"
+                       f"{', reduced while the site is busy' if busy else ''}). Other visitors are unaffected.")
+    limits.record("ai_ip_day", client_ip)
+    return True, f"{n} AI answers a day per network{' (busy mode)' if busy else ''}"
