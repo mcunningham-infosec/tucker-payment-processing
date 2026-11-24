@@ -1,0 +1,24 @@
+{
+  "displayName": "Tucker site: owner alert",
+  "documentation": {
+    "mimeType": "text/markdown",
+    "content": "A limit on tuckerpaymentprocessing.com started biting. The log line says which one (kind=...): fair_share, busy_mode, nap, month_50, month_80, zip_lockout or test. Each kind is sent at most once a day. Limits are set in /etc/tucker/tucker.env (see app/config.py); restart the app after changing them."
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "The app logged TUCKER_ALERT",
+      "conditionMatchedLog": {
+        "filter": "logName=\"projects/tucker-payment-processing/logs/tucker_journal\" AND jsonPayload.MESSAGE=~\"TUCKER_ALERT kind=\" AND (jsonPayload._SYSTEMD_UNIT=\"tucker.service\" OR jsonPayload.SYSLOG_IDENTIFIER=\"tucker-alert-test\")",
+        "labelExtractors": {
+          "kind": "REGEXP_EXTRACT(jsonPayload.MESSAGE, \"kind=([a-z0-9_]+)\")"
+        }
+      }
+    }
+  ],
+  "alertStrategy": {
+    "notificationRateLimit": { "period": "300s" },
+    "autoClose": "1800s"
+  },
+  "notificationChannels": ["CHANNEL_ID"]
+}
