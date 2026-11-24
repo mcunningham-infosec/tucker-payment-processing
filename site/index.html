@@ -45,17 +45,20 @@
           <figure><img src="assets/tucker_avatar_256.png" alt="Tucker, a cocker spaniel" width="96" height="96"><figcaption><strong>Tucker</strong><br>AI Support Agent</figcaption></figure>
           <figure><img src="assets/cipher_avatar_256.png" alt="Cipher, a black cat" width="96" height="96"><figcaption><strong>Cipher</strong><br>Resident hacker cat (version 2)</figcaption></figure>
         </div>
-        <p>Tucker Payment Processing is a pretend payment company with a <strong>real</strong> AI customer-support agent. Ask Tucker about company policies, or verify as a demo customer and ask about that account, while the Behind the Scenes panel shows exactly what happens to every message.</p>
+        <p>Tucker Payment Processing is a pretend payment company with <strong>real</strong> AI: Tucker, an AI customer-support agent who also helps you shop at Tucker's Treats, and the AI SOC Squirrel, a bounded AI security analyst that investigates live attacks in <a href="cipher.html">Cipher's Lair</a>. On this page, ask Tucker about company policies, or verify as a demo customer and ask about that account, while the Behind the Scenes panel shows exactly what happens to every message.</p>
       </div>
 
       <div class="card">
         <h2 class="real">The company is pretend. The technology is not.</h2>
         <ul>
-          <li><strong>Google Gemini</strong> powers Tucker, on the paid tier, so chats are not used to train the model.</li>
+          <li><strong>Google Gemini</strong> powers Tucker and the AI SOC Squirrel, on the paid tier, so chats are not used to train the model.</li>
           <li><strong>Google Cloud</strong> hosts a hardened Ubuntu Linux server running Apache, Python (FastAPI) and PostgreSQL.</li>
+          <li><strong>Live attack testing:</strong> Cipher runs 50 real attacks (the OWASP Top 10 for web apps and for AI) against this site from inside its own server. Code-run detection rules wake the AI analyst and block the attacker.</li>
+          <li><strong>Monitoring and alerts:</strong> Google Cloud Monitoring emails the owner when a defense fails, a spending threshold is crossed or someone hits a lockout.</li>
           <li><strong>HTTPS everywhere</strong> with an automatically renewing certificate and strict security headers.</li>
           <li><strong>Zero-trust admin access:</strong> no admin port open to the internet; administrators get in only through Google's identity-checked tunnel with two-factor authentication.</li>
-          <li><strong>Least privilege:</strong> the server has no cloud permissions; Tucker's chat can only read the database; the store can add an order only through one function that re-prices everything itself; nobody can edit or delete an order; and there is no database password to steal.</li>
+          <li><strong>Least privilege:</strong> the server's only cloud permission is writing its own alerts to Google's logging; Tucker's chat can only read the database; the store can add an order only through one function that re-prices everything itself; nobody can edit or delete an order; and there is no database password to steal.</li>
+          <li><strong>Open source:</strong> every line is <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">on GitHub</a>, including Cipher's attacks, the defenses and the AI SOC. Security that only works while the code is secret isn't security.</li>
         </ul>
       </div>
 
