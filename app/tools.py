@@ -39,6 +39,10 @@ TOOL_DECLARATIONS = [
      "parameters": {"type": "object", "properties": {
          "transaction_id": {"type": "integer", "description": "Transaction number"}},
          "required": ["transaction_id"]}},
+    {"name": "get_my_orders",
+     "description": "List the verified customer's Tucker's Treats orders (newest first) with the items in each.",
+     "parameters": {"type": "object", "properties": {
+         "limit": {"type": "integer", "description": "How many (1-10)"}}}},
     {"name": "search_policies",
      "description": "Search Tucker Payment Processing's policies (security, refunds, disputes, AI use, data retention).",
      "parameters": {"type": "object", "properties": {
@@ -121,6 +125,21 @@ def get_my_transactions(session: Session, limit: int = 5):
                                   "detail": f"Filtered by the verified customer in SQL (WHERE customer_id = session). Limit {limit}."}
 
 
+def get_my_orders(session: Session, limit: int = 5):
+    """Return the verified customer's Treats orders with items (read-only; capped at 10)."""
+    blocked = _need_verified(session, "get_my_orders")
+    if blocked:
+        return blocked
+    try:
+        limit = max(1, min(int(limit or 5), 10))
+    except (TypeError, ValueError):
+        limit = 5
+    orders = db.customer_orders(session.customer_id, limit)
+    clean = [{k: (_rows(v) if k == "items" else _plain(v)) for k, v in o.items()} for o in orders]
+    return {"orders": clean}, {"type": "tool", "status": "ok", "label": f"Read {len(clean)} order(s) with their items",
+                               "detail": "Read-only: the chat's database login can SELECT orders but never change them."}
+
+
 def get_transaction(session: Session, transaction_id: int = 0):
     """Return one transaction only if it belongs to the verified customer."""
     blocked = _need_verified(session, "get_transaction")
@@ -135,7 +154,7 @@ def get_transaction(session: Session, transaction_id: int = 0):
         return ({"found": False, "message": f"No transaction {tid} on this account."},
                 {"type": "authz", "status": "denied", "label": f"Transaction {tid}: not on this account",
                  "detail": "The lookup is limited to the verified customer, so other customers' transactions can't be read."})
-    return {k: _plain(v) for k, v in row.items()}, {"type": "tool", "status": "ok", "label": f"Read transaction {tid}",
+    return {k: (_rows(v) if k == "items" else _plain(v)) for k, v in row.items()}, {"type": "tool", "status": "ok", "label": f"Read transaction {tid}",
                                                     "detail": "Ownership checked in SQL before returning it."}
 
 
@@ -149,6 +168,7 @@ def search_policies(session: Session, query: str = ""):
 
 REGISTRY = {"verify_identity": verify_identity, "get_my_profile": get_my_profile, "get_my_cards": get_my_cards,
             "get_my_transactions": get_my_transactions, "get_transaction": get_transaction,
+            "get_my_orders": get_my_orders,
             "search_policies": search_policies}
 
 

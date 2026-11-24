@@ -20,6 +20,8 @@ class Settings:
     gemini_api_key: str = _env("GEMINI_API_KEY", "")            # secret: server env file only
     gemini_model: str = _env("GEMINI_MODEL", "gemini-3.5-flash-lite")
     database_url: str = _env("DATABASE_URL", "postgresql:///tucker?host=/var/run/postgresql")
+    # The store's checkout uses its own database login, which can do exactly one thing: call demo.place_order().
+    store_database_url: str = _env("STORE_DATABASE_URL", "postgresql://tucker_store@/tucker?host=/var/run/postgresql")
 
     # Model pricing (USD per 1M tokens) used for the app-level spend cap.
     price_in_per_m: float = float(_env("PRICE_IN_PER_M", "0.30"))

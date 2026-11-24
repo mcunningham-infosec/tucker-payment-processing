@@ -8,12 +8,14 @@ every order is "on Tucker" - his card is on file in the database. Everything tha
   - the card is always Tucker's card on file; anything card-like the browser sends is ignored
   - the card must be active and unexpired, or the order is declined
   - the shipping address is the chosen demo customer's (dog-themed, fictional) address on file; nothing to type
-No order is stored: the store is read-only like the rest of the site. Only a count goes to the ops log.
+Orders ARE stored (real stores must keep them), but only through demo.place_order(): the store's database
+login can call that one function and nothing else, and the function re-prices everything from the catalog.
+Nobody can edit or delete an order. A request that tries to tamper is refused outright and nothing is saved.
 Every step adds a Behind the Scenes event so visitors can watch the checks happen.
 """
 import datetime as dt
 import secrets
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from . import db
 
@@ -83,12 +85,13 @@ def quote(raw_items, events):
         _ev(events, "input", "denied", "Unknown product code(s) refused", ", ".join(unknown)[:80])
     subtotal = sum((l["line_total"] for l in lines), Decimal("0"))
     shipping = Decimal("0") if subtotal >= FREE_SHIPPING_OVER or not lines else SHIPPING
-    tax = (subtotal * TAX_RATE).quantize(Decimal("0.01"))
+    tax = (subtotal * TAX_RATE).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)   # same as PostgreSQL round()
     total = subtotal + shipping + tax
     if lines:
         _ev(events, "pricing", "ok", f"Priced {len(lines)} item(s) from the database",
             f"Subtotal ${subtotal:.2f} + shipping ${shipping:.2f} + NJ tax ${tax:.2f}")
     return {
+        "tampered": any(e["type"] == "tamper" for e in events),
         "lines": [{**l, "unit_price": f"{l['unit_price']:.2f}", "line_total": f"{l['line_total']:.2f}"} for l in lines],
         "subtotal": f"{subtotal:.2f}", "shipping": f"{shipping:.2f}", "tax": f"{tax:.2f}",
         "total": f"{total:.2f}", "ship_from": SHIP_FROM,
@@ -140,16 +143,28 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref=""):
         return {"ok": False, "message": "Please pick a demo customer to shop as.", "order": priced}
     if extra_fields:
         _ev(events, "tamper", "denied", "Browser sent extra fields - ignored", ", ".join(sorted(extra_fields))[:80])
+    if priced.pop("tampered", False) or extra_fields:
+        _ev(events, "tamper", "denied", "Order refused: the request was tampered with",
+            "Treated as a fraud signal. Nothing was saved and your cart is untouched.")
+        db.record_event(session_id, "order_tamper_refused", "")
+        return {"ok": False, "refused": True, "message": "Nice try! Tampered orders are refused. Your cart is still here.",
+                "order": priced}
     approved, reason, card = _authorize(events)
     if not approved:
         db.record_event(session_id, "order_declined", "")
         return {"ok": False, "message": reason, "order": priced}
-    confirmation = "TT-" + secrets.token_hex(3).upper()
-    _ev(events, "payment", "ok", f"Approved: ${priced['total']} on {card['brand']} ending {card['last4']}",
+    try:
+        saved = db.place_order(shopper["customer_ref"], [{"sku": l["sku"], "qty": l["qty"]} for l in priced["lines"]])
+    except Exception:
+        _ev(events, "payment", "denied", "The database refused the order")
+        return {"ok": False, "message": "Tucker dropped the order. Please try again.", "order": priced}
+    _ev(events, "payment", "ok", f"Approved: ${saved['total']:.2f} on {card['brand']} ending {card['last4']}",
         "Simulated authorization - no real money moves.")
-    _ev(events, "privacy", "ok", "Order not stored", "The store is read-only; only an anonymous count is logged.")
+    _ev(events, "database", "ok", f"Order {saved['order_ref']} saved through demo.place_order()",
+        "The store's login can only call this one function; the database re-priced every item itself. "
+        "Nobody can edit or delete an order, and the chat can only read it.")
     db.record_event(session_id, "order_approved", "")
-    return {"ok": True, "message": f"Order {confirmation} for {shopper['name']} approved and paid by Tucker! "
-                                   f"Shipping to {shopper['address']}.",
-            "confirmation": confirmation, "order": priced,
+    return {"ok": True, "message": f"Order {saved['order_ref']} for {shopper['name']} approved and paid by Tucker! "
+                                   f"Shipping to {saved['ship_to']}.",
+            "confirmation": saved["order_ref"], "order": priced,
             "paid_with": f"{card['brand']} ending {card['last4']}"}
