@@ -80,15 +80,24 @@
       li.style.animationDelay = (i * 0.12) + "s";
       steps.appendChild(li);
     });
+    scrollSteps(steps, (events || []).length);
+  }
+
+  // Keep the newest Behind the Scenes step in view, like a chat (scrolls the panel, never the page).
+  function scrollSteps(steps, count) {
+    var box = steps.closest(".bts");
+    if (!box) { return; }
+    var go = function () { box.scrollTop = box.scrollHeight; };
+    go(); window.setTimeout(go, count * 120 + 250);
   }
 
   // Add one step to the running Behind the Scenes list (newest first, last 8 kept).
   function addStep(type, status, label, detail) {
-    localSteps.unshift({ type: type, status: status, label: label, detail: detail || "" });
-    localSteps = localSteps.slice(0, 8);
+    localSteps.push({ type: type, status: status, label: label, detail: detail || "" });
+    localSteps = localSteps.slice(-8);
     showSteps(localSteps);
     var intro = document.getElementById("bts-intro");
-    if (intro) { intro.textContent = "What your clicks did, newest first:"; }
+    if (intro) { intro.textContent = "What your clicks did, newest at the bottom:"; }
   }
 
   // ---------- product grid (treats.html) ----------
@@ -144,6 +153,17 @@
 
   // ---------- checkout (checkout.html) ----------
 
+  // Middle panel when there's nothing to pay for: an empty cart, or right after an order (done = true).
+  function showPayEmpty(show, done) {
+    var box = document.getElementById("pay-empty");
+    if (!box) { return; }
+    box.hidden = !show;
+    if (done) {
+      document.getElementById("pay-empty-title").textContent = "Thanks for shopping!";
+      document.getElementById("pay-empty-text").textContent = "Your receipt is on the right, and Tucker's chat on the left can tell you about the order. Room for one more treat?";
+    }
+  }
+
   // Draw the server-priced order: lines with +/- buttons, then the totals.
   function renderOrder(order) {
     var list = document.getElementById("lines"), totals = document.getElementById("totals");
@@ -151,6 +171,7 @@
     var empty = !order.lines.length;
     document.getElementById("empty").hidden = !empty;
     document.getElementById("pay").hidden = empty;
+    showPayEmpty(empty, false);
     order.lines.forEach(function (l) {
       var row = el("li", "line");
       var img = el("img"); img.src = "assets/products/" + l.image; img.alt = ""; img.width = 72; img.height = 54;
@@ -218,6 +239,7 @@
         if (d.ok) {
           setCart({});
           document.getElementById("pay").hidden = true;
+          showPayEmpty(true, true);
           var orderBox = document.querySelector("[aria-label='Your order']");
           orderBox.classList.add("receipt");
           orderBox.querySelector("h2").textContent = "Receipt";

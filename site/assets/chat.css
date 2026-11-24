@@ -139,3 +139,5 @@ button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
 #theme-btn .ico { display:inline-block; width:1em; text-align:center; }
 .theme-time { font-size:.85rem; color:var(--muted); font-variant-numeric:tabular-nums; min-width:6.5em; text-align:left; }
 .theme-time:empty { display:none; }
+/* Panel title stays visible while the steps auto-scroll underneath it */
+.bts > h2 { position:sticky; top:-16px; margin:-16px -16px 6px; padding:16px 16px 6px; background:var(--card); z-index:1; border-radius:24px 24px 0 0; }

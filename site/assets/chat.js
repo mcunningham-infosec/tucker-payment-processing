@@ -73,6 +73,12 @@
       li.style.animationDelay = (i * 0.12) + "s";   // CSSOM, allowed by the CSP (no inline style attribute)
       steps.appendChild(li);
     });
+    // Keep the newest step in view, like the chat log (scrolls the panel only, never the whole page).
+    var box = steps.closest(".bts");
+    if (box) {
+      var go = function () { box.scrollTop = box.scrollHeight; };
+      go(); window.setTimeout(go, (events || []).length * 120 + 250);
+    }
   }
 
   // Update the little status line under Tucker's name.

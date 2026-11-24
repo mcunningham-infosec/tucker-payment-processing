@@ -82,7 +82,8 @@
 /* Left column on store pages: Behind the Scenes, then the small chat */
 .side { display:flex; flex-direction:column; gap:18px; }
 .chat-card.mini .chat-head img { width:44px; height:44px; }
-.chat-card.mini .log { height:230px; }
+.chat-card.mini .log { height:260px; }
+.shop-grid .chat-card.mini .log { height:420px; }   /* product page: room for longer answers */
 .chat-card.mini .try { font-size:.85rem; }
 .chat-card.mini .try button { font-size:.8rem; padding:3px 9px; }
 .side .bts { position:static; max-height:460px; overflow-y:auto; }   /* long step lists scroll, so the chat stays close */
@@ -94,3 +95,12 @@
 .checkout-grid .side { grid-area:side; } .checkout-grid .pay { grid-area:pay; } .checkout-grid .cart-col { grid-area:cart; }
 @media (min-width:820px) { .checkout-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"pay cart" "side side"; } }
 @media (min-width:1200px) { .checkout-grid { grid-template-columns:320px minmax(0,1fr) minmax(0,1fr); grid-template-areas:"side pay cart"; align-items:start; } }
+
+/* Checkout middle panel when the cart is empty (or just after an order) */
+.picks { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin:8px 0 14px; }
+.pick { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:var(--ink); font-weight:700;
+        font-size:.85rem; background:var(--cream); border:2px solid #f0dcc0; border-radius:16px; padding:8px; text-align:center; }
+.pick:hover, .pick:focus-visible { border-color:var(--blue); outline:none; }
+.pick img { width:100%; max-width:120px; height:auto; }
+.shop-cta { display:flex; justify-content:center; width:100%; box-sizing:border-box; padding:12px 16px; font-size:1rem; }
+.card a.cart-cta, .card a.cart-cta:hover { color:#fff; text-decoration:none; }
