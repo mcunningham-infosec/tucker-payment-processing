@@ -176,8 +176,8 @@ def _(p, ctx):
     return Outcome(r.status in (400, 403, 404) and "root:" not in r.text, f"HTTP {r.status}")
 
 
-@attack("a01-status", "A01", "Peek at the server's status page", "GET /server-status",
-        "Status page limited to the server itself... and Cipher is outside that rule")
+@attack("a01-status", "A01", "Peek at the server's status page", "GET /server-status  // who else is visiting?",
+        "Status module switched off entirely (Cipher found it reachable from inside the server)")
 def _(p, ctx):
     r = p.req("GET", "/server-status")
     return Outcome(r.status in (403, 404), f"HTTP {r.status}")
@@ -507,10 +507,11 @@ def _(p, ctx):
     return Outcome(r.status in (400, 422) and not leak, f"HTTP {r.status}, no internals leaked")
 
 
-@attack("a10-huge", "A10", "Send an enormous request", "POST 9 KB of 'meow'", "Apache refuses bodies over 8 KB")
+@attack("a10-huge", "A10", "Send an enormous request to exhaust memory", "POST 1 MB of 'meow'  // swallow THIS",
+        "Refused unread at 16 KB, by Apache and again by the app (Cipher found the gap)")
 def _(p, ctx):
-    r = p.req("POST", "/api/chat", {"message": "meow " * 1900, "page": "home"})
-    return Outcome(r.status in (413, 422) or _denied(r.json(), "input"), f"HTTP {r.status}")
+    r = p.req("POST", "/api/chat", {"message": "meow " * 200000, "page": "home"})
+    return Outcome(r.status == 413, f"HTTP {r.status}" + (" (too large, refused unread)" if r.status == 413 else " - ACCEPTED"))
 
 
 @attack("a10-nulls", "A10", "Hide control characters in a message", "message = '\\x00\\x00\\x1b[31m'",
