@@ -107,6 +107,11 @@ def ai_spend_since(interval: str) -> float:
         return float(row["total"])
 
 
+def event_session(session_id: str, client_ip: str | None) -> str:
+    """Tag Cipher's own demo traffic so the owner's daily report can count it separately from real visitors."""
+    return f"cipher-{session_id}" if client_ip and client_ip.startswith("cipher-run:") else session_id
+
+
 def record_event(session_id: str, event_type: str, detail: str = ""):
     """Append a guardrail/chat event (no chat text, no IP) for the daily report."""
     with connect() as c:

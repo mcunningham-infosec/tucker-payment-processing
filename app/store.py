@@ -172,7 +172,7 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref="", cl
     if priced.pop("tampered", False) or extra_fields:
         _ev(events, "tamper", "denied", "Order refused: the request was tampered with",
             "Treated as a fraud signal. Nothing was saved and your cart is untouched.")
-        db.record_event(session_id, "order_tamper_refused", "")
+        db.record_event(db.event_session(session_id, client_ip), "order_tamper_refused", "")
         return {"ok": False, "refused": True, "message": "Nice try! Tampered orders are refused. Your cart is still here.",
                 "order": priced}
     if _purchase_limited(session_id, client_ip, events):
@@ -180,7 +180,7 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref="", cl
                 "order": priced}
     approved, reason, card = _authorize(events)
     if not approved:
-        db.record_event(session_id, "order_declined", "")
+        db.record_event(db.event_session(session_id, client_ip), "order_declined", "")
         return {"ok": False, "message": reason, "order": priced}
     try:
         saved = db.place_order(shopper["customer_ref"], [{"sku": l["sku"], "qty": l["qty"]} for l in priced["lines"]])
@@ -192,7 +192,7 @@ def checkout(raw_items, session_id, events, extra_fields=(), customer_ref="", cl
     _ev(events, "database", "ok", f"Order {saved['order_ref']} saved through demo.place_order()",
         "The store's login can only call this one function; the database re-priced every item itself. "
         "Nobody can edit or delete an order, and the chat can only read it.")
-    db.record_event(session_id, "order_approved", "")
+    db.record_event(db.event_session(session_id, client_ip), "order_approved", "")
     limits.record("purchase_cookie", session_id)
     if client_ip:
         limits.record("purchase_ip", client_ip)

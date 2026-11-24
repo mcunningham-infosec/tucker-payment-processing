@@ -103,13 +103,13 @@ def verify_identity(session: Session, customer_number: str = "", zip_code: str =
         session.customer_id = row["id"]
         session.customer_first_name = row["full_name"].split()[0]
         session.customer_ref = str(customer_number).strip().upper()
-        db.record_event(session.id, "verify_ok", "")            # for the owner's daily report (no customer data)
+        db.record_event(db.event_session(session.id, session.client_ip), "verify_ok", "")            # for the owner's daily report (no customer data)
         return ({"verified": True, "first_name": session.customer_first_name},
                 {"type": "authz", "status": "ok", "label": "Identity verified (in Python, not by the AI)",
                  "detail": f"Session is now bound to customer {str(customer_number).upper()}. "
                            "All account lookups use this session, never an id from the AI."})
     session.verify_attempts += 1
-    db.record_event(session.id, "verify_fail", "")
+    db.record_event(db.event_session(session.id, session.client_ip), "verify_fail", "")
     if session.client_ip:
         limits.record("verify_fail_ip", session.client_ip)
     left = max(0, MAX_VERIFY_ATTEMPTS - session.verify_attempts)

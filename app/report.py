@@ -100,18 +100,21 @@ def visitors(entries, lookup=network_owner):
     by = collections.OrderedDict()
     for e in sorted(entries, key=lambda e: e["when"]):
         v = by.setdefault(e["ip"], {"ip": e["ip"], "first": e["when"], "last": e["when"], "requests": 0,
-                                    "pages": collections.Counter(), "scans": collections.Counter(), "errors": 0,
+                                    "pages": collections.Counter(), "scans": collections.Counter(), "errors": 0, "assets": 0,
                                     "ua": e["ua"], "where": ", ".join(x for x in (e["city"], e["reg"], e["cc"]) if x)})
         v["last"] = e["when"]
         v["requests"] += 1
         if PAGE.match(e["path"]) and e["status"] < 400:
             v["pages"][e["path"]] += 1
+        if e["path"].startswith("/assets/") and e["path"].endswith((".css", ".js")) and e["status"] < 400:
+            v["assets"] += 1
         if SCAN_PATH.search(e["path"]):
             v["scans"][e["path"][:80]] += 1
         if e["status"] >= 500:
             v["errors"] += 1
     for v in by.values():
-        v["bot"] = bool(BOT_UA.search(v["ua"])) or not v["pages"]
+        # A person views a page AND their browser loads its styles/scripts; scanners with a browser-like name rarely do.
+        v["bot"] = bool(BOT_UA.search(v["ua"])) or not v["pages"] or not v["assets"]
         v["scanner"] = sum(v["scans"].values()) >= 3
     people = [v for v in by.values() if not v["bot"]]
     for v in people[:40]:                                   # look up owners for people (bounded: DNS is slow)
@@ -123,17 +126,20 @@ def app_activity(day: dt.date):
     """Counts from the app's own event table, orders, Cipher runs and AI spend."""
     start, end = _day_bounds(day)
     with db.connect() as c:
+        # Cipher's own demo traffic is tagged "cipher-..." (db.event_session) and counted separately.
         ev = {r["event_type"]: r["n"] for r in c.execute(
-            "SELECT event_type, count(*) AS n FROM ops.chat_events WHERE at >= %s AND at < %s GROUP BY 1",
-            (start, end)).fetchall()}
-        sessions = c.execute("SELECT count(DISTINCT session_id) AS n FROM ops.chat_events "
-                             "WHERE event_type = 'message' AND at >= %s AND at < %s", (start, end)).fetchone()["n"]
+            "SELECT event_type, count(*) AS n FROM ops.chat_events WHERE at >= %s AND at < %s "
+            "AND session_id NOT LIKE 'cipher-%%' GROUP BY 1", (start, end)).fetchall()}
+        cipher_events = c.execute("SELECT count(*) AS n FROM ops.chat_events WHERE session_id LIKE 'cipher-%%' "
+                                  "AND at >= %s AND at < %s", (start, end)).fetchone()["n"]
+        sessions = c.execute("SELECT count(DISTINCT session_id) AS n FROM ops.chat_events WHERE event_type = 'message' "
+                             "AND session_id NOT LIKE 'cipher-%%' AND at >= %s AND at < %s", (start, end)).fetchone()["n"]
         details = c.execute("SELECT event_type, detail FROM ops.chat_events WHERE event_type IN ('alert','cipher_run') "
                             "AND at >= %s AND at < %s ORDER BY at", (start, end)).fetchall()
         orders = c.execute("SELECT count(*) AS n, coalesce(sum(total),0) AS total FROM demo.orders "
                            "WHERE source = 'web' AND created_at >= %s AND created_at < %s",
                            (start.replace(tzinfo=None), end.replace(tzinfo=None))).fetchone()
-    return {"events": ev, "chat_sessions": sessions, "orders": orders["n"], "orders_total": float(orders["total"]),
+    return {"events": ev, "chat_sessions": sessions, "cipher_events": cipher_events, "orders": orders["n"], "orders_total": float(orders["total"]),
             "alerts": [d["detail"] for d in details if d["event_type"] == "alert"],
             "cipher_runs": [d["detail"] for d in details if d["event_type"] == "cipher_run"],
             "spend_day": db.ai_spend_since("day"), "spend_month": db.ai_spend_since("month")}
@@ -181,7 +187,9 @@ def build(day: dt.date, entries=None, activity=None, lookup=network_owner):
     bots = [v for v in vis if v["bot"]]
     notes = unusual(vis, act)
     e = act["events"]
+    views = sum(sum(v["pages"].values()) for v in people)
     subject = (f"Tucker daily report {day:%a %b %d}: {len(people)} visitor{'s' if len(people) != 1 else ''}, "
+               f"{views} page view{'s' if views != 1 else ''}, "
                f"{e.get('message', 0)} chats, ${act['spend_day']:.2f} AI" + (f", {len(notes)} to review" if notes else ""))
 
     def esc(x, n=120):
@@ -193,10 +201,11 @@ def build(day: dt.date, entries=None, activity=None, lookup=network_owner):
         rows.append((v["first"].strftime("%H:%M"), v["ip"], v.get("owner", ""), v["where"] or "unknown",
                      pages, v["requests"], v["ua"]))
     activity_lines = [
+        ("Unique visitors (people) / page views", f"{len(people)} / {views}"),
         ("Chat questions answered", e.get("message", 0)), ("Chat sessions", act["chat_sessions"]),
         ("Identity checks passed / failed", f"{e.get('verify_ok', 0)} / {e.get('verify_fail', 0)}"),
         ("Store orders (demo)", f"{act['orders']} (${act['orders_total']:.2f})"),
-        ("Cipher attack runs", len(act["cipher_runs"])),
+        ("Cipher attack runs", f"{len(act['cipher_runs'])} ({act.get('cipher_events', 0)} of Cipher's own test events, not counted above)"),
         ("Prompt injections blocked", e.get("injection_blocked", 0)),
         ("Bots and crawlers (addresses)", len(bots)),
     ]

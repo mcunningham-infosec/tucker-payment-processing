@@ -117,13 +117,13 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     limited = _rate_limited(session) or _ip_limited(client_ip)
     if limited:
         _ev(events, "rate", "denied", "Rate limit", limited)
-        db.record_event(session.id, "rate_limited", limited)
+        db.record_event(db.event_session(session.id, session.client_ip), "rate_limited", limited)
         return _result(session, "Tucker needs a quick breather. Please wait a moment before your next question.", events)
 
     hit = guardrails.detect_injection(text)
     if hit:
         _ev(events, "injection", "denied", "Prompt injection blocked before reaching the AI", f'Matched: "{hit}"')
-        db.record_event(session.id, "injection_blocked", hit)
+        db.record_event(db.event_session(session.id, session.client_ip), "injection_blocked", hit)
         return _result(session, INJECTION_REPLY, events)
     _ev(events, "injection", "ok", "No prompt-injection patterns found")
 
@@ -131,13 +131,13 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     if not ok:
         _ev(events, "spend", "denied", "Spend guardrail triggered: " + caps["reason"],
             f"Month ${caps['month_usd']:.2f} of ${caps['month_cap']:.2f}; today ${caps['day_usd']:.2f} of ${caps['day_cap']:.2f}.")
-        db.record_event(session.id, "nap", caps["reason"])
+        db.record_event(db.event_session(session.id, session.client_ip), "nap", caps["reason"])
         return _result(session, NAP_REPLY, events, napping=True)
     _ev(events, "spend", "ok", f"Spend check: ${caps['month_usd']:.2f} of ${caps['month_cap']:.2f} this month")
     fair, why = spend.fair_share(client_ip)
     if not fair:
         _ev(events, "spend", "denied", "Fair-share limit for your network", why)
-        db.record_event(session.id, "fair_share", "")
+        db.record_event(db.event_session(session.id, session.client_ip), "fair_share", "")
         return _result(session, FAIR_SHARE_REPLY, events)
     if why:
         _ev(events, "spend", "ok", "Fair-share check passed", why)
@@ -171,17 +171,17 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
         # Server log gets the error type and a short message (never the conversation or any key).
         log.error("model call failed: %s: %s", type(exc).__name__, guardrails.mask_output(str(exc)[:300])[0])
         _ev(events, "model", "denied", "AI model unavailable - failing gracefully", type(exc).__name__)
-        db.record_event(session.id, "model_error", type(exc).__name__)
+        db.record_event(db.event_session(session.id, session.client_ip), "model_error", type(exc).__name__)
         return _result(session, ERROR_REPLY, events)
 
     reply, masked = guardrails.mask_output(reply or "Woof?")
     if masked:
         _ev(events, "output", "denied", "Output filter masked sensitive data", ", ".join(masked))
-        db.record_event(session.id, "masked_output", ", ".join(masked))
+        db.record_event(db.event_session(session.id, session.client_ip), "masked_output", ", ".join(masked))
     else:
         _ev(events, "output", "ok", "Output filter: nothing sensitive found")
     history += [("user", text), ("model", reply)]
-    db.record_event(session.id, "message", "")
+    db.record_event(db.event_session(session.id, session.client_ip), "message", "")
     return _result(session, reply, events)
 
 
