@@ -13,6 +13,7 @@ The only cookie is the session id: HttpOnly (JavaScript can't read it), Secure (
 SameSite=Lax, and it expires when the browser closes.
 """
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from . import cipher
@@ -24,7 +25,21 @@ from .llm import GeminiLLM
 
 app = FastAPI(title="Tucker Payment Processing", docs_url=None, redoc_url=None, openapi_url=None)
 COOKIE = "tucker_session"
+MAX_BODY_BYTES = 16 * 1024      # every legitimate request here is tiny; anything bigger is refused unread
 _llm = None
+
+
+@app.middleware("http")
+async def limit_body_size(request: Request, call_next):
+    """Refuse oversized requests BEFORE reading them, so a flood of huge bodies can't exhaust memory.
+    (Found by Cipher: Apache's limit wasn't applied to requests it forwards to the app. Now both layers check.)"""
+    if request.method in ("POST", "PUT", "PATCH"):
+        length = request.headers.get("content-length")
+        if length is None:
+            return JSONResponse({"detail": "Length required"}, status_code=411)
+        if not length.isdigit() or int(length) > MAX_BODY_BYTES:
+            return JSONResponse({"detail": "Request too large"}, status_code=413)
+    return await call_next(request)
 
 
 def get_llm():
