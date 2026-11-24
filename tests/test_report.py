@@ -1,6 +1,8 @@
 """
 Tests for the owner's daily report (app/report.py): it reads the web log correctly, tells people from bots,
 flags what's unusual, and never lets visitor-controlled text (paths, browser names) inject HTML into the email.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import datetime as dt
 

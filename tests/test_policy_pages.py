@@ -2,6 +2,8 @@
 The policy pages on the website are generated from policies/*.md, the same documents Tucker answers from.
 These tests fail if someone edits a policy without rebuilding the pages (python deploy/build_policy_pages.py),
 so what visitors read can never drift from what the AI is told.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import importlib.util
 import pathlib

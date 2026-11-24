@@ -1,4 +1,7 @@
-"""Tests for the guardrails, tools and chat flow, using a scripted fake model (no real AI calls)."""
+"""Tests for the guardrails, tools and chat flow, using a scripted fake model (no real AI calls).
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+"""
 import psycopg
 import pytest
 

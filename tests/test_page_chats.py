@@ -1,5 +1,7 @@
 """
 Tests for the store and cart chats: least privilege per page.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from app import store, tools
 from app.chat import handle_message
@@ -48,7 +50,6 @@ def test_visit_orders_only_show_this_visit():
 
 def test_store_chat_knows_a_verified_visitors_first_name_but_nothing_else():
     """Penny verified on the home page: the store chat may greet her by name, but still has no account tools."""
-    from app import tools
     from app.chat import handle_message
     from app.llm import FakeLLM, ModelTurn
     from app.session import Session

@@ -1,6 +1,8 @@
 """
 Test setup: point the app at a local test database (as the least-privilege tucker_app role)
 and reset the ops tables before each test using an admin connection.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import os
 import psycopg

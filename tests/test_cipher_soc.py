@@ -1,6 +1,8 @@
 """
 Tests for the AI SOC Squirrel's guardrails: it may only read this run's events and PROPOSE menu actions;
 Python validates everything it says, and a broken or tricked AI never changes what happens.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 from app.cipher import soc
 from app.llm import FakeLLM, ModelTurn

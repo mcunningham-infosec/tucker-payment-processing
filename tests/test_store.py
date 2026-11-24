@@ -1,5 +1,7 @@
 """
 Tests for Tucker's Treats: the browser can choose WHAT to buy and WHICH demo card, nothing else.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import psycopg
 import pytest

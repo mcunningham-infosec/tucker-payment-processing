@@ -1,5 +1,7 @@
 """
 Tests for the generous, cookie-proof limits and the nightly reset.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import subprocess
 
