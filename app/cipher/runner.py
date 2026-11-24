@@ -16,8 +16,8 @@ from .attacks import ATTACKS, OWASP, Outcome, Probe
 TARGET = os.environ.get("CIPHER_TARGET", "https://127.0.0.1")          # Apache on this server's own address
 HOST = os.environ.get("CIPHER_HOST", "tuckerpaymentprocessing.com")
 REPO = os.environ.get("CIPHER_REPO", "/opt/tucker")
-PACE_SECONDS = float(os.environ.get("CIPHER_PACE", "0.9"))             # a beat between attacks so people can follow
-MAX_SECONDS = 180
+PACE_SECONDS = float(os.environ.get("CIPHER_PACE", "1.8"))             # a beat between attacks so people can read along
+MAX_SECONDS = 300
 MAX_REQUESTS = 200
 KEEP_SECONDS = 3600
 
