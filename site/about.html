@@ -9,10 +9,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About Us - Tucker Payment Processing</title>
   <meta name="description" content="How Tucker Payment Processing is built: the architecture, the AI governance and security controls, the AI policies, and the open-source code.">
-  <link rel="stylesheet" href="assets/site.css?v=20261124h">
-  <link rel="stylesheet" href="assets/chat.css?v=20261124h">
-  <link rel="stylesheet" href="assets/about.css?v=20261124h">
-  <link rel="stylesheet" href="assets/tour.css?v=20261124h">
+  <link rel="stylesheet" href="assets/site.css?v=20261124i">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124i">
+  <link rel="stylesheet" href="assets/about.css?v=20261124i">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124i">
 </head>
 <body class="home-page">
   <header class="top">
@@ -111,6 +111,33 @@
       </ul>
     </section>
 
+    <section id="about-scans" class="card">
+      <h2>Our site's scorecard</h2>
+      <p>Don't just take our word for it. On November 24, 2026 the live site was tested by independent, public security
+        scanners. The first round found three gaps; they were fixed the same afternoon and every scan was run again.
+        Each report is a PDF you can download, and each has a link to run the same scan yourself.</p>
+      <div class="scan-table">
+        <table>
+          <thead><tr><th>Independent scanner</th><th>What it checks</th><th>Before</th><th>Grade</th><th>Results</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Qualys SSL Labs</strong></td><td>HTTPS and TLS configuration</td><td class="was">B</td><td class="now">A+</td>
+              <td><a href="scans/2026-11-24/ssl-labs.pdf">PDF</a> &middot; <a href="https://www.ssllabs.com/ssltest/analyze.html?d=tuckerpaymentprocessing.com&amp;hideResults=on">Re-test</a></td></tr>
+            <tr><td><strong>Internet.nl</strong></td><td>IPv6, DNSSEC, TLS, headers, security.txt, routing</td><td class="was">75%</td><td class="now">96%</td>
+              <td><a href="scans/2026-11-24/internet-nl.pdf">PDF</a> &middot; <a href="https://internet.nl/site/tuckerpaymentprocessing.com/4434911/">Saved result</a></td></tr>
+            <tr><td><strong>Mozilla HTTP Observatory</strong></td><td>Web security best practices (CSP, HSTS, SRI, cookies)</td><td>&ndash;</td><td class="now">A+</td>
+              <td><a href="scans/2026-11-24/mozilla-observatory.pdf">PDF</a> &middot; <a href="https://developer.mozilla.org/en-US/observatory/analyze?host=tuckerpaymentprocessing.com">Re-test</a></td></tr>
+            <tr><td><strong>SecurityHeaders.com</strong></td><td>Browser security headers</td><td>A+</td><td class="now">A+</td>
+              <td><a href="scans/2026-11-24/securityheaders.pdf">PDF</a> &middot; <a href="https://securityheaders.com/?q=https%3A%2F%2Ftuckerpaymentprocessing.com%2F&amp;hide=on&amp;followRedirects=on">Re-test</a></td></tr>
+            <tr><td><strong>Sucuri SiteCheck</strong></td><td>Malware and blocklists</td><td>Clean</td><td class="now">Clean</td>
+              <td><a href="scans/2026-11-24/sucuri-sitecheck.pdf">PDF</a> &middot; <a href="https://sitecheck.sucuri.net/results/https/tuckerpaymentprocessing.com">Re-test</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Fixed the same day:</strong> old TLS 1.0/1.1 turned off, DNSSEC enabled, CAA records added and a
+        <a href="/.well-known/security.txt">security.txt</a> published for researchers.
+        <a class="scan-all" href="scans/2026-11-24/summary.pdf">Download the summary (PDF)</a></p>
+    </section>
+
     <section id="about-code" class="card">
       <h2>Dig into the code</h2>
       <p>Everything is open to read on GitHub. Security that only works while the code is secret isn't security. Good places to start:</p>
@@ -136,6 +163,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261124h" defer></script>
+  <script src="assets/tour.js?v=20261124i" defer></script>
 </body>
 </html>
