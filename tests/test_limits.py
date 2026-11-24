@@ -123,3 +123,16 @@ def test_fair_share_tightens_when_the_day_is_busy(admin):
         assert spend.fair_share(ip)[0] is True
     ok, why = spend.fair_share(ip)
     assert ok is False and "busy" in why
+
+
+def test_alerts_fire_once_per_day_and_never_show_raw_ips(admin, caplog):
+    """A limit biting writes one TUCKER_ALERT line (for the owner's email alert), only once a day,
+    with an anonymous network code instead of the IP address."""
+    import logging
+    from app import alerts
+    ip = "198.51.100.123"
+    with caplog.at_level(logging.WARNING, logger="tucker.alerts"):
+        assert alerts.raise_once("fair_share", "test", ip) is True
+        assert alerts.raise_once("fair_share", "test", ip) is False      # deduplicated
+    lines = [r.getMessage() for r in caplog.records if "TUCKER_ALERT" in r.getMessage()]
+    assert len(lines) == 1 and "kind=fair_share" in lines[0] and ip not in lines[0]
