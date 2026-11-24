@@ -1,6 +1,6 @@
-# Tucker Payment Processing
+<p align="center"><a href="https://tuckerpaymentprocessing.com"><img src="docs/banner.png" alt="Tucker Payment Processing: An AI Governance, Technology and Security Demonstration" width="100%"></a></p>
 
-**An AI Governance, Technology and Security Demonstration** · https://tuckerpaymentprocessing.com
+**Live site:** https://tuckerpaymentprocessing.com
 
 Tucker Payment Processing is a **fictional** payment company. Its customer-support agent is Tucker (a real cocker spaniel), an AI assistant built to show how a customer-facing AI should be governed and secured: what it is allowed to do, what it is never allowed to do, and how every guardrail is visible in real time.
 
