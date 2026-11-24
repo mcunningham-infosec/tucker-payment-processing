@@ -22,7 +22,7 @@ import urllib.request
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel
 
-from .. import alerts, limits
+from .. import alerts, db, limits
 from .. import session as sessions
 from . import detect, runner, soc
 
@@ -162,6 +162,11 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                 note = ("The source stopped before the block rule fired (some attacks were not blocked). "
                         "The run is over: write the closing report and flag every gap.")
             _checkin(st, "final", note)
+            s = st.get("summary") or {}
+            db.record_event("system", "cipher_run",            # one line for the owner's daily report
+                            f"{s.get('held', 0)}/{s.get('attacks', 0)} held"
+                            + (f"; GOT THROUGH: {', '.join(s['failed'][:4])}" if s.get("failed") else "")
+                            + ("; source blocked by rule" if st.get("blocked_source") else ""))
             now = time.time()
             # Enforced by policy no matter what the AI said (the block was recorded when the button was pressed).
             st["actions"].append({"t": now, "actor": "Policy (enforced by code)", "action": "block_attacker_24h",
