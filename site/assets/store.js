@@ -234,6 +234,7 @@
     post("api/checkout", body)
       .then(function (d) {
         showSteps(d.events);
+        if (window.tuckerChatStatus && "verified_as" in d) { window.tuckerChatStatus(d.verified_as); }
         renderOrder(d.order);
         setResult(d.ok, d.ok ? d.message + " Total $" + d.order.total + " on Tucker's " + d.paid_with + "." : d.message);
         if (d.ok) {
@@ -270,8 +271,17 @@
         d.shoppers.forEach(function (s) {
           var o = el("option", "", s.name + " (" + s.customer_ref + ")"); o.value = s.customer_ref; sel.appendChild(o);
         });
-        showShipTo();
-      });
+        // If this browser verified as a customer in Tucker's chat, shop as them by default.
+        return fetch("api/whoami", { credentials: "same-origin" }).then(function (r) { return r.json(); })
+          .then(function (w) {
+            if (w.customer_ref && shopperList.some(function (s) { return s.customer_ref === w.customer_ref; })) {
+              sel.value = w.customer_ref;
+              addStep("authz", "ok", "Shopping as " + w.verified_as + ", the customer you verified as",
+                      "Pre-selected from your verified chat session. Picking someone else signs you out of " + w.verified_as + "'s identity.");
+            }
+          }).catch(function () {});
+      })
+      .then(function () { showShipTo(); });
   }
 
   // Wire up the checkout page.

@@ -21,7 +21,7 @@
     session: "Session"
   };
 
-  var log, form, msg, send, count, steps, intro, status;
+  var log, form, msg, send, count, steps, intro, status, defaultStatus;
 
   // Create an element with a class and (optionally) plain text. Text is never parsed as HTML.
   function el(tag, cls, text) {
@@ -112,7 +112,7 @@
         showSteps(data.events);
         if (data.napping) { setStatus("taking a nap (spending cap reached)", true); }
         else if (data.verified_as) { setStatus("helping " + data.verified_as + " (verified)"); }
-        else { setStatus("AI support agent · online"); }
+        else { setStatus(defaultStatus); }
       })
       .catch(function () {
         typing.remove();
@@ -133,7 +133,7 @@
         showSteps([{ type: "session", status: "ok", label: "Chat reset: the server forgot this conversation",
                      detail: "Your verified identity and chat history were dropped and the session cookie was deleted." }]);
         intro.textContent = "What your last click did:";
-        setStatus("AI support agent · online");
+        setStatus(defaultStatus);
       });
   }
 
@@ -149,6 +149,11 @@
     } catch (e) { return []; }
   }
 
+  // Let other scripts (the checkout) update the status line when the verified person changes.
+  window.tuckerChatStatus = function (verifiedAs) {
+    if (status) { setStatus(verifiedAs ? "helping " + verifiedAs + " (verified)" : defaultStatus); }
+  };
+
   function init() {
     var box = document.querySelector("[data-chat-page]");
     page = box ? box.getAttribute("data-chat-page") : "home";
@@ -160,6 +165,12 @@
     steps = document.getElementById("steps");
     intro = document.getElementById("bts-intro");
     status = document.getElementById("status");
+    defaultStatus = status ? status.textContent : "";
+    // Same verified person on every page: ask the server who this browser is verified as (name only).
+    fetch("api/whoami", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (d) { if (d.verified_as) { setStatus("helping " + d.verified_as + " (verified)"); } })
+      .catch(function () { /* status line just stays as it is */ });
 
     form.addEventListener("submit", function (e) { e.preventDefault(); sendMessage(msg.value); });
     // Enter sends; Shift+Enter makes a new line.
