@@ -50,6 +50,13 @@ def get_or_create(session_id: str | None) -> Session:
     return s
 
 
+def rotate(s: Session):
+    """Give a session a brand-new random id (used right after identity verification), dropping the old id."""
+    _SESSIONS.pop(s.id, None)
+    s.id = secrets.token_urlsafe(24)
+    _SESSIONS[s.id] = s
+
+
 def reset(session_id: str | None):
     """Forget a visitor's session (the 'start over' button)."""
     _SESSIONS.pop(session_id or "", None)

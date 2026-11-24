@@ -15,6 +15,7 @@ SameSite=Lax, and it expires when the browser closes.
 from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
 
+from . import cipher
 from . import session as sessions
 from . import store
 from .chat import handle_message
@@ -44,7 +45,12 @@ class ChatIn(BaseModel):
 
 def client_ip(request: Request) -> str:
     """The visitor's IP as seen by the app (Apache forwards it; uvicorn trusts only the local proxy).
-    Used only to count limits as an anonymous daily code; never stored or logged by the app."""
+    Used only to count limits as an anonymous daily code; never stored or logged by the app.
+    Cipher's demo runs come from inside the server; each run carries a signed run id instead, so its
+    limits are counted on their own and can't lock out real visitors (or each other)."""
+    run_id = cipher.verify_run_header(request.headers.get(cipher.HEADER))
+    if run_id:
+        return f"cipher-run:{run_id}"
     return request.client.host if request.client else ""
 
 
@@ -63,8 +69,12 @@ def health():
 def chat(body: ChatIn, request: Request, response: Response):
     """Handle one chat message for this visitor's session."""
     s = sessions.get_or_create(request.cookies.get(COOKIE))
+    was_verified = s.customer_id is not None
+    result = handle_message(s, body.message[:2000], get_llm(), client_ip(request), body.page[:10], body.cart[:20])
+    if not was_verified and s.customer_id is not None:
+        sessions.rotate(s)        # new session id the moment the visitor verifies (stops session fixation)
     _set_cookie(response, s.id)
-    return handle_message(s, body.message[:2000], get_llm(), client_ip(request), body.page[:10], body.cart[:20])
+    return result
 
 
 @app.post("/api/reset")

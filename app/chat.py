@@ -87,8 +87,11 @@ def _ip_limited(client_ip):
     """Cookie-proof limit: messages per minute and per day from one IP (counted as an anonymous code)."""
     if not client_ip:
         return None
-    if limits.over_limit("chat_ip_min", client_ip, SETTINGS.chat_per_ip_per_minute, 60):
-        return f"more than {SETTINGS.chat_per_ip_per_minute} messages a minute from your network"
+    per_min = SETTINGS.chat_per_ip_per_minute
+    if client_ip.startswith("cipher-run:"):
+        per_min *= 3     # one Cipher demo run sends ~20 chats in a minute; it's signed by the server and runs alone
+    if limits.over_limit("chat_ip_min", client_ip, per_min, 60):
+        return f"more than {per_min} messages a minute from your network"
     if limits.over_limit("chat_ip_day", client_ip, SETTINGS.chat_per_ip_per_day, 86400):
         return f"daily limit of {SETTINGS.chat_per_ip_per_day} messages from your network reached"
     limits.record("chat_ip_min", client_ip)
