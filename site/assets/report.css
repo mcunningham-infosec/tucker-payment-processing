@@ -7,7 +7,15 @@ body { margin:0; background:#e9edf2; color:var(--ink); font:14px/1.5 "Segoe UI",
 .toolbar a:hover, .toolbar button:hover { filter:brightness(1.1); }
 .toolbar button { font-size:.9rem; line-height:1.2; font-family:inherit; background:var(--brand); color:#fff; border:0; border-radius:8px; padding:9px 18px; font-weight:700; cursor:pointer; }
 .paper { max-width:900px; margin:12px auto 32px; background:#fff; padding:40px 48px; box-shadow:0 2px 12px rgba(0,0,0,.08); border-radius:6px; }
-@media (max-width:700px) { .paper { padding:22px 16px; } }
+@media (max-width:700px) {
+  .paper { padding:22px 14px; }
+  .rhead { flex-direction:column; } .rhead .meta { text-align:left; }
+  .paper table:not(.kv) { display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }   /* wide tables scroll inside the page */
+  table.kv { table-layout:fixed; } table.kv th { width:38%; }
+  table { font-size:.8rem; }
+  .toolbar { gap:10px; }
+}
+th, td { overflow-wrap:break-word; }
 
 .rhead { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; border-bottom:3px solid var(--brand); padding-bottom:14px; }
 .rhead h1 { margin:0; font-size:1.5rem; }
