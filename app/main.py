@@ -30,6 +30,14 @@ _llm = None
 
 
 @app.middleware("http")
+async def refuse_blocked_sources(request: Request, call_next):
+    """A Cipher run the SOC's block rule shut down gets HTTP 403 on everything, enforced here by code."""
+    if cipher.is_blocked(cipher.verify_run_header(request.headers.get(cipher.HEADER))):
+        return JSONResponse({"detail": "Blocked by the AI SOC: this source was shut down."}, status_code=403)
+    return await call_next(request)
+
+
+@app.middleware("http")
 async def limit_body_size(request: Request, call_next):
     """Refuse oversized requests BEFORE reading them, so a flood of huge bodies can't exhaust memory.
     (Found by Cipher: Apache's limit wasn't applied to requests it forwards to the app. Now both layers check.)"""
