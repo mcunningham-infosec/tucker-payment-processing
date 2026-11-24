@@ -90,8 +90,10 @@ app.include_router(cipher_api.setup(lambda: get_llm(), client_ip, COOKIE, _set_c
 
 @app.get("/api/health")
 def health():
-    """Liveness check used by monitoring."""
-    return {"ok": True, "model": SETTINGS.gemini_model}
+    """Liveness check used by monitoring. cipher_busy tells deploy/update.sh to wait for an attack run in
+    progress before restarting the app (runs live in memory, so a restart would cut one off)."""
+    from .cipher import runner
+    return {"ok": True, "model": SETTINGS.gemini_model, "cipher_busy": runner.busy()}
 
 
 @app.post("/api/chat")
