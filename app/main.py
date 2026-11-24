@@ -74,6 +74,10 @@ def _set_cookie(response: Response, sid: str):
     response.set_cookie(COOKIE, sid, httponly=True, secure=True, samesite="lax", path="/api")
 
 
+from .cipher import api as cipher_api   # noqa: E402  (needs the helpers defined above)
+app.include_router(cipher_api.setup(lambda: get_llm(), client_ip, COOKIE, _set_cookie))
+
+
 @app.get("/api/health")
 def health():
     """Liveness check used by monitoring."""

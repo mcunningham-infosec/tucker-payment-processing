@@ -21,6 +21,7 @@ KINDS = {
     "month_50": "Half of this month's AI budget is used",
     "month_80": "80% of this month's AI budget is used",
     "zip_lockout": "A network was locked out for guessing customer ZIP codes",
+    "cipher_gap": "Cipher's live attack run got past a defense: fix it",
 }
 
 
