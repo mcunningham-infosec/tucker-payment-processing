@@ -2,7 +2,7 @@
   "displayName": "Tucker site: owner alert",
   "documentation": {
     "mimeType": "text/markdown",
-    "content": "A limit on tuckerpaymentprocessing.com started biting. The log line says which one (kind=...): fair_share, busy_mode, nap, month_50, month_80, zip_lockout or test. Each kind is sent at most once a day. Limits are set in /etc/tucker/tucker.env (see app/config.py); restart the app after changing them."
+    "content": "A limit on tuckerpaymentprocessing.com started biting. The log line says which one (kind=...): fair_share, busy_mode, nap, month_50, month_80, zip_lockout, cipher_gap (Cipher got past a defense: fix it) or test. Each kind is sent at most once a day. Limits are set in /etc/tucker/tucker.env (see app/config.py); restart the app after changing them."
   },
   "combiner": "OR",
   "conditions": [
