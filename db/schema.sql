@@ -77,7 +77,7 @@ CREATE TABLE demo.order_items (
     line_total  NUMERIC(10,2) NOT NULL
 );
 
--- Card transactions, numbered 1-50 so visitors can ask about "transaction 12". Each one is a
+-- Card transactions, numbered 1-30 (6 per customer) so visitors can ask about "transaction 12". Each one is a
 -- Tucker's Treats purchase: amount = that order's total.
 CREATE TABLE demo.transactions (
     id           INT PRIMARY KEY,
