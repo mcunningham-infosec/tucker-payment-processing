@@ -60,6 +60,8 @@
       say: "Michael wrote the company's policies first, then built me to follow them. You can read every one on the AI Policies tab." },
     { page: "about", spot: "#about-tech",
       say: "The technology underneath: Google Cloud, Gemini, Cloudflare, zero-trust admin access and least privilege everywhere." },
+    { page: "about", spot: "#about-scans",
+      say: "Don't just take our word for it: independent scanners tested this site. The first round found three gaps, Michael fixed them the same day, and the reports went from B to A+. Every report is here as a PDF, with a link to run the scan yourself." },
     { page: "about", spot: "#about-code",
       say: "Want to dig deeper? Every line of code is open on GitHub. These are good places to start." },
     { page: "about", spot: "#about-who", last: true,

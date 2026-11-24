@@ -38,3 +38,13 @@
 .policy .source { margin-top:18px; font-size:.85rem; }
 .policy-list li { margin:12px 0; }
 .who .seeking { font-size:2em; line-height:1.25; margin:14px 0; }
+
+/* Independent security scans table (About Us). Scrolls sideways on small phones instead of squashing. */
+.scan-table { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0; }
+.scan-table table { width:100%; border-collapse:collapse; font-size:.92rem; min-width:560px; }
+.scan-table th, .scan-table td { text-align:left; padding:8px 10px; border-bottom:1px solid #eee3d3; vertical-align:top; }
+.scan-table th { background:#f5f8ff; color:var(--blue); }
+.scan-table td.was { color:#b3261e; font-weight:800; }
+.scan-table td.now { color:#1e7d46; font-weight:800; font-size:1.05rem; }
+.scan-all { display:inline-block; margin-left:6px; background:var(--blue); color:#fff !important; text-decoration:none; font-weight:700;
+            border-radius:999px; padding:5px 14px; font-size:.88rem; }
