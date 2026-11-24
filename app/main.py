@@ -158,10 +158,13 @@ def checkout(body: CheckoutIn, request: Request, response: Response):
             # Picking a shopper proves nothing, so it must never GRANT access to that customer's account.
             # Shopping as someone else signs the visitor out of the identity they verified instead.
             was = s.customer_first_name
+            bought_as = next((x["name"].split()[0] for x in store.shoppers() if x["customer_ref"] == shopper), shopper)
             sessions.sign_out_customer(s)
+            note = (f"You were verified as {was} but made this purchase as {bought_as}, so you've been signed out. "
+                    "Hit the home page to verify again.")
+            result["message"] = result["message"] + " " + note
             events.append({"type": "authz", "status": "ok",
-                           "label": f"Signed out of {was}'s verified identity",
-                           "detail": f"You shopped as {shopper}. Choosing a shopper isn't proof of identity, so Tucker "
-                                     "won't treat you as that customer either. To see an account again, verify in the "
-                                     "home page chat with the customer number and ZIP code."})
+                           "label": f"Verified as {was}, bought as {bought_as}: signed out",
+                           "detail": "Choosing a shopper isn't proof of identity, so it never grants access to that "
+                                     "customer's account. Verify again in the home page chat (customer number + ZIP)."})
     return {**result, "events": events, "verified_as": s.customer_first_name}
