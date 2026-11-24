@@ -19,7 +19,9 @@ INSERT INTO demo.products (sku, name, kind, price_usd, blurb, image, tucker_rati
  ('TT-103', 'Squeaky Credit Card',    'toy',     6.99, 'The only card Tucker is allowed to hold. Squeaks, never charges.',    'squeaky-card.svg', 4, 3),
  ('TT-104', 'Tennis Balls (3-pack)',  'toy',     5.99, 'Extra fuzzy. One for fetch, one for chewing, one for under the couch.', 'tennis-balls.svg', 5, 4),
  ('TT-105', 'Rope Tug Toy',           'toy',     9.99, 'Braided cotton rope for tug-of-war. Tucker always wins.',             'rope.svg',         4, 5),
- ('TT-106', 'Cozy Nap Pillow',        'comfort', 24.99, 'For when the spending cap kicks in and Tucker takes a nap.',          'nap-pillow.svg',   5, 6);
+ ('TT-106', 'Cozy Nap Pillow',        'comfort', 24.99, 'For when the spending cap kicks in and Tucker takes a nap.',          'nap-pillow.svg',   5, 6),
+ ('TT-107', 'Chicken Jerky Bites',    'treat',   9.49, 'Slow-dried chicken. Tucker will sit, stay and roll over for these.',   'jerky.svg',        5, 7),
+ ('TT-108', 'Plush Squirrel',         'toy',    11.99, 'The squirrel that keeps distracting Tucker. Now he can finally catch it.', 'squirrel.svg', 5, 8);
 
 GRANT SELECT ON demo.products TO tucker_app;
 
