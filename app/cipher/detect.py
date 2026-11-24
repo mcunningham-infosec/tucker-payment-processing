@@ -12,6 +12,8 @@ The counts come from the real defense responses to each request (a 403, a refuse
 keyed to the source's signed identity. They don't come from Cipher's script: if a defense fails, that
 attack isn't counted as blocked (it's escalated as a gap instead), and the block rule only fires on what
 was really stopped.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import os
 import time

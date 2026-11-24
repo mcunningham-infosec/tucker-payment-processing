@@ -4,6 +4,8 @@ runner.py - plays Cipher's attack list against this site and records what happen
 One run at a time (a lock), a hard time limit, and a request cap. The page polls the run's progress, so
 the three boxes (Cipher's Attack, Tucker's Defense, AI SOC Squirrel) fill in live.
 Runs are kept in memory only, for one hour, and hold no visitor data beyond their own results.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import os
 import threading
@@ -21,17 +23,20 @@ MAX_SECONDS = 300
 MAX_REQUESTS = 200
 KEEP_SECONDS = 3600
 
-_RUNS: dict = {}
-_ACTIVE = threading.Lock()
+_RUNS: dict = {}                    # run id -> live state the Lair page polls (memory only, kept one hour)
+_ACTIVE = threading.Lock()          # held while a run is in progress: only one attack run at a time, site-wide
 
 
 def _tidy():
+    """Forget runs older than an hour (and their blocks), so memory never grows."""
     cutoff = time.time() - KEEP_SECONDS
     for rid in [r for r, s in _RUNS.items() if s["started"] < cutoff]:
         _RUNS.pop(rid, None)
+        cipher.forget_run(rid)
 
 
 def busy() -> bool:
+    """True while some visitor's run is in progress (the start button then says to wait)."""
     return _ACTIVE.locked()
 
 
@@ -51,16 +56,20 @@ def start(on_alert=None, on_block=None, on_done=None, pace=None) -> str | None:
 
 
 def state(run_id: str) -> dict | None:
+    """The live state of one run (attacks so far, SOC check-ins, actions), or None if unknown or expired."""
     return _RUNS.get(run_id)
 
 
 def _run(run_id, token, on_alert, on_block, on_done, pace):
+    """The attack loop, in a background thread. For each attack: run it, record the defense's real result, let
+    the detection rules count it, and hand off to the AI SOC when a rule fires (alert = investigate in parallel,
+    block = shut this run's source down and prove the block holds). Always releases the one-run lock."""
     st = _RUNS[run_id]
     ctx = {"started": st["started"], "repo": REPO, "run_id": run_id}
     try:
         probe = Probe(TARGET, HOST, token, cipher.HEADER)
         investigation = None
-        for i, a in enumerate(ATTACKS):
+        for a in ATTACKS:
             if time.time() - st["started"] > MAX_SECONDS or probe.requests > MAX_REQUESTS:
                 st["attacks"].append({"id": "limit", "owasp": "", "title": "Run stopped at its safety limit",
                                       "says": "", "defense": "", "held": True, "check": True, "evidence": ""})

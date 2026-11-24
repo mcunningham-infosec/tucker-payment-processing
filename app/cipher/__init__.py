@@ -8,6 +8,8 @@ His attack list and his target are fixed in code: a visitor can't choose payload
 Each run gets its own signed identity (X-Cipher-Run header). The app counts that run's limits on their
 own, so one visitor's run can't lock out the next one. The signature uses the server's secret (HASH_SALT),
 so nobody outside can forge it to dodge their own limits.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import hashlib
 import hmac
@@ -19,6 +21,7 @@ HEADER = "x-cipher-run"
 
 
 def _sign(run_id: str) -> str:
+    """HMAC-SHA256 of the run id with the server's secret: only this server can produce a valid signature."""
     return hmac.new(SETTINGS.hash_salt.encode(), f"cipher-run:{run_id}".encode(), hashlib.sha256).hexdigest()[:32]
 
 
@@ -32,10 +35,17 @@ _BLOCKED: set = set()      # run sources the SOC's block rule shut down (in memo
 
 
 def block_run(run_id: str):
+    """The SOC's block rule fired: from now on the app refuses every request from this run (HTTP 403)."""
     _BLOCKED.add(run_id)
 
 
+def forget_run(run_id: str):
+    """Drop an expired run's block (its signed token is useless after the run ends, so nothing is unblocked early)."""
+    _BLOCKED.discard(run_id)
+
+
 def is_blocked(run_id: str | None) -> bool:
+    """True if this run was shut down by the block rule. Checked by middleware in main.py on every request."""
     return bool(run_id) and run_id in _BLOCKED
 
 

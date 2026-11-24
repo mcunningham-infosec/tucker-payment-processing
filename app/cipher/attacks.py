@@ -13,12 +13,13 @@ Rules Cipher follows (and the code enforces):
   - Payloads in the visitor's report are described or defanged, never raw exploit strings.
 
 Voice: Cipher is cold, precise and condescending (an original villain, inspired by a famous movie agent).
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import json as jsonlib
 import re
 import socket
 import ssl
-import time
 from dataclasses import dataclass, field
 from urllib.parse import urlsplit
 
@@ -43,6 +44,7 @@ CA_FILE = "/etc/ssl/certs/ca-certificates.crt"
 
 @dataclass
 class Outcome:
+    """What one attack found: did the defense hold, and the evidence (shown to the visitor, defanged)."""
     held: bool                 # True = the defense held (attack failed)
     evidence: str              # what we observed, in plain English
     check: bool = False        # True for "checks" (A03, A09) rather than attacks
@@ -51,11 +53,13 @@ class Outcome:
 
 @dataclass
 class Resp:
+    """A minimal HTTP response: status, headers and body text."""
     status: int
     headers: dict
     text: str
 
     def json(self):
+        """The body as JSON, or {} if it isn't JSON (a refused request often returns an HTML error page)."""
         try:
             return jsonlib.loads(self.text)
         except ValueError:
@@ -81,6 +85,8 @@ class Probe:
         self.requests = 0
 
     def req(self, method, path, body=None, headers=None, keep_cookie=True, raw=False) -> Resp:
+        """Send one request to this site. Every request carries the run's signed X-Cipher-Run header (so the
+        app can count and, if the SOC rule fires, block this run) and an honest Cipher user agent."""
         h = {"Host": self.host, "User-Agent": "Cipher/1.0 (Tucker's Treats live attack demo)", **self.run}
         if self.cookie and keep_cookie:
             h["Cookie"] = f"tucker_session={self.cookie}"
@@ -111,14 +117,17 @@ def _scalar(row):
 
 
 def _labels(data: dict) -> list:
+    """The chat's Behind-the-Scenes events as short 'type:status:label' strings, for evidence."""
     return [f"{e.get('type')}:{e.get('status')}:{e.get('label', '')}" for e in data.get("events", [])]
 
 
 def _denied(data: dict, kind: str) -> bool:
+    """True if a chat reply's events show the given guardrail step denied the request."""
     return any(e.get("type") == kind and e.get("status") == "denied" for e in data.get("events", []))
 
 
 def _ai_calls(data: dict) -> int:
+    """How many times a chat request actually reached the AI model (most attacks are stopped before that)."""
     return sum(1 for e in data.get("events", []) if e.get("type") == "model")
 
 
@@ -129,6 +138,7 @@ LEAK_CANARIES = [line.strip()[:40] for line in SYSTEM_PROMPT.splitlines() if len
 
 @dataclass
 class Attack:
+    """One registered attack: its OWASP category, what each box on the Lair page shows, and the function."""
     id: str
     owasp: str
     title: str          # short, for the Cipher box
@@ -141,6 +151,7 @@ ATTACKS: list[Attack] = []
 
 
 def attack(id, owasp, title, says, defense):
+    """Decorator that registers an attack function in ATTACKS, in the order the attacks are run."""
     def wrap(fn):
         ATTACKS.append(Attack(id, owasp, title, says, defense, fn))
         return fn
@@ -297,8 +308,14 @@ def _(p, ctx):
 
 # ---------------------------------------------------------------- A04 Cryptographic Failures
 def _old_tls(p, version):
+    """Try to connect with an old TLS version. Returns (held, evidence); held=None if this machine can't even
+    offer that version.
+
+    Security scanners (e.g. CodeQL "use of insecure SSL/TLS version") flag this function, and they're right
+    that it uses weak TLS: that is the point. It is Cipher's downgrade ATTACK, proving the server refuses
+    TLS 1.0 and 1.1. It only ever connects to this site itself and never sends or receives any data."""
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    ctx.check_hostname, ctx.verify_mode = False, ssl.CERT_NONE
+    ctx.check_hostname, ctx.verify_mode = False, ssl.CERT_NONE   # attack probe: no data is exchanged
     try:
         ctx.set_ciphers("ALL:@SECLEVEL=0")
         ctx.minimum_version = ctx.maximum_version = version

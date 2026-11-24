@@ -13,6 +13,8 @@ How it works (and why it's bounded on purpose - OWASP LLM06 "Excessive Agency"):
   4. Its answer must be a small JSON object; Python validates it and shows only plain text.
   5. The 24-hour block on the attacker is enforced by Python no matter what the AI says or whether it
      answers at all. Security never depends on the AI.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import json
 import re
@@ -172,8 +174,8 @@ def check_in(llm, attacks: list, final: bool, note: str = "") -> dict:
             messages.append({"role": "model", "text": "", "raw": getattr(turn, "raw", None)})
             for name, args in turn.tool_calls:
                 messages.append({"role": "tool", "name": name, "result": _run_tool(name, args, attacks, proposals, final)})
-    except Exception:
-        pass
+    except Exception as e:      # any AI problem (outage, budget, bad output) -> plain-facts report, never a crash
+        print(f"AI SOC check-in fell back to plain facts: {type(e).__name__}", flush=True)
     rep = fallback(attacks, final)
     rep["proposals"], rep["ai_calls"] = proposals, calls
     return rep
@@ -190,6 +192,7 @@ def _fix_counts(text: str, data: dict) -> tuple[str, int]:
     """Replace any wrong category count the AI states with the real one. Returns (text, corrections)."""
     real, n = data.get("categories_seen"), 0
     def sub(m):
+        """One stated count: keep it if it's right, swap in the real number if not."""
         nonlocal n
         if real is not None and int(m.group(1)) != real:
             n += 1

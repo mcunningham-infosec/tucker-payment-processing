@@ -9,8 +9,10 @@ Abuse controls, all enforced here in Python before anything runs:
   - the block is recorded the moment the button is pressed, so rapid presses can't start a second run
   - one run at a time site-wide, and at most CIPHER_RUNS_PER_DAY runs a day site-wide (protects the AI budget)
   - the visitor sends nothing but the button press: no payloads, no targets
-The visitor's own IP (and country, once Cloudflare is in front) is shown back ONLY to that visitor in their
-report, kept in memory for an hour, and never stored.
+The visitor's own IP and rough location (from Cloudflare's visitor-location headers) are shown back ONLY to that
+visitor in their report, kept in memory for an hour, never stored and never sent to the AI.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import json
 import os
@@ -45,6 +47,7 @@ def defang(text: str) -> str:
 
 
 def _safe_attack(a: dict) -> dict:
+    """A copy of one attack record with every visible text field defanged for display."""
     out = dict(a)
     for k in ("title", "says", "evidence", "defense"):
         out[k] = defang(out.get(k, ""))
@@ -52,6 +55,7 @@ def _safe_attack(a: dict) -> dict:
 
 
 def _safe_soc(c: dict) -> dict:
+    """A copy of one AI SOC check-in with the AI's own words defanged too (it may quote attack payloads)."""
     out = dict(c)
     out["headline"] = defang(c.get("headline", ""))
     out["lines"] = [defang(x) for x in c.get("lines", [])]
@@ -60,6 +64,7 @@ def _safe_soc(c: dict) -> dict:
 
 
 class StartIn(BaseModel):
+    """The only thing the browser sends to start a run: the human-check token. No payloads, no targets."""
     turnstile: str = ""          # Cloudflare Turnstile token from the browser (proves a human pressed the button)
 
 
@@ -80,23 +85,25 @@ def _human(token: str, ip: str) -> bool:
     if ip and not ip.startswith("cipher-run:"):
         form["remoteip"] = ip
     try:
+        # Fixed HTTPS address (never visitor-supplied), so this outbound call can't be redirected elsewhere.
         req = urllib.request.Request("https://challenges.cloudflare.com/turnstile/v0/siteverify",
                                      data=urllib.parse.urlencode(form).encode(), method="POST")
-        with urllib.request.urlopen(req, timeout=6) as r:
+        with urllib.request.urlopen(req, timeout=6) as r:   # noqa: S310 - fixed https:// URL above
             return bool(json.loads(r.read(8192)).get("success"))
     except Exception:
         return False
 
 
 def _open() -> bool:
-    """Launch switch: the attack button works only when CIPHER_ENABLED=1 in /etc/tucker/tucker.env.
-    (Off until Cloudflare is in front of the site.)"""
+    """Launch switch: the attack button works only when CIPHER_ENABLED=1 in /etc/tucker/tucker.env
+    (a kill switch: set it to 0 and restart the app to close the Lair instantly)."""
     return os.environ.get("CIPHER_ENABLED", "0") == "1"
 
 
 def _blocked(cookie_id: str, ip: str) -> bool:
-    # Testing switch: CIPHER_ONE_PER_DAY=0 in /etc/tucker/tucker.env lifts the 1-run-per-24h rule while the
-    # owner tests. LAUNCH CHECKLIST (last step): remove it / set it to 1.
+    """True if this browser (session cookie) OR this network (IP) already ran Cipher in the last 24 hours.
+    Testing switch: CIPHER_ONE_PER_DAY=0 in /etc/tucker/tucker.env lifts the rule while the owner tests.
+    LAUNCH CHECKLIST (last step): remove it / set it to 1."""
     if os.environ.get("CIPHER_ONE_PER_DAY", "1") == "0":
         return False
     return (limits.over_limit("cipher_run_cookie", cookie_id, 1, DAY, daily=False) or
@@ -108,6 +115,9 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
 
     @router.post("/api/cipher/start")
     def start(request: Request, response: Response, body: StartIn | None = None):
+        """The button press. Every gate is checked in order, cheapest first, before anything runs:
+        launch switch, a run already in progress, the 24-hour block, the site-wide daily cap, one run at a
+        time, and finally the human check (Cloudflare Turnstile)."""
         if not _open():
             return {"status": "closed", "message": "Cipher's Lair opens soon. He's still sharpening his claws."}
         s = sessions.get_or_create(request.cookies.get(cookie_name))
@@ -135,6 +145,8 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         limits.record("cipher_run_site", "site", daily=False)
 
         def _checkin(st, when, note=""):
+            """Ask the AI SOC Squirrel to look at the run so far ('alert', read-only) or close it out ('final',
+            may propose actions). Its proposals are recorded with the policy decision code made on each."""
             t = time.time()
             rep = soc.check_in(get_llm(), list(st["attacks"]), final=(when == "final"), note=note)
             st["soc"].append({"when": when, "t": t, **rep})
@@ -143,16 +155,20 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                                       "detail": p["reason"], "outcome": p["policy"]})
 
         def alert(run_id, st):
+            """Detection rule fired at ALERT_AFTER blocked attacks: wake the AI analyst (runs in parallel)."""
             _checkin(st, "alert", f"Detection rule alert_after_{detect.ALERT_AFTER} fired: {st['blocked_count']} "
                                   "blocked attacks from one source. The attack is still running.")
 
         def block(run_id, st):
+            """Detection rule fired at BLOCK_AFTER: record that CODE (not the AI) shut the source down."""
             st["actions"].append({"t": time.time(), "actor": f"Detection rule block_after_{detect.BLOCK_AFTER} (code)",
                                   "action": "block_source",
                                   "detail": f"Source shut down after {st['blocked_count']} blocked attacks: every "
                                             "further request from it gets HTTP 403.", "outcome": "enforced"})
 
         def done(run_id, st):
+            """Run finished: final AI report, one line for the owner's daily report, the 24-hour block, and an
+            owner alert if any defense failed."""
             if st.get("blocked_source"):
                 r = st.get("retry") or {}
                 note = (f"Detection rule block_after_{detect.BLOCK_AFTER} fired after {st['blocked_count']} blocked "
@@ -183,7 +199,7 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
         st = runner.state(run_id)
         # Shown back ONLY to this visitor, by code (never sent to the AI). Location comes from Cloudflare's
-        # visitor-location headers once Cloudflare is in front of the site.
+        # visitor-location headers (the server only accepts traffic from Cloudflare, so these can't be forged).
         h = request.headers
         st["visitor"] = {"ip": ip if ip and not ip.startswith("cipher-run:") else "",
                          "country": h.get("cf-ipcountry", "")[:4], "region": h.get("cf-region", "")[:60],
@@ -193,6 +209,8 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
 
     @router.get("/api/cipher/status")
     def status(request: Request):
+        """This visitor's run, polled by the Lair page about once a second. Only the visitor's own run (found
+        through their session cookie) is ever returned, and every text field is defanged first."""
         s = sessions.peek(request.cookies.get(cookie_name))
         st = runner.state(getattr(s, "cipher_run", None) or "") if s else None
         if not st:

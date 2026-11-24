@@ -5,6 +5,8 @@ cli.py - run Cipher once from the server's command line and print the results (f
                   runuser -u tucker_app -m -- /opt/tucker-venv/bin/python -m app.cipher.cli [--soc]'
 
 --soc also runs the AI SOC Squirrel's two check-ins with the real model (costs a fraction of a cent).
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import sys
 import time
@@ -13,6 +15,8 @@ from . import runner, soc
 
 
 def main():
+    """Run all of Cipher's attacks with no pauses, print HELD/FAIL per attack, the detection rules and, with
+    --soc, the AI SOC Squirrel's report. Useful after any server change: every line should say HELD."""
     use_soc = "--soc" in sys.argv
     llm = None
     if use_soc:
@@ -20,10 +24,12 @@ def main():
         llm = GeminiLLM()
 
     def alert(rid, st):
+        """The alert-stage check-in (only with --soc)."""
         if llm:
             st["soc"].append({"when": "alert", **soc.check_in(llm, list(st["attacks"]), final=False)})
 
     def done(rid, st):
+        """The final check-in (only with --soc)."""
         if llm:
             st["soc"].append({"when": "final", **soc.check_in(llm, list(st["attacks"]), final=True)})
 
