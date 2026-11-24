@@ -10,6 +10,7 @@ import threading
 import time
 
 from .. import cipher
+from . import detect
 from .attacks import ATTACKS, OWASP, Outcome, Probe
 
 TARGET = os.environ.get("CIPHER_TARGET", "https://127.0.0.1")          # Apache on this server's own address
@@ -34,15 +35,16 @@ def busy() -> bool:
     return _ACTIVE.locked()
 
 
-def start(on_halfway=None, on_done=None, pace=None) -> str | None:
+def start(on_alert=None, on_block=None, on_done=None, pace=None) -> str | None:
     """Start a run in the background. Returns its id, or None if another run is in progress."""
     if not _ACTIVE.acquire(blocking=False):
         return None
     _tidy()
     run_id, token = cipher.new_run_token()
     _RUNS[run_id] = {"run_id": run_id, "status": "running", "started": time.time(), "total": len(ATTACKS),
-                     "attacks": [], "soc": [], "actions": [], "summary": None}
-    t = threading.Thread(target=_run, args=(run_id, token, on_halfway, on_done, PACE_SECONDS if pace is None else pace),
+                     "attacks": [], "soc": [], "actions": [], "detections": [], "blocked_count": 0,
+                     "summary": None}
+    t = threading.Thread(target=_run, args=(run_id, token, on_alert, on_block, on_done, PACE_SECONDS if pace is None else pace),
                          daemon=True)
     t.start()
     return run_id
@@ -52,12 +54,11 @@ def state(run_id: str) -> dict | None:
     return _RUNS.get(run_id)
 
 
-def _run(run_id, token, on_halfway, on_done, pace):
+def _run(run_id, token, on_alert, on_block, on_done, pace):
     st = _RUNS[run_id]
     ctx = {"started": st["started"], "repo": REPO, "run_id": run_id}
     try:
         probe = Probe(TARGET, HOST, token, cipher.HEADER)
-        half = len(ATTACKS) // 2
         for i, a in enumerate(ATTACKS):
             if time.time() - st["started"] > MAX_SECONDS or probe.requests > MAX_REQUESTS:
                 st["attacks"].append({"id": "limit", "owasp": "", "title": "Run stopped at its safety limit",
@@ -68,12 +69,27 @@ def _run(run_id, token, on_halfway, on_done, pace):
                 out = a.run(probe, ctx)
             except Exception as e:                    # an attack that errors is reported honestly, not hidden
                 out = Outcome(held=None, evidence=f"attack errored: {type(e).__name__}", check=True)
-            st["attacks"].append({"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp),
+            rec = {"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp),
                                   "title": a.title, "says": a.says, "defense": a.defense, "held": out.held,
                                   "check": out.check, "evidence": out.evidence, "ai_calls": out.ai_calls,
-                                  "t": t0, "ms": int((time.time() - t0) * 1000)})
-            if i + 1 == half and on_halfway:
-                on_halfway(run_id, st)
+                                  "t": t0, "ms": int((time.time() - t0) * 1000)}
+            st["attacks"].append(rec)
+            fired = detect.observe(st, rec)              # detection rules count what the defenses really did
+            if "alert" in fired and on_alert:
+                on_alert(run_id, st)
+            if "block" in fired:
+                cipher.block_run(run_id)                 # enforced by the app from this moment
+                st["blocked_source"] = True
+                if on_block:
+                    on_block(run_id, st)
+                time.sleep(pace)
+                try:                                     # Cipher tries once more: the block must really hold
+                    r = probe.req("GET", "/api/health")
+                    st["retry"] = {"t": time.time(), "status": r.status,
+                                   "held": r.status == 403, "evidence": f"HTTP {r.status}"}
+                except Exception as e:
+                    st["retry"] = {"t": time.time(), "status": 0, "held": None, "evidence": type(e).__name__}
+                break
             time.sleep(pace)
         done = [x for x in st["attacks"] if x["id"] != "limit"]
         st["ended"] = time.time()

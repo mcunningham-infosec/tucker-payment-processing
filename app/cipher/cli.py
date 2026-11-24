@@ -19,15 +19,15 @@ def main():
         from ..llm import GeminiLLM
         llm = GeminiLLM()
 
-    def halfway(rid, st):
+    def alert(rid, st):
         if llm:
-            st["soc"].append({"when": "halfway", **soc.check_in(llm, list(st["attacks"]), final=False)})
+            st["soc"].append({"when": "alert", **soc.check_in(llm, list(st["attacks"]), final=False)})
 
     def done(rid, st):
         if llm:
             st["soc"].append({"when": "final", **soc.check_in(llm, list(st["attacks"]), final=True)})
 
-    rid = runner.start(on_halfway=halfway, on_done=done, pace=0)
+    rid = runner.start(on_alert=alert, on_done=done, pace=0)
     if not rid:
         print("Another Cipher run is in progress.")
         return
@@ -38,6 +38,10 @@ def main():
         mark = "HELD" if a["held"] is True else ("FAIL" if a["held"] is False else "ERR ")
         print(f"{mark} {a['owasp']:<6} {a['id']:<18} {a['evidence'][:70]}")
     print(st["status"], st["summary"])
+    for d in st["detections"]:
+        print(f"RULE {d['rule']}: {d['count']}/{d['limit']} -> {d['outcome']}")
+    if st.get("retry"):
+        print("Cipher retry after block:", st["retry"]["evidence"])
     for c in st["soc"]:
         print(f"\nSQUIRREL ({c['when']}, ai={c.get('ai')}, calls={c.get('ai_calls')}): {c['headline']}")
         for line in c["lines"]:

@@ -28,6 +28,17 @@ def new_run_token() -> tuple[str, str]:
     return run_id, f"{run_id}.{_sign(run_id)}"
 
 
+_BLOCKED: set = set()      # run sources the SOC's block rule shut down (in memory; runs expire in an hour)
+
+
+def block_run(run_id: str):
+    _BLOCKED.add(run_id)
+
+
+def is_blocked(run_id: str | None) -> bool:
+    return bool(run_id) and run_id in _BLOCKED
+
+
 def verify_run_header(value: str | None) -> str | None:
     """Return the run id if the header carries a valid signature, else None (forged or absent)."""
     if not value or "." not in value or len(value) > 80:

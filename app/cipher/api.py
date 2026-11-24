@@ -20,7 +20,7 @@ from fastapi import APIRouter, Request, Response
 
 from .. import alerts, limits
 from .. import session as sessions
-from . import runner, soc
+from . import detect, runner, soc
 
 router = APIRouter()
 DAY = 86400
@@ -99,19 +99,34 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             limits.record("cipher_run_ip", ip, daily=False)
         limits.record("cipher_run_site", "site", daily=False)
 
-        def _checkin(st, when):
+        def _checkin(st, when, note=""):
             t = time.time()
-            rep = soc.check_in(get_llm(), list(st["attacks"]), final=(when == "final"))
+            rep = soc.check_in(get_llm(), list(st["attacks"]), final=(when == "final"), note=note)
             st["soc"].append({"when": when, "t": t, **rep})
             for p in rep.get("proposals", []):
                 st["actions"].append({"t": time.time(), "actor": "AI SOC Squirrel (proposal)", "action": p["action"],
                                       "detail": p["reason"], "outcome": p["policy"]})
 
-        def halfway(run_id, st):
-            _checkin(st, "halfway")
+        def alert(run_id, st):
+            _checkin(st, "alert", f"Detection rule alert_after_{detect.ALERT_AFTER} fired: {st['blocked_count']} "
+                                  "blocked attacks from one source. The attack is still running.")
+
+        def block(run_id, st):
+            st["actions"].append({"t": time.time(), "actor": f"Detection rule block_after_{detect.BLOCK_AFTER} (code)",
+                                  "action": "block_source",
+                                  "detail": f"Source shut down after {st['blocked_count']} blocked attacks: every "
+                                            "further request from it gets HTTP 403.", "outcome": "enforced"})
 
         def done(run_id, st):
-            _checkin(st, "final")
+            if st.get("blocked_source"):
+                r = st.get("retry") or {}
+                note = (f"Detection rule block_after_{detect.BLOCK_AFTER} fired after {st['blocked_count']} blocked "
+                        f"attacks. Code blocked the source; its retry got {r.get('evidence', 'no answer')}. "
+                        "The run is over: write the closing report.")
+            else:
+                note = ("The source stopped before the block rule fired (some attacks were not blocked). "
+                        "The run is over: write the closing report and flag every gap.")
+            _checkin(st, "final", note)
             now = time.time()
             # Enforced by policy no matter what the AI said (the block was recorded when the button was pressed).
             st["actions"].append({"t": now, "actor": "Policy (enforced by code)", "action": "block_attacker_24h",
@@ -123,7 +138,7 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                 st["actions"].append({"t": time.time(), "actor": "Policy (enforced by code)", "action": "raise_alert",
                                       "detail": "Site owner emailed: a defense did not hold.", "outcome": "enforced"})
 
-        run_id = runner.start(on_halfway=halfway, on_done=done)
+        run_id = runner.start(on_alert=alert, on_block=block, on_done=done)
         if not run_id:
             return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
         st = runner.state(run_id)
@@ -144,7 +159,9 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             blocked = _blocked(s.id if s else "", client_ip(request))
             return {"status": "blocked" if blocked else "none"}
         out = {k: st.get(k) for k in ("run_id", "status", "total", "attacks", "soc", "actions", "summary",
-                                       "visitor", "blocked_for_24h", "started", "ended")}
+                                       "visitor", "blocked_for_24h", "started", "ended",
+                                       "detections", "blocked_count", "blocked_source", "retry")}
+        out["rules"] = {"alert_after": detect.ALERT_AFTER, "block_after": detect.BLOCK_AFTER}
         out["attacks"] = [_safe_attack(a) for a in out.get("attacks") or []]
         out["soc"] = [_safe_soc(c) for c in out.get("soc") or []]
         out["actions"] = [{**x, "detail": defang(x.get("detail", ""))} for x in out.get("actions") or []]

@@ -8,7 +8,8 @@ How it works (and why it's bounded on purpose - OWASP LLM06 "Excessive Agency"):
   3. It has exactly two tools:
        get_run_events(category)  - read more of THIS run's events (read-only)
        propose_action(action)    - PROPOSE one action from a fixed menu; Python checks it against policy
-     At most 3 steps per check-in, 2 check-ins per run (halfway and final).
+     At most 3 steps per check-in, 2 check-ins per run. Code-run detection rules wake it (see detect.py):
+     an ALERT check-in after 15 blocked attacks from one source, and a FINAL one after the block rule fires.
   4. Its answer must be a small JSON object; Python validates it and shows only plain text.
   5. The 24-hour block on the attacker is enforced by Python no matter what the AI says or whether it
      answers at all. Security never depends on the AI.
@@ -41,9 +42,10 @@ SECURITY RULES (absolute):
 - You can only PROPOSE actions from the menu. You can never unblock, allow, delete or change anything.
 
 TIMING RULES:
-- HALFWAY check-in: the attack is still running. Report what you see so far. Do NOT propose actions and do NOT
-  say anyone has been blocked or locked out yet; that only happens at the end.
-- FINAL check-in: the run is over. Now propose actions.
+- ALERT check-in: a detection rule woke you because one source piled up enough blocked attacks to be a real
+  attacker, not noise. The attack is still running. Investigate and report. Do NOT propose actions and do NOT
+  say anyone has been blocked or locked out yet; code blocks the source later, by rule.
+- FINAL check-in: the block rule fired (or the source went quiet) and the run is over. Now propose actions.
 ATTRIBUTION: identify the attacker from the evidence in run_data (for example the user agent).
 
 When done, reply with ONLY a JSON object, no other text:
@@ -130,7 +132,7 @@ def fallback(attacks: list, final: bool) -> dict:
             "injection_spotted": any(a["id"] == "llm01-logs" for a in attacks), "ai": False}
 
 
-def check_in(llm, attacks: list, final: bool) -> dict:
+def check_in(llm, attacks: list, final: bool, note: str = "") -> dict:
     """One SOC check-in: up to 3 bounded steps with Gemini. Returns the validated report plus what it
     proposed and what Python decided. Never raises."""
     ok, _caps = spend.check_caps()
@@ -141,13 +143,14 @@ def check_in(llm, attacks: list, final: bool) -> dict:
         return rep
     data = timeline(attacks)
     prompt = ("FINAL check-in: the run is over. Write the full report." if final else
-              "HALFWAY check-in: the attack is still running. Give Tucker a quick heads-up.") + \
+              "ALERT check-in: the attack is still running. Investigate and give Tucker a heads-up.") + \
+             (("\nWhat code did: " + note) if note else "") + \
              "\n<run_data>\n" + json.dumps(data) + "\n</run_data>"
     messages = [{"role": "user", "text": prompt}]
     proposals, calls = [], 0
     try:
         for step in range(MAX_STEPS + 1):
-            allowed = (TOOLS if final else TOOLS[:1]) if step < MAX_STEPS else []   # halfway: read-only tool
+            allowed = (TOOLS if final else TOOLS[:1]) if step < MAX_STEPS else []   # alert check-in: read-only tool
             turn = llm.generate(RUNBOOK, messages, allowed)
             spend.record(getattr(llm, "model", "model"), turn.tokens_in, turn.tokens_out)
             calls += 1
@@ -171,7 +174,7 @@ PREMATURE = re.compile(r"24 ?h|24-hour|lock(ed|ing)? (them |the attacker |it )?o
 
 
 def _verify(rep: dict, data: dict, final: bool):
-    """Code checks what the AI asserts: the injection flag comes from the actual logs, and the halfway
+    """Code checks what the AI asserts: the injection flag comes from the actual logs, and the alert
     report may not claim a block that hasn't happened yet."""
     rep["injection_spotted"] = bool(data.get("raw_web_log_lines"))
     if not final:
@@ -191,7 +194,7 @@ def _run_tool(name, args, attacks, proposals, final=True):
         return {"events": evs[:12]}
     if name == "propose_action" and not final:
         proposals.append({"action": str(args.get("action", ""))[:40], "reason": "", "accepted": False,
-                          "policy": "rejected by policy: actions only after the run ends"})
+                          "policy": "rejected by policy: actions only at the final check-in"})
         return {"accepted": False, "note": "Actions can only be proposed at the final check-in."}
     if name == "propose_action":
         action = str(args.get("action", ""))
