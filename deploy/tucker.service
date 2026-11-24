@@ -1,0 +1,52 @@
+# systemd unit for Tucker's chat API (FastAPI under uvicorn).
+# Install: sudo cp deploy/tucker.service /etc/systemd/system/ && sudo systemctl enable --now tucker
+#
+# Security notes:
+# - Runs as the unprivileged 'tucker_app' user (no shell, no home, no sudo).
+# - Listens on 127.0.0.1 only; the internet reaches it solely through Apache.
+# - Secrets come from /etc/tucker/tucker.env (root-only, mode 600), read by systemd before
+#   the app starts. They are never in the repository.
+# - The sandboxing options below make most of the filesystem read-only and block
+#   privilege escalation, so even a compromised app process has very little to work with.
+
+[Unit]
+Description=Tucker Payment Processing chat API
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+User=tucker_app
+Group=tucker_app
+WorkingDirectory=/opt/tucker
+EnvironmentFile=/etc/tucker/tucker.env
+# One worker on purpose: chat sessions are kept in memory, and the server is tiny.
+ExecStart=/opt/tucker-venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --no-server-header
+Restart=on-failure
+RestartSec=3
+
+# --- Sandboxing ---
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+UMask=0077
+# Keep the app from starving the 1 GB server.
+MemoryMax=350M
+
+[Install]
+WantedBy=multi-user.target
