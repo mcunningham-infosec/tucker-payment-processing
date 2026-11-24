@@ -39,8 +39,8 @@
                   "Let's see how long your defenses last.");
     line("log-attack", "cipher.announce(attacks = " + total + ")", "big");
     window.setTimeout(function () {
-      say("defense", "Incoming! " + total + " attacks headed our way. Shields up: I'm stopping every one as it comes in!");
-      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => blocking mode ON", "big");
+      say("defense", "Incoming! " + total + " attacks headed our way. Tucker's automated defenses are kicking in!");
+      line("log-defense", "tucker.alert(\"incoming attacks detected\")  => automated defenses ON", "big");
     }, 700);
   }
 
