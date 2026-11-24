@@ -38,20 +38,55 @@ def test_totals_are_computed_on_server():
     assert q["total"] == f"{30.98 + float(q['tax']):.2f}"
 
 
-def test_browser_cannot_supply_a_card():
-    """Anything card-like the browser sends is reported and ignored; Tucker's card on file pays."""
-    events = []
-    r = store.checkout([{"sku": "TT-101", "qty": 1}], "s1", events, ["card_number"], "TPP-1002")
-    assert r["ok"] and r["paid_with"] == "Visa ending 7777"
-    assert any(e["type"] == "tamper" and "card_number" in e["detail"] for e in events)
+def test_tampered_checkout_is_refused_and_nothing_saved(admin):
+    """A checkout carrying fake prices or a card number is refused outright; no order is written."""
+    for items, extra in ((TAMPERED, ()), ([{"sku": "TT-101", "qty": 1}], ["card_number"])):
+        events = []
+        r = store.checkout(items, "s1", events, extra, "TPP-1002")
+        assert not r["ok"] and r.get("refused")
+        assert any(e["label"].startswith("Order refused") for e in events)
+    assert admin.execute("SELECT count(*) FROM demo.orders WHERE source='web'").fetchone()[0] == 0
 
 
-def test_good_card_is_approved_and_nothing_is_stored(admin):
-    """An active card is approved; no order row exists anywhere, only an anonymous count event."""
+def test_good_order_is_saved_with_database_prices(admin):
+    """An honest order is saved through demo.place_order with the database's prices, paid by Tucker."""
     r = store.checkout([{"sku": "TT-103", "qty": 2}], "s1", [], (), "TPP-1001")
     assert r["ok"] and "12 Fetch Lane, Barkington, NJ" in r["message"]
-    n = admin.execute("SELECT count(*) FROM ops.chat_events WHERE event_type='order_approved'").fetchone()[0]
-    assert n == 1
+    row = admin.execute("SELECT o.total, o.paid_by, i.qty, i.unit_price FROM demo.orders o "
+                        "JOIN demo.order_items i ON i.order_id = o.id WHERE o.order_ref = %s", (r["confirmation"],)).fetchone()
+    assert row[1] == "tucker" and row[2] == 2 and str(row[3]) == "6.99"
+    assert str(row[0]) == r["order"]["total"]          # Python's quote and the database agree to the cent
+
+
+def test_store_login_can_only_call_the_function():
+    """The store's own database login can't read, insert, edit or delete orders directly."""
+    import os
+    for sql in ("SELECT * FROM demo.orders", "UPDATE demo.orders SET total = 0", "DELETE FROM demo.order_items",
+                "INSERT INTO demo.orders (order_ref, customer_id, card_id, paid_by, subtotal, shipping, tax, total, "
+                "status, ship_to, source) VALUES ('X',1,1,'x',0,0,0,0,'approved','x','web')"):
+        with psycopg.connect(os.environ["STORE_DATABASE_URL"], autocommit=True) as c:
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                c.execute(sql)
+
+
+def test_chat_can_read_orders_but_never_change_them():
+    """Tucker's chat login can read orders, but can't edit them or place one."""
+    from app.db import connect
+    with connect() as c:
+        assert c.execute("SELECT count(*) FROM demo.orders").fetchone()["count"] >= 50
+    for sql in ("UPDATE demo.orders SET status = 'refunded'", "SELECT demo.place_order('TPP-1001', '[]')"):
+        with pytest.raises(psycopg.errors.InsufficientPrivilege):
+            with connect() as c:
+                c.execute(sql)
+
+
+def test_every_transaction_matches_its_order():
+    """Seed data: each transaction's amount equals its Treats order's total, built from real products."""
+    from app.db import connect
+    with connect() as c:
+        bad = c.execute("SELECT count(*) FROM demo.transactions t JOIN demo.orders o ON o.id = t.order_id "
+                        "WHERE t.amount_usd <> o.total OR t.merchant <> 'Tucker''s Treats'").fetchone()["count"]
+    assert bad == 0
 
 
 def test_app_cannot_change_prices():
@@ -67,3 +102,21 @@ def test_must_shop_as_a_listed_demo_customer():
     assert not store.checkout([{"sku": "TT-101", "qty": 1}], "s1", [], (), "TPP-9999")["ok"]
     assert not store.checkout([{"sku": "TT-101", "qty": 1}], "s1", [], (), "TPP-0001")["ok"]
     assert "TPP-0001" not in [s["customer_ref"] for s in store.shoppers()]
+
+
+def test_chat_order_lookup_is_limited_to_the_verified_customer():
+    """Tucker's get_my_orders tool needs verification and only returns that customer's orders."""
+    from app import tools
+    from app.session import Session
+    s = Session(id="t1")
+    _, ev = tools.run_tool(s, "get_my_orders", {})
+    assert ev["status"] == "denied"
+    tools.run_tool(s, "verify_identity", {"customer_number": "TPP-1002", "zip_code": "30301"})
+    store.checkout([{"sku": "TT-108", "qty": 1}], "s1", [], (), "TPP-1002")
+    result, ev = tools.run_tool(s, "get_my_orders", {"limit": 10})
+    assert ev["status"] == "ok" and result["orders"]
+    assert result["orders"][0]["items"][0]["name"] == "Plush Squirrel"     # newest first: the web order
+    from app.db import connect
+    with connect() as c:
+        mine = {r["order_ref"] for r in c.execute("SELECT order_ref FROM demo.orders WHERE customer_id = 2").fetchall()}
+    assert {o["order_ref"] for o in result["orders"]} <= mine
