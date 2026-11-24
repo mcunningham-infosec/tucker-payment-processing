@@ -90,3 +90,14 @@ def test_lair_is_closed_until_switched_on(monkeypatch):
     from app import main
     monkeypatch.delenv("CIPHER_ENABLED", raising=False)
     assert TestClient(main.app, base_url="https://testserver").post("/api/cipher/start").json()["status"] == "closed"
+
+
+def test_payloads_are_defanged_before_reaching_the_visitor():
+    """What the page shows must not trip a visitor's corporate proxy/IPS/DLP: no script tags, SQL quotes,
+    ../ paths, CRLF sequences or full card numbers in the response."""
+    from app.cipher.api import defang
+    raw = "<script>steal()</script> ' OR '1'='1 ../../etc/passwd %0d%0a 4111 1111 1111 1111"
+    out = defang(raw)
+    for bad in ("<script>", "'", "../", "etc/passwd", "%0d%0a", "4111 1111 1111 1111"):
+        assert bad not in out
+    assert "1111" in out and "script" in out          # still readable to a person
