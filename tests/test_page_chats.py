@@ -44,3 +44,23 @@ def test_visit_orders_only_show_this_visit():
     assert [o["order_ref"] for o in result["orders"]] == [r["confirmation"]]
     result2, _ = tools.run_tool(Session(id="v2"), "get_visit_orders", {}, "cart")
     assert result2["orders"] == []
+
+
+def test_store_chat_knows_a_verified_visitors_first_name_but_nothing_else():
+    """Penny verified on the home page: the store chat may greet her by name, but still has no account tools."""
+    from app import tools
+    from app.chat import handle_message
+    from app.llm import FakeLLM, ModelTurn
+    from app.session import Session
+    s = Session(id="penny-store")
+    s.customer_id, s.customer_first_name = 1, "Penny"
+    seen = {}
+
+    class Spy(FakeLLM):
+        def generate(self, system, messages, decl):
+            seen["system"], seen["tools"] = system, [d["name"] for d in decl]
+            return ModelTurn(text="Hi Penny!", tokens_in=10, tokens_out=3)
+
+    handle_message(s, "who am i?", Spy([]), "203.0.113.50", page="store")
+    assert "first name is Penny" in seen["system"]
+    assert not any(n in seen["tools"] for n in ("get_my_cards", "get_my_transactions", "get_my_profile"))
