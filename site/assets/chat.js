@@ -46,11 +46,18 @@
     return row;
   }
 
-  // Show bouncing dots while Tucker "thinks"; returns the element so it can be removed.
+  // Little things Tucker is "doing" while the AI works on an answer.
+  var BUSY = ["thinking", "sniffing through the files", "scratching an ear", "fetching that",
+              "looking for his toy", "checking the policy binder"];
+
+  // Show bouncing dots plus a dog-ish status while Tucker "thinks"; returns the element so it can be removed.
   function addTyping() {
+    var wrap = el("span");
     var dots = el("span", "dots");
     dots.appendChild(el("span")); dots.appendChild(el("span")); dots.appendChild(el("span"));
-    return addMessage("tucker", dots, "typing");
+    wrap.appendChild(dots);
+    wrap.appendChild(el("span", "busy", " Tucker is " + BUSY[Math.floor(Math.random() * BUSY.length)] + "..."));
+    return addMessage("tucker", wrap, "typing");
   }
 
   // Replace the Behind the Scenes list with this message's steps, revealed one after another.
