@@ -25,6 +25,12 @@ DAY = 86400
 RUNS_PER_DAY = int(os.environ.get("CIPHER_RUNS_PER_DAY", "25"))
 
 
+def _open() -> bool:
+    """Launch switch: the attack button works only when CIPHER_ENABLED=1 in /etc/tucker/tucker.env.
+    (Off until Cloudflare is in front of the site.)"""
+    return os.environ.get("CIPHER_ENABLED", "0") == "1"
+
+
 def _blocked(cookie_id: str, ip: str) -> bool:
     return (limits.over_limit("cipher_run_cookie", cookie_id, 1, DAY, daily=False) or
             (bool(ip) and limits.over_limit("cipher_run_ip", ip, 1, DAY, daily=False)))
@@ -35,6 +41,8 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
 
     @router.post("/api/cipher/start")
     def start(request: Request, response: Response):
+        if not _open():
+            return {"status": "closed", "message": "Cipher's Lair opens soon. He's still sharpening his claws."}
         s = sessions.get_or_create(request.cookies.get(cookie_name))
         set_cookie(response, s.id)
         ip = client_ip(request)
