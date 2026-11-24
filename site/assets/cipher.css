@@ -22,6 +22,7 @@
 .attack-btn:disabled { background:#3a3a3a; color:#999; box-shadow:none; cursor:default; }
 .report-btn { background:#38ff7a; color:#000; text-decoration:none; font-weight:900; border-radius:999px; padding:12px 22px; }
 .lair-fine { text-align:center; color:#8aa596; font-size:.85rem; margin:6px 0 0; }
+.lair-code a { color:#7dffa6; }
 
 .lair-grid { display:grid; gap:16px; grid-template-columns:minmax(0,1fr); }
 @media (min-width:1000px) { .lair-grid { grid-template-columns:repeat(3, minmax(0,1fr)); } }
