@@ -8,6 +8,19 @@
 
   var shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }, timer = null, finished = false, introduced = false, analyzing = false;
 
+  // ---- Reading pace: everything the server reports goes into one queue and is shown in time order, a beat
+  // apart, so the squirrel's lines never jump ahead of the attacks a reader is looking at.
+  var queue = [], pumping = false, finishQueued = false, displayed = 0;
+  var PACE = { attack: 450, rule: 700, soc: 1100, action: 600 };
+  function q(fn, ms) { queue.push([fn, ms]); if (!pumping) { pump(); } }
+  function pump() {
+    var item = queue.shift();
+    if (!item) { pumping = false; return; }
+    pumping = true;
+    try { item[0](); } catch (e) { /* keep the show going */ }
+    window.setTimeout(pump, item[1]);
+  }
+
   function $(id) { return document.getElementById(id); }
 
   function line(logId, text, cls) {
@@ -137,19 +150,20 @@
   }
 
   // ---- render one AI SOC check-in
-  function renderSoc(c, st) {
-    showYou(st && st.visitor);
-    if (c.when === "alert") {
-      line("log-soc", "squirrel.investigate(\"alert\") @ " + clock(c.t) + "  // read-only", "big");
-    } else {
-      line("log-soc", "squirrel.report(\"final\") @ " + clock(c.t), "big");
-    }
-    line("log-soc", "headline: " + c.headline);
-    (c.lines || []).forEach(function (l) { line("log-soc", "> " + l, "sub"); });
-    line("log-soc", "verdict = " + c.verdict + (c.injection_spotted ? "   prompt_injection_spotted = true" : ""),
-         c.verdict === "contained" ? "" : "bad");
-    if (c.ai === false) { line("log-soc", "(plain-facts mode: the AI was unavailable, so no AI wrote this)", "warn"); }
-    if (c.when === "final" && !(st && st.blocked_source)) { say("soc", c.headline || "Attack contained."); }
+  function renderSoc(c, st) {            // queued one line at a time, at reading pace
+    q(function () {
+      showYou(st && st.visitor);
+      line("log-soc", c.when === "alert" ? "squirrel.investigate(\"alert\") @ " + clock(c.t) + "  // read-only"
+                                         : "squirrel.report(\"final\") @ " + clock(c.t), "big");
+    }, PACE.rule);
+    q(function () { line("log-soc", "headline: " + c.headline); }, PACE.soc);
+    (c.lines || []).forEach(function (l) { q(function () { line("log-soc", "> " + l, "sub"); }, PACE.soc); });
+    q(function () {
+      line("log-soc", "verdict = " + c.verdict + (c.injection_spotted ? "   prompt_injection_spotted = true" : ""),
+           c.verdict === "contained" ? "" : "bad");
+      if (c.ai === false) { line("log-soc", "(plain-facts mode: the AI was unavailable, so no AI wrote this)", "warn"); }
+      if (c.when === "final" && !(st && st.blocked_source)) { say("soc", c.headline || "Attack contained."); }
+    }, PACE.rule);
   }
 
   function renderAction(x) {
@@ -183,30 +197,50 @@
   }
 
   function render(st) {
-    var total = st.total || 50;
-    (st.attacks || []).slice(shown.attacks).forEach(function (a, i) { renderAttack(a, shown.attacks + i + 1, total); });
+    var total = st.total || 50, fresh = [];
+    // Collect everything new since the last poll, then show it in time order through the reading-pace queue.
+    (st.attacks || []).slice(shown.attacks).forEach(function (a, i) {
+      var n = shown.attacks + i + 1;
+      fresh.push({ t: a.t || 0, o: 0, go: function () {
+        q(function () { renderAttack(a, n, total); displayed = n;
+                        if (st.status === "running") { setStatus("Attack in progress: " + n + " of " + total + "..."); } },
+          PACE.attack); } });
+    });
     shown.attacks = (st.attacks || []).length;
-    (st.detections || []).slice(shown.det).forEach(function (d) { renderDetection(d, st); });
+    (st.detections || []).slice(shown.det).forEach(function (d) {
+      fresh.push({ t: d.t || 0, o: 1, go: function () { q(function () { renderDetection(d, st); }, PACE.rule); } });
+    });
     shown.det = (st.detections || []).length;
-    if (st.retry && !shown.retry) { shown.retry = true; renderRetry(st.retry); }
-    (st.soc || []).slice(shown.soc).forEach(function (c) { renderSoc(c, st); });
+    if (st.retry && !shown.retry) {
+      shown.retry = true;
+      fresh.push({ t: st.retry.t || 0, o: 2, go: function () { q(function () { renderRetry(st.retry); }, PACE.rule); } });
+    }
+    (st.soc || []).slice(shown.soc).forEach(function (c) {
+      fresh.push({ t: c.t || 0, o: 3, go: function () { renderSoc(c, st); } });
+    });
     shown.soc = (st.soc || []).length;
-    (st.actions || []).slice(shown.actions).forEach(renderAction);
+    (st.actions || []).slice(shown.actions).forEach(function (x) {
+      fresh.push({ t: x.t || 0, o: 4, go: function () { q(function () { renderAction(x); }, PACE.action); } });
+    });
     shown.actions = (st.actions || []).length;
-    // All attacks are in but the AI's final report isn't back yet: say so, so the box never looks stuck.
+    fresh.sort(function (a, b) { return (a.t - b.t) || (a.o - b.o); }).forEach(function (f) { f.go(); });
+
+    // Every attack is in but the AI's final report isn't back yet: say so (after the queue catches up).
     var over = st.blocked_source || shown.attacks >= total;
     if (st.status === "running" && over && shown.soc < 2 && !analyzing && (!st.blocked_source || shown.retry)) {
       analyzing = true;
-      line("log-soc", "squirrel.report(\"final\")  // reading every event and the web logs...", "warn");
-      if (!st.blocked_source) { say("soc", "Source went quiet. Writing up my final report..."); }
+      q(function () {
+        line("log-soc", "squirrel.report(\"final\")  // reading every event and the web logs...", "warn");
+        if (!st.blocked_source) { say("soc", "Source went quiet. Writing up my final report..."); }
+        setStatus(st.blocked_source ? "Attacker blocked by the AI SOC. The squirrel is writing its final report..."
+                                    : "All attacks done. The AI SOC Squirrel is writing its final report...");
+      }, PACE.rule);
     }
-    if (st.status === "running") {
-      setStatus(st.blocked_source ? "Attacker blocked by the AI SOC. The squirrel is writing its final report..."
-                : (shown.attacks >= total ? "All attacks done. The AI SOC Squirrel is writing its final report..."
-                                          : "Attack in progress: " + shown.attacks + " of " + total + "..."));
-      $("attack").disabled = true; $("attack").textContent = "Attacking...";
+    if (st.status === "running") { $("attack").disabled = true; $("attack").textContent = "Attacking..."; }
+    if ((st.status === "done" || st.status === "error") && !finishQueued) {
+      finishQueued = true;
+      q(function () { finish(st); }, 0);
     }
-    if ((st.status === "done" || st.status === "error") && !finished) { finish(st); }
   }
 
   function poll() {
@@ -236,6 +270,7 @@
     $("report-link").hidden = true;
     $("you-card").hidden = true; youShown = false;
     shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }; finished = false; introduced = false; analyzing = false;
+    queue = []; finishQueued = false; displayed = 0;
   }
 
   function start() {

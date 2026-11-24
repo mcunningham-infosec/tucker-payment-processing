@@ -23,6 +23,10 @@ th, td { overflow-wrap:break-word; }
 .rhead .meta { text-align:right; font-size:.85rem; color:var(--muted); }
 .classif { display:inline-block; margin-top:6px; padding:2px 8px; border:1px solid var(--warn); color:var(--warn); border-radius:4px;
            font-size:.72rem; font-weight:800; letter-spacing:.6px; text-transform:uppercase; }
+.live-banner { margin:14px 0 4px; padding:10px 14px; border-radius:8px; background:#eef5ff; border:1px solid #b9d2f5;
+               border-left:5px solid var(--brand); font-size:.9rem; line-height:1.45; }
+.live-banner strong { color:var(--brand); }
+@media print { .live-banner { background:#fff; } }
 .badges { display:flex; gap:8px; margin:14px 0 4px; flex-wrap:wrap; }
 .badge { padding:4px 10px; border-radius:999px; font-weight:800; font-size:.8rem; color:#fff; }
 .badge.ok { background:var(--ok); } .badge.bad { background:var(--bad); } .badge.info { background:#4b5563; }
