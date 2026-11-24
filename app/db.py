@@ -1,0 +1,85 @@
+"""
+db.py - the only place the app talks to PostgreSQL.
+
+The app's database role (tucker_app) can only SELECT the demo company's data and can only
+INSERT into its own ops tables. So even if every other layer failed, a visitor (or the AI)
+could not change a customer, card or transaction: the database itself refuses.
+All queries use parameters (%s), never string-building, so SQL injection isn't possible here.
+"""
+from contextlib import contextmanager
+import psycopg
+from psycopg.rows import dict_row
+
+from .config import SETTINGS
+
+
+@contextmanager
+def connect():
+    """Open a short-lived connection (rows come back as dicts) and always close it."""
+    conn = psycopg.connect(SETTINGS.database_url, row_factory=dict_row, autocommit=True)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
+def find_customer_for_verification(customer_ref: str):
+    """Return (id, name, zip) for a customer number, or None. Used only by the identity check."""
+    with connect() as c:
+        return c.execute("SELECT id, full_name, zip FROM demo.customers WHERE customer_ref = %s",
+                         (customer_ref.strip().upper(),)).fetchone()
+
+
+def customer_profile(customer_id: int):
+    """Return the verified customer's non-sensitive profile (no ZIP, no email)."""
+    with connect() as c:
+        return c.execute("SELECT customer_ref, full_name, plan, member_since FROM demo.customers WHERE id = %s",
+                         (customer_id,)).fetchone()
+
+
+def customer_cards(customer_id: int):
+    """Return the verified customer's cards: brand, last 4, expiry and status only."""
+    with connect() as c:
+        return c.execute("SELECT brand, last4, exp_month, exp_year, status FROM demo.cards "
+                         "WHERE customer_id = %s ORDER BY id", (customer_id,)).fetchall()
+
+
+def customer_transactions(customer_id: int, limit: int = 10):
+    """Return the verified customer's most recent transactions (newest first)."""
+    with connect() as c:
+        return c.execute("SELECT t.id, t.created_at, t.merchant, t.amount_usd, t.status, t.decline_reason, "
+                         "c.brand, c.last4 FROM demo.transactions t JOIN demo.cards c ON c.id = t.card_id "
+                         "WHERE t.customer_id = %s ORDER BY t.created_at DESC LIMIT %s",
+                         (customer_id, limit)).fetchall()
+
+
+def customer_transaction(customer_id: int, transaction_id: int):
+    """Return one transaction ONLY if it belongs to the verified customer (else None)."""
+    with connect() as c:
+        return c.execute("SELECT t.id, t.created_at, t.merchant, t.amount_usd, t.status, t.decline_reason, "
+                         "c.brand, c.last4 FROM demo.transactions t JOIN demo.cards c ON c.id = t.card_id "
+                         "WHERE t.customer_id = %s AND t.id = %s", (customer_id, transaction_id)).fetchone()
+
+
+def record_ai_usage(model: str, tokens_in: int, tokens_out: int, cost: float):
+    """Append one model call's token counts and cost (feeds the spend cap)."""
+    with connect() as c:
+        c.execute("INSERT INTO ops.ai_usage (model, input_tokens, output_tokens, cost_usd) VALUES (%s,%s,%s,%s)",
+                  (model, tokens_in, tokens_out, cost))
+
+
+def ai_spend_since(interval: str) -> float:
+    """Total AI cost for the current month ('month') or day ('day'), in USD."""
+    if interval not in ("month", "day"):
+        raise ValueError("interval must be 'month' or 'day'")
+    with connect() as c:
+        row = c.execute(f"SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage "
+                        f"WHERE called_at >= date_trunc('{interval}', now())").fetchone()
+        return float(row["total"])
+
+
+def record_event(session_id: str, event_type: str, detail: str = ""):
+    """Append a guardrail/chat event (no chat text, no IP) for the daily report."""
+    with connect() as c:
+        c.execute("INSERT INTO ops.chat_events (session_id, event_type, detail) VALUES (%s,%s,%s)",
+                  (session_id, event_type, detail[:200]))
