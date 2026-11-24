@@ -43,6 +43,27 @@ def test_chat_ip_limit_holds_across_sessions():
     assert any(e["type"] == "rate" and e["status"] == "denied" for e in r["events"])
 
 
+def test_ipv6_counts_by_network_not_by_address():
+    """One phone or home gets a whole IPv6 /64 and can rotate addresses inside it: limits count the /64."""
+    assert limits.network("2600:1700:abcd:12:aaaa:bbbb:cccc:1") == "2600:1700:abcd:12::/64"
+    assert limits.subject("2600:1700:abcd:12::1") == limits.subject("2600:1700:abcd:12:ffff:ffff:ffff:ffff")
+    assert limits.subject("2600:1700:abcd:12::1") != limits.subject("2600:1700:abcd:13::1")    # neighbor /64
+    assert limits.network("::ffff:203.0.113.7") == "203.0.113.7"                              # IPv4 in IPv6 form
+    assert limits.network("203.0.113.7") == "203.0.113.7"
+    assert limits.network("cipher-run:abc") == "cipher-run:abc"                               # not an IP
+
+
+def test_rotating_ipv6_addresses_cannot_dodge_the_purchase_limit():
+    """25 orders from 25 different addresses in one /64, each with a new cookie: the 26th is still refused."""
+    net = "2001:db8:4:7::"
+    for i in range(SETTINGS.purchases_per_day):
+        assert store.checkout([{"sku": "TT-104", "qty": 1}], f"v6-{i}", [], (), "TPP-1002", f"{net}{i + 1:x}")["ok"]
+    events = []
+    r = store.checkout([{"sku": "TT-104", "qty": 1}], "v6-fresh", events, (), "TPP-1002", f"{net}beef")
+    assert not r["ok"] and any("Daily purchase limit" in e["label"] for e in events)
+    assert store.checkout([{"sku": "TT-104", "qty": 1}], "v6-other", [], (), "TPP-1002", "2001:db8:4:8::1")["ok"]
+
+
 def test_no_raw_ip_is_stored(admin):
     """Limit counters hold anonymous daily codes, never the IP itself."""
     limits.record("purchase_ip", "203.0.113.99")
