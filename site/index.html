@@ -58,14 +58,14 @@
           <li><strong>Google Cloud</strong> hosts a hardened Ubuntu Linux server running Apache, Python (FastAPI) and PostgreSQL.</li>
           <li><strong>HTTPS everywhere</strong> with an automatically renewing certificate and strict security headers.</li>
           <li><strong>Zero-trust admin access:</strong> no admin port open to the internet; administrators get in only through Google's identity-checked tunnel with two-factor authentication.</li>
-          <li><strong>Least privilege:</strong> the server has no cloud permissions, the app's database account can't change anything, and there is no database password to steal.</li>
+          <li><strong>Least privilege:</strong> the server has no cloud permissions; Tucker's chat can only read the database; the store can add an order only through one function that re-prices everything itself; nobody can edit or delete an order; and there is no database password to steal.</li>
         </ul>
       </div>
 
       <div class="card">
         <h2>Tucker's rules (our AI policy)</h2>
         <ul>
-          <li><strong>Read-only.</strong> Tucker can look things up but can't change anything: no refunds, no moving money, no unfreezing cards.</li>
+          <li><strong>Read-only.</strong> Tucker can look things up, including your Tucker's Treats orders, but can't change anything: no refunds, no moving money, no unfreezing cards, no editing orders.</li>
           <li><strong>The code decides access, not the AI.</strong> Tucker can only see the customer you verified as, and only for this session.</li>
           <li><strong>Last 4 digits only.</strong> Full card numbers never exist in the system, and an output filter masks anything that looks like one anyway.</li>
           <li><strong>Prompt-injection shield.</strong> Attempts to rewrite Tucker's rules are blocked before they reach the AI.</li>
