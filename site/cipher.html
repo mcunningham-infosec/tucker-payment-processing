@@ -40,7 +40,7 @@
         Watch Tucker's defenses stop them in real time. When the SOC's detection rules see a real attacker (not just noise), they
         wake the <strong>AI SOC Squirrel</strong> (a bounded Gemini AI security analyst) to investigate while the attack goes on,
         and code shuts the attacker down, just like a real security operations center.</p>
-      <p class="lair-real"><strong>Nothing here is simulated.</strong> Every attack is a real request against this live website, and every result you see is the real defense responding. If a defense ever fails, it shows up as "GOT THROUGH", the site owner is alerted, and your report says so.</p>
+      <p class="lair-real"><strong>Nothing here is simulated.</strong> Every attack is a real request against this live website, and every result you see is the real defense responding. The AI SOC Squirrel is monitoring the real, live server-side logs as the attack unfolds. If a defense ever fails, it shows up as "GOT THROUGH", the site owner is alerted, and your report says so.</p>
       <p class="lair-safe">All attacks are run server side, against the site itself, so no attack traffic ever leaves your network: you can't get in trouble with your company or be blocked by a security platform you may be running. <strong>You get 1 attack every 24 hours. Make it Count!</strong></p>
       <div class="lair-actions">
         <button type="button" id="attack" class="attack-btn">Attack Tucker's Treats!</button>
@@ -52,7 +52,7 @@
         <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py">AI guardrails</a> &middot;
         <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py">SOC detection rules</a> &middot;
         <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py">AI SOC Squirrel</a></p>
-      <p class="lair-fine" id="lair-status" role="status">One run per visitor every 24 hours. Takes about 90 seconds.</p>
+      <p class="lair-fine" id="lair-status" role="status">One run per visitor every 24 hours. Takes about 2½ minutes.</p>
     </section>
 
     <div class="lair-grid">
