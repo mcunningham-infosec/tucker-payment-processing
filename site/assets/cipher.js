@@ -104,7 +104,10 @@
     shown.soc = (st.soc || []).length;
     (st.actions || []).slice(shown.actions).forEach(renderAction);
     shown.actions = (st.actions || []).length;
-    if (st.status === "running") { setStatus("Attack in progress: " + shown.attacks + " of " + total + "..."); }
+    if (st.status === "running") {
+      setStatus("Attack in progress: " + shown.attacks + " of " + total + "...");
+      $("attack").disabled = true; $("attack").textContent = "Attacking...";
+    }
     if ((st.status === "done" || st.status === "error") && !finished) { finish(st); }
   }
 
