@@ -28,6 +28,9 @@
 
 .lair-grid { display:grid; gap:16px; grid-template-columns:minmax(0,1fr); }
 @media (min-width:1000px) { .lair-grid { grid-template-columns:repeat(3, minmax(0,1fr)); } }
+/* Desktop: all three boxes are the same height; each log fills whatever room is left under its header (the SOC box
+   also holds the "that's you" card, so its log is a little shorter instead of its box being taller). */
+@media (min-width:1000px) { .lair-box { height:680px; min-height:0; } .lair-box .term { max-height:none; min-height:0; } }
 .lair-box { background:#161616; border:1px solid #2a2a2a; border-radius:18px; padding:20px 14px 14px; display:flex; flex-direction:column; min-height:420px; }
 .lair-box.defense { border-top:3px solid #4d8dff; }
 .lair-box.attack { border-top:3px solid #d9472b; }
