@@ -23,8 +23,24 @@ cp deploy/tucker-reset.service deploy/tucker-reset.timer deploy/tucker-report.se
 systemctl daemon-reload
 systemctl enable --now tucker-reset.timer tucker-report.timer >/dev/null
 
-systemctl restart tucker
-sleep 3
+# Restart the app only when its code changed. Cipher's attack runs live in the app's memory, so a restart
+# in the middle of one cuts it off: if a run is in progress, wait for it to finish first (a run is capped
+# at 5 minutes; we wait up to 7).
+APP_REV=$(git rev-parse HEAD:app HEAD:policies HEAD:requirements.txt | sha1sum | cut -c1-40)
+STAMP=/var/lib/tucker-deploy/app.rev
+mkdir -p "$(dirname "$STAMP")"
+if [ "$APP_REV" != "$(cat "$STAMP" 2>/dev/null || true)" ]; then
+  for _ in $(seq 1 84); do
+    curl -fsS --max-time 3 http://127.0.0.1:8000/api/health 2>/dev/null | grep -q '"cipher_busy":true' || break
+    echo "Waiting for a Cipher attack run to finish before restarting the app..."
+    sleep 5
+  done
+  systemctl restart tucker
+  echo "$APP_REV" > "$STAMP"
+  sleep 3
+else
+  echo "App code unchanged: no restart"
+fi
 systemctl is-active apache2 tucker
 # (no "| head" here: with pipefail, head closing the pipe early made the script report a false failure)
 systemctl list-timers tucker-report.timer tucker-reset.timer --no-pager --no-legend
