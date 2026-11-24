@@ -45,6 +45,9 @@
 .term .bad { color:#ff6b57; }
 .term .warn { color:#ffd166; }
 .term .you { color:#000; background:#38ff7a; padding:0 4px; border-radius:4px; }
+.term .num { display:inline-block; min-width:2.6em; padding:0 5px; margin-right:4px; border-radius:5px; background:#38ff7a; color:#000; font-weight:900; text-align:center; }
+.term .bad .num { background:#ff6b57; }
+.term .warn .num { background:#ffd166; }
 .term .big { color:#fff; font-weight:700; }
 
 .lair-foot { color:#fff; font-size:.75rem; text-align:center; opacity:.85; padding:18px 16px 30px; margin:0 auto; max-width:none; background:#000; }

@@ -20,6 +20,17 @@
     return li;
   }
 
+  // A log line that starts with a bold attack number (#07), so attacks and defenses line up.
+  function numbered(logId, num, text, cls) {
+    var li = line(logId, "", cls);
+    var tag = document.createElement("span");
+    tag.className = "num";
+    tag.textContent = num;
+    li.appendChild(tag);
+    li.appendChild(document.createTextNode(" " + text));
+    return li;
+  }
+
   function say(who, text) {
     var b = $("bubble-" + who);
     b.hidden = false;
@@ -47,11 +58,12 @@
   // ---- render one attack: Cipher's box gets the attempt, Tucker's box gets the defense
   function renderAttack(a, n, total) {
     if (a.id === "limit") { line("log-attack", "cipher.halt()  // safety limit reached", "warn"); return; }
-    line("log-attack", "cipher.attack(" + String(n).padStart(2, "0") + "/" + total + ", \"" + a.title + "\")");
+    var num = "#" + String(n).padStart(2, "0");
+    numbered("log-attack", num, "cipher.attack(\"" + a.title + "\")");
     line("log-attack", ">> " + a.says, "sub");
     var tag = a.held === true ? "HELD" : (a.held === false ? "GOT THROUGH" : "CHECK");
     var cls = a.held === false ? "bad" : (a.check ? "warn" : "");
-    line("log-defense", "tucker.defend(\"" + a.defense + "\")  => " + tag, cls);
+    numbered("log-defense", num, "tucker.defend(\"" + a.defense + "\")  => " + tag, cls);
     line("log-defense", "evidence: " + a.evidence + "  [" + a.owasp + "]", "sub");
     if (n === 1) { intro(total); }
     if (n === 12) { say("attack", "Locked doors everywhere. How... tedious."); }
