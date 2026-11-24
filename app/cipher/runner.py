@@ -59,6 +59,7 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
     ctx = {"started": st["started"], "repo": REPO, "run_id": run_id}
     try:
         probe = Probe(TARGET, HOST, token, cipher.HEADER)
+        investigation = None
         for i, a in enumerate(ATTACKS):
             if time.time() - st["started"] > MAX_SECONDS or probe.requests > MAX_REQUESTS:
                 st["attacks"].append({"id": "limit", "owasp": "", "title": "Run stopped at its safety limit",
@@ -75,8 +76,9 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
                                   "t": t0, "ms": int((time.time() - t0) * 1000)}
             st["attacks"].append(rec)
             fired = detect.observe(st, rec)              # detection rules count what the defenses really did
-            if "alert" in fired and on_alert:
-                on_alert(run_id, st)
+            if "alert" in fired and on_alert:          # the AI investigates in parallel; Cipher keeps attacking
+                investigation = threading.Thread(target=on_alert, args=(run_id, st), daemon=True)
+                investigation.start()
             if "block" in fired:
                 cipher.block_run(run_id)                 # enforced by the app from this moment
                 st["blocked_source"] = True
@@ -91,6 +93,8 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
                     st["retry"] = {"t": time.time(), "status": 0, "held": None, "evidence": type(e).__name__}
                 break
             time.sleep(pace)
+        if investigation:                              # final report comes after the alert investigation
+            investigation.join(timeout=60)
         done = [x for x in st["attacks"] if x["id"] != "limit"]
         st["ended"] = time.time()
         st["summary"] = {

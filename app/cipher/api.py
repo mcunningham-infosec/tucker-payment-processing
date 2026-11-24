@@ -12,11 +12,15 @@ Abuse controls, all enforced here in Python before anything runs:
 The visitor's own IP (and country, once Cloudflare is in front) is shown back ONLY to that visitor in their
 report, kept in memory for an hour, and never stored.
 """
+import json
 import os
 import re
 import time
+import urllib.parse
+import urllib.request
 
 from fastapi import APIRouter, Request, Response
+from pydantic import BaseModel
 
 from .. import alerts, limits
 from .. import session as sessions
@@ -55,6 +59,35 @@ def _safe_soc(c: dict) -> dict:
     return out
 
 
+class StartIn(BaseModel):
+    turnstile: str = ""          # Cloudflare Turnstile token from the browser (proves a human pressed the button)
+
+
+def _turnstile_keys() -> tuple[str, str]:
+    """(site key, secret) from /etc/tucker/tucker.env. The site key is public; the secret never leaves the server."""
+    return os.environ.get("TURNSTILE_SITEKEY", ""), os.environ.get("TURNSTILE_SECRET", "")
+
+
+def _human(token: str, ip: str) -> bool:
+    """Ask Cloudflare whether this Turnstile token is valid (one use, a few minutes old at most).
+    If Turnstile isn't configured, the check is off (local tests). If Cloudflare can't be reached, fail closed."""
+    _, secret = _turnstile_keys()
+    if not secret:
+        return True
+    if not token or len(token) > 2048:
+        return False
+    form = {"secret": secret, "response": token}
+    if ip and not ip.startswith("cipher-run:"):
+        form["remoteip"] = ip
+    try:
+        req = urllib.request.Request("https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                                     data=urllib.parse.urlencode(form).encode(), method="POST")
+        with urllib.request.urlopen(req, timeout=6) as r:
+            return bool(json.loads(r.read(8192)).get("success"))
+    except Exception:
+        return False
+
+
 def _open() -> bool:
     """Launch switch: the attack button works only when CIPHER_ENABLED=1 in /etc/tucker/tucker.env.
     (Off until Cloudflare is in front of the site.)"""
@@ -74,7 +107,7 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
     """Wire the router to the app's LLM, visitor-IP and cookie helpers (avoids a circular import)."""
 
     @router.post("/api/cipher/start")
-    def start(request: Request, response: Response):
+    def start(request: Request, response: Response, body: StartIn | None = None):
         if not _open():
             return {"status": "closed", "message": "Cipher's Lair opens soon. He's still sharpening his claws."}
         s = sessions.get_or_create(request.cookies.get(cookie_name))
@@ -92,6 +125,8 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             return {"status": "resting", "message": "Cipher has used up all nine lives for today. Come back tomorrow!"}
         if runner.busy():
             return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
+        if not _human(body.turnstile if body else "", ip):     # bots don't get to launch attack runs
+            return {"status": "bot_check", "message": "Couldn't confirm you're a human. Please complete the check and try again."}
 
         # Record the block FIRST: a second press (or a script) can't start another run.
         limits.record("cipher_run_cookie", s.id, daily=False)
@@ -157,10 +192,11 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         st = runner.state(getattr(s, "cipher_run", None) or "") if s else None
         if not st:
             blocked = _blocked(s.id if s else "", client_ip(request))
-            return {"status": "blocked" if blocked else "none"}
+            return {"status": "blocked" if blocked else "none", "turnstile_sitekey": _turnstile_keys()[0]}
         out = {k: st.get(k) for k in ("run_id", "status", "total", "attacks", "soc", "actions", "summary",
                                        "visitor", "blocked_for_24h", "started", "ended",
                                        "detections", "blocked_count", "blocked_source", "retry")}
+        out["turnstile_sitekey"] = _turnstile_keys()[0]
         out["rules"] = {"alert_after": detect.ALERT_AFTER, "block_after": detect.BLOCK_AFTER}
         out["attacks"] = [_safe_attack(a) for a in out.get("attacks") or []]
         out["soc"] = [_safe_soc(c) for c in out.get("soc") or []]
