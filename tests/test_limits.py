@@ -77,3 +77,22 @@ def test_after_reset_every_customer_has_six_recent_transactions(admin):
     # orders and their transactions stay on the same timestamp after the shift
     assert admin.execute("SELECT count(*) FROM demo.transactions t JOIN demo.orders o ON o.id = t.order_id "
                          "WHERE t.created_at <> o.created_at").fetchone()[0] == 0
+
+
+def test_zip_guessing_is_locked_per_network_even_with_new_cookies(admin):
+    """Dropping the cookie used to mean 3 fresh guesses. Now failures also count per network, so a
+    guesser who keeps starting new sessions is stopped after the hourly limit."""
+    from app import tools
+    n = SETTINGS.verify_fails_per_ip_per_hour
+    for i in range(n):
+        s = Session(id=f"guess-{i}")           # a brand-new session each time (new cookie)
+        s.client_ip = "198.51.100.9"
+        result, event = tools.verify_identity(s, "TPP-1001", "00000")
+        assert result["verified"] is False and result.get("error") != "locked"
+    s = Session(id="guess-final")
+    s.client_ip = "198.51.100.9"
+    result, event = tools.verify_identity(s, "TPP-1001", "07731")   # even the RIGHT zip is refused now
+    assert result["error"] == "locked" and "network" in event["label"]
+    other = Session(id="other-network")
+    other.client_ip = "203.0.113.77"
+    assert tools.verify_identity(other, "TPP-1001", "07731")[0]["verified"] is True   # other networks unaffected
