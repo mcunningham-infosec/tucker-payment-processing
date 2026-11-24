@@ -83,7 +83,7 @@
 .side { display:flex; flex-direction:column; gap:18px; }
 .chat-card.mini .chat-head img { width:44px; height:44px; }
 .chat-card.mini .log { height:260px; }
-.shop-grid .chat-card.mini .log { height:420px; }   /* product page: room for longer answers */
+.shop-grid .chat-card.mini .log { height:345px; }   /* product page: 50% taller for longer answers */
 .chat-card.mini .try { font-size:.85rem; }
 .chat-card.mini .try button { font-size:.8rem; padding:3px 9px; }
 .side .bts { position:static; max-height:460px; overflow-y:auto; }   /* long step lists scroll, so the chat stays close */
@@ -111,6 +111,6 @@
   .shop-grid .side, .checkout-grid .side { position:sticky; top:12px; max-height:calc(100vh - 24px); align-self:start; }
   .shop-grid .side .bts, .checkout-grid .side .bts { flex:1 1 auto; min-height:120px; max-height:none; overflow-y:auto; }
   .shop-grid .side .chat-card, .checkout-grid .side .chat-card { flex:0 0 auto; }
-  .shop-grid .chat-card.mini .log { height:min(420px, 42vh); }
+  .shop-grid .chat-card.mini .log { height:min(345px, 38vh); }
   .checkout-grid .chat-card.mini .log { height:min(260px, 30vh); }
 }
