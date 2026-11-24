@@ -30,9 +30,6 @@
 .box-head { display:flex; align-items:center; gap:12px; }
 .box-head img { width:56px; height:56px; border-radius:50%; background:#0d0d0d; }
 .box-head h2 { margin:0; font-size:1.2rem; color:#fff; }
-.avatar-hat { position:relative; width:56px; height:56px; flex:none; }
-.box-head .avatar-hat img:first-child { width:56px; height:56px; }
-.box-head .avatar-hat .hat { position:absolute; left:4px; top:-20px; width:48px; height:29px; border-radius:0; background:none; transform:rotate(-8deg); }
 
 .lair-bubble { position:relative; margin:12px 0 4px; background:#f5fff7; color:#0b1a10; border-radius:14px; padding:9px 13px; font-weight:700;
           font-size:.95rem; animation:pop-in .25s ease-out; }
