@@ -46,7 +46,7 @@ flowchart LR
 - Least privilege everywhere: each database login can do one job (the store's login can call one function and nothing else).
 - Strict Content-Security-Policy, no inline scripts, no third-party scripts, fonts or trackers, one strictly necessary cookie.
 - TLS 1.2+, HSTS, DNSSEC and CAA. Scored A+ by SSL Labs, Mozilla Observatory and SecurityHeaders ([scorecard](https://tuckerpaymentprocessing.com/about.html#scans)).
-- Secrets live only on the server, never in this repository. CodeQL scans every push. See [SECURITY.md](SECURITY.md) to report an issue.
+- Secrets live only on the server, never in this repository. CodeQL, secret scanning and Dependabot (vulnerability and malware alerts, automatic security fix pull requests) check every change. See [SECURITY.md](SECURITY.md) to report an issue.
 
 ## Repository map
 | Folder | What's in it |
