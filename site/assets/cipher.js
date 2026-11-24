@@ -192,6 +192,7 @@
     var held = s.held + " of " + s.attacks + " attacks stopped";
     line("log-defense", "tucker.summary(\"" + held + "\")", "big");
     say("defense", "Stop trying to steal my treats, Cipher! ... Good job, Squirrel!");
+    document.dispatchEvent(new CustomEvent("cipher-done"));   // tour.js: Tucker then suggests the About page
     showYou(st.visitor);
     var gaps = (s.failed || []).length;
     line("log-soc", (gaps ? "status = PARTIALLY CONTAINED (" + gaps + " to fix)." : "status = CONTAINED.") +
