@@ -136,3 +136,31 @@ def test_alerts_fire_once_per_day_and_never_show_raw_ips(admin, caplog):
         assert alerts.raise_once("fair_share", "test", ip) is False      # deduplicated
     lines = [r.getMessage() for r in caplog.records if "TUCKER_ALERT" in r.getMessage()]
     assert len(lines) == 1 and "kind=fair_share" in lines[0] and ip not in lines[0]
+
+
+def test_cipher_run_identity_cannot_be_forged():
+    """Only a header signed with the server's secret counts as a Cipher run; anything else is ignored."""
+    from app import cipher
+    run_id, token = cipher.new_run_token()
+    assert cipher.verify_run_header(token) == run_id
+    assert cipher.verify_run_header(run_id + ".0123456789abcdef0123456789abcdef") is None
+    assert cipher.verify_run_header("garbage") is None and cipher.verify_run_header(None) is None
+
+
+def test_session_id_rotates_when_a_customer_verifies():
+    """After a successful identity check the browser gets a new session id; the old one stops working."""
+    from fastapi.testclient import TestClient
+    from app import main
+    llm = FakeLLM([
+        ModelTurn(text="Hi! How can I help?", tokens_in=10, tokens_out=5),
+        ModelTurn(tool_calls=[("verify_identity", {"customer_number": "TPP-1001", "zip_code": "07731"})], tokens_in=10, tokens_out=5),
+        ModelTurn(text="Verified!", tokens_in=10, tokens_out=5)])
+    main.get_llm = lambda: llm
+    c = TestClient(main.app, base_url="https://testserver")
+    c.post("/api/chat", json={"message": "hello"})            # creates a session
+    old = c.cookies.get("tucker_session")
+    c.post("/api/chat", json={"message": "I'm customer TPP-1001, ZIP code 07731."})
+    new = c.cookies.get("tucker_session")
+    assert old and new and old != new
+    from app import session as sessions
+    assert sessions._SESSIONS.get(old) is None and sessions._SESSIONS[new].customer_id is not None
