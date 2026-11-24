@@ -33,6 +33,16 @@
     return li;
   }
 
+  // Puts a small label (e.g. [Gemini]) in front of a line the AI wrote. textContent only: AI text is never HTML.
+  function tagged(li, label) {
+    if (!label) { return li; }
+    var b = document.createElement("span");
+    b.className = "ai-tag";
+    b.textContent = label;
+    li.insertBefore(b, li.firstChild);
+    return li;
+  }
+
   // A log line that starts with a bold attack number (#07), so attacks and defenses line up.
   function numbered(logId, num, text, cls) {
     var li = line(logId, "", cls);
@@ -156,8 +166,10 @@
       line("log-soc", c.when === "alert" ? "squirrel.investigate(\"alert\") @ " + clock(c.t) + "  // read-only"
                                          : "squirrel.report(\"final\") @ " + clock(c.t), "big");
     }, PACE.rule);
-    q(function () { line("log-soc", "headline: " + c.headline); }, PACE.soc);
-    (c.lines || []).forEach(function (l) { q(function () { line("log-soc", "> " + l, "sub"); }, PACE.soc); });
+    // Lines the AI wrote get a [Gemini] tag, so it's clear which text is generated live (none in plain-facts mode).
+    var tag = c.ai === false ? "" : "[Gemini]";
+    q(function () { tagged(line("log-soc", "headline: " + c.headline), tag); }, PACE.soc);
+    (c.lines || []).forEach(function (l) { q(function () { tagged(line("log-soc", "> " + l, "sub"), tag); }, PACE.soc); });
     q(function () {
       line("log-soc", "verdict = " + c.verdict + (c.injection_spotted ? "   prompt_injection_spotted = true" : ""),
            c.verdict === "contained" ? "" : "bad");

@@ -49,10 +49,11 @@
 .term { list-style:none; margin:10px 0 0; padding:10px; background:#0a0a0a; border-radius:12px; flex:1; overflow-y:auto; max-height:460px;
         font-family:ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace; font-size:.8rem; line-height:1.45; color:#38ff7a; }
 .term li { margin:0 0 6px; white-space:pre-wrap; overflow-wrap:anywhere; animation:pop-in .2s ease-out; }
-.term .dim { color:#3e8a56; }
-.term .sub { color:#8fd9a6; padding-left:12px; }
+.term .dim { color:#38ff7a; }
+.term .sub { color:#38ff7a; padding-left:12px; }
 .term .bad { color:#ff6b57; }
 .term .warn { color:#ffd166; }
+.term .ai-tag { display:inline-block; padding:0 5px; margin-right:6px; border-radius:4px; background:#38ff7a; color:#000; font-weight:900; }
 .term .you { color:#000; background:#ffd166; font-weight:900; padding:0 4px; border-radius:4px; }
 .term .num { display:inline-block; min-width:2.6em; padding:0 5px; margin-right:4px; border-radius:5px; background:#38ff7a; color:#000; font-weight:900; text-align:center; }
 .term .bad .num { background:#ff6b57; }
