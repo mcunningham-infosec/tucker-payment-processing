@@ -19,7 +19,7 @@ class Settings:
     """Immutable bundle of settings; frozen so nothing can change them at runtime."""
     gemini_api_key: str = _env("GEMINI_API_KEY", "")            # secret: server env file only
     gemini_model: str = _env("GEMINI_MODEL", "gemini-2.5-flash-lite")
-    database_url: str = _env("DATABASE_URL", "postgresql://tucker_app@localhost/tucker")
+    database_url: str = _env("DATABASE_URL", "postgresql:///tucker?host=/var/run/postgresql")
 
     # Model pricing (USD per 1M tokens) used for the app-level spend cap.
     price_in_per_m: float = float(_env("PRICE_IN_PER_M", "0.10"))

@@ -29,7 +29,8 @@ _INJECTION_RE = [re.compile(p, re.IGNORECASE) for p in INJECTION_PATTERNS]
 
 _PAN_CANDIDATE = re.compile(r"(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)")  # 13-19 digits, optional spaces/dashes
 _SSN = re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")
-_SECRET = re.compile(r"\b(AIza[0-9A-Za-z_\-]{20,}|sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,})\b")
+# Google keys come as "AIza..." (classic) or "AQ...." (newer format).
+_SECRET = re.compile(r"\b(AIza[0-9A-Za-z_\-]{20,}|AQ\.[0-9A-Za-z_\-.]{20,}|sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,})")
 
 
 def clean_input(text: str) -> str:
