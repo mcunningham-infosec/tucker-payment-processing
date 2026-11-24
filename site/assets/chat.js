@@ -17,7 +17,8 @@
   var KINDS = {
     input: "Input check", rate: "Rate limit", injection: "Prompt-injection shield",
     spend: "Spend cap", model: "AI model (Google Gemini)", rag: "Policy search (RAG)",
-    authz: "Access control (Python)", tool: "Database read (read-only)", output: "Output filter"
+    authz: "Access control (Python)", tool: "Database read (read-only)", output: "Output filter",
+    session: "Session"
   };
 
   var log, form, msg, send, count, steps, intro, status;
@@ -123,8 +124,9 @@
       .catch(function () { /* nothing to do: the session also expires on its own */ })
       .then(function () {
         while (log.children.length > 1) { log.removeChild(log.lastChild); }
-        steps.textContent = "";
-        intro.textContent = "Send a message and every step it passes through will appear here, in order.";
+        showSteps([{ type: "session", status: "ok", label: "Chat reset: the server forgot this conversation",
+                     detail: "Your verified identity and chat history were dropped and the session cookie was deleted." }]);
+        intro.textContent = "What your last click did:";
         setStatus("AI support agent · online");
       });
   }

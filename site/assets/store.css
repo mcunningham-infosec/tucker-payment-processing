@@ -1,0 +1,64 @@
+/* Tucker's Treats: cart icon (every page), product grid, checkout. Mobile-first. */
+.top { position:relative; }
+.cart-link { position:absolute; top:-12px; right:0; display:flex; align-items:center; gap:4px; color:var(--blue);
+             text-decoration:none; font-weight:800; background:var(--card); border:2px solid #e8dcc8; border-radius:999px; padding:6px 12px 6px 10px; }
+.cart-link:hover, .cart-link:focus-visible { border-color:var(--blue); outline:none; }
+.cart-count[hidden] { display:none; }
+.cart-count { background:var(--orange); color:#fff; border-radius:999px; min-width:22px; height:22px; padding:0 6px;
+              display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; }
+@media (max-width:560px) { .cart-text { display:none; } .top { padding-top:30px; } .cart-link { top:-18px; } }
+
+.muted { color:var(--muted); }
+.small { font-size:.85rem; }
+
+/* Product grid */
+.shop { max-width:1300px; margin:0 auto; }
+.shop-grid { display:grid; gap:18px; grid-template-columns:minmax(0,1fr); }
+.shop-grid .bts { order:2; }
+@media (min-width:900px) { .shop-grid { grid-template-columns:280px minmax(0,1fr); align-items:start; }
+  .shop-grid .bts { order:0; position:sticky; top:12px; } }
+.shop-intro { text-align:center; margin-bottom:14px; }
+.shop-intro h2 { color:var(--blue); margin:0 0 4px; }
+.products { display:grid; gap:18px; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); }
+.product { background:var(--card); border-radius:22px; padding:14px; box-shadow:0 6px 0 rgba(0,0,0,.05); display:flex; flex-direction:column; position:relative; }
+.product img { width:100%; height:auto; border-radius:16px; }
+.product h3 { margin:10px 0 4px; font-size:1.1rem; }
+.blurb { margin:0 0 6px; color:var(--muted); font-size:.92rem; flex:1; }
+.paws { font-size:.95rem; letter-spacing:2px; }
+.kind-tag { position:absolute; top:22px; left:22px; background:var(--blue); color:#fff; border-radius:8px; padding:1px 8px; font-size:.72rem; font-weight:700; text-transform:uppercase; }
+.kind-tag.treat { background:#c4600c; } .kind-tag.comfort { background:#5c4fae; }
+.buy-row { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+.price { font-size:1.3rem; font-weight:800; }
+.add { background:var(--orange); color:#fff; border:0; border-radius:999px; padding:8px 16px; font-weight:800; cursor:pointer; }
+
+/* Checkout: cart | pay | Behind the Scenes on desktop; stacked on phones */
+.checkout-grid { max-width:1300px; margin:0 auto; display:grid; gap:18px; grid-template-columns:minmax(0,1fr); }
+@media (min-width:820px) { .checkout-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .checkout-grid .bts { grid-column:1 / -1; } }
+@media (min-width:1200px) { .checkout-grid { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 300px; align-items:start; } .checkout-grid .bts { grid-column:auto; } }
+.lines { list-style:none; padding:0; margin:0; }
+.line { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f0e6d6; }
+.line img { width:72px; height:54px; border-radius:10px; }
+.line-mid { flex:1; display:flex; flex-direction:column; gap:2px; }
+.line-total { font-weight:800; }
+.qty { display:flex; align-items:center; gap:8px; margin-top:2px; }
+.qbtn { width:28px; height:28px; border-radius:50%; border:2px solid var(--blue); background:#fff; color:var(--blue); font-weight:800; cursor:pointer; line-height:1; }
+.totals { margin-top:10px; }
+.trow { display:flex; justify-content:space-between; padding:3px 0; }
+.trow.grand { font-size:1.2rem; font-weight:800; border-top:2px solid var(--cream); margin-top:6px; padding-top:8px; }
+.field { display:flex; flex-direction:column; gap:4px; font-weight:700; margin:6px 0 10px; }
+.field select { font:inherit; padding:8px 10px; border-radius:12px; border:2px solid #e2d6c4; background:#fff; }
+.cards { display:flex; flex-direction:column; gap:6px; }
+.card-opt { display:flex; align-items:center; gap:8px; padding:8px 10px; border:2px solid #eee3d2; border-radius:12px; cursor:pointer; }
+.status-tag { margin-left:auto; background:#fff0ec; color:#d9472b; border-radius:8px; padding:0 8px; font-size:.8rem; font-weight:700; text-transform:uppercase; }
+.card h3 { margin:14px 0 4px; font-size:1rem; }
+.ship { margin:0 0 12px; }
+.place { width:100%; background:var(--orange); color:#fff; border:0; border-radius:999px; padding:12px; font-weight:800; font-size:1.1rem; cursor:pointer; }
+.place:disabled { opacity:.5; cursor:wait; }
+.tamper { width:100%; margin-top:8px; background:#fff0ec; color:#b8361c; border:2px solid #f3b4a8; border-radius:999px; padding:8px; font-weight:700; cursor:pointer; }
+.result { margin:0 0 12px; padding:10px 12px; border-radius:12px; font-weight:700; }
+.result.ok { background:#e8f7ee; color:#1d7444; }
+.result.bad { background:#fff0ec; color:#b8361c; }
+.receipt .qty { display:none; }
+.on-tucker { display:flex; gap:12px; align-items:center; background:#e8f7ee; border-radius:16px; padding:12px; }
+.on-tucker img { width:72px; height:72px; border-radius:50%; flex:none; }
+.on-tucker p { margin:0; }
