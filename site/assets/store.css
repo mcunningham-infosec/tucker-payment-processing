@@ -87,14 +87,14 @@
 .chat-card.mini .try { font-size:.85rem; }
 .chat-card.mini .try button { font-size:.8rem; padding:3px 9px; }
 .side .bts { position:static; max-height:460px; overflow-y:auto; }   /* long step lists scroll, so the chat stays close */
-@media (min-width:900px) { .shop-grid { grid-template-columns:300px minmax(0,1fr); } }
+@media (min-width:900px) { .shop-grid { grid-template-columns:360px minmax(0,1fr); } }
 
 /* Checkout: LEFT Behind the Scenes + chat | MIDDLE pick a customer / place order | RIGHT your cart.
    Phones: cart first, then payment, then Behind the Scenes and chat. */
 .checkout-grid { grid-template-columns:minmax(0,1fr); grid-template-areas:"cart" "pay" "side"; }
 .checkout-grid .side { grid-area:side; } .checkout-grid .pay { grid-area:pay; } .checkout-grid .cart-col { grid-area:cart; }
 @media (min-width:820px) { .checkout-grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"pay cart" "side side"; } }
-@media (min-width:1200px) { .checkout-grid { grid-template-columns:320px minmax(0,1fr) minmax(0,1fr); grid-template-areas:"side pay cart"; align-items:start; } }
+@media (min-width:1200px) { .checkout-grid { grid-template-columns:360px minmax(0,1fr) minmax(0,1fr); grid-template-areas:"side pay cart"; align-items:start; } }
 
 /* Checkout middle panel when the cart is empty (or just after an order) */
 .picks { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin:8px 0 14px; }
