@@ -1,0 +1,53 @@
+/* Cipher's Lair: black page, Matrix-green "terminal" text in dark grey boxes, small white footer. */
+body.lair { background:#000; color:#d7ffe0; border-top:6px solid #fff; }
+.lair .lair-top .tag { color:#9fb3a5; }
+.lair .tabs a { background:#111; border-color:#2c2c2c; color:#7dffa6; }
+.lair .tabs a[aria-current="page"] { background:#38ff7a; color:#000; border-color:#38ff7a; }
+.lair .home .logo { filter:drop-shadow(0 0 6px rgba(56,255,122,.25)); }
+
+.lair-main { max-width:1400px; margin:0 auto; padding:0 16px 24px; }
+.lair-sign { display:flex; flex-direction:column; align-items:center; gap:10px; margin:4px 0 16px; }
+.lair-sign img { width:min(420px, 90vw); height:auto; }
+.lair-song { background:#111; color:#7dffa6; border:1px solid #2f6b42; border-radius:999px; padding:7px 16px; font-weight:700; cursor:not-allowed; opacity:.8; }
+
+.lair-explain { max-width:980px; margin:0 auto 18px; background:#141414; border:1px solid #2a2a2a; border-radius:18px; padding:18px 22px;
+                font-family:ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace; font-size:.95rem; line-height:1.55; }
+.lair-explain strong { color:#7dffa6; }
+.lair-safe { border-left:3px solid #38ff7a; padding:6px 12px; background:#0b1a10; color:#b6ffcb; border-radius:0 10px 10px 0; }
+.lair-actions { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center; margin:14px 0 6px; }
+.attack-btn { background:#d9472b; color:#fff; border:0; border-radius:999px; padding:14px 30px; font-size:1.15rem; font-weight:900;
+              letter-spacing:.3px; cursor:pointer; box-shadow:0 0 0 3px #000, 0 0 18px rgba(217,71,43,.6); font-family:inherit; }
+.attack-btn:hover:not(:disabled) { filter:brightness(1.1); }
+.attack-btn:disabled { background:#3a3a3a; color:#999; box-shadow:none; cursor:default; }
+.report-btn { background:#38ff7a; color:#000; text-decoration:none; font-weight:900; border-radius:999px; padding:12px 22px; }
+.lair-fine { text-align:center; color:#8aa596; font-size:.85rem; margin:6px 0 0; }
+
+.lair-grid { display:grid; gap:16px; grid-template-columns:minmax(0,1fr); }
+@media (min-width:1000px) { .lair-grid { grid-template-columns:repeat(3, minmax(0,1fr)); } }
+.lair-box { background:#161616; border:1px solid #2a2a2a; border-radius:18px; padding:20px 14px 14px; display:flex; flex-direction:column; min-height:420px; }
+.lair-box.defense { border-top:3px solid #4d8dff; }
+.lair-box.attack { border-top:3px solid #d9472b; }
+.lair-box.soc { border-top:3px solid #38ff7a; }
+.box-head { display:flex; align-items:center; gap:12px; }
+.box-head img { width:56px; height:56px; border-radius:50%; background:#0d0d0d; }
+.box-head h2 { margin:0; font-size:1.2rem; color:#fff; }
+.avatar-hat { position:relative; width:56px; height:56px; flex:none; }
+.box-head .avatar-hat img:first-child { width:56px; height:56px; }
+.box-head .avatar-hat .hat { position:absolute; left:4px; top:-20px; width:48px; height:29px; border-radius:0; background:none; transform:rotate(-8deg); }
+
+.lair-bubble { position:relative; margin:12px 0 4px; background:#f5fff7; color:#0b1a10; border-radius:14px; padding:9px 13px; font-weight:700;
+          font-size:.95rem; animation:pop-in .25s ease-out; }
+.lair-bubble::before { content:""; position:absolute; left:20px; top:-9px; border:9px solid transparent; border-bottom-color:#f5fff7; border-top:0; }
+
+.term { list-style:none; margin:10px 0 0; padding:10px; background:#0a0a0a; border-radius:12px; flex:1; overflow-y:auto; max-height:460px;
+        font-family:ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace; font-size:.8rem; line-height:1.45; color:#38ff7a; }
+.term li { margin:0 0 6px; white-space:pre-wrap; overflow-wrap:anywhere; animation:pop-in .2s ease-out; }
+.term .dim { color:#3e8a56; }
+.term .sub { color:#8fd9a6; padding-left:12px; }
+.term .bad { color:#ff6b57; }
+.term .warn { color:#ffd166; }
+.term .you { color:#000; background:#38ff7a; padding:0 4px; border-radius:4px; }
+.term .big { color:#fff; font-weight:700; }
+
+.lair-foot { color:#fff; font-size:.75rem; text-align:center; opacity:.85; padding:18px 16px 26px; background:#000; }
+@media (prefers-reduced-motion: reduce) { .term li, .lair-bubble { animation:none; } }
