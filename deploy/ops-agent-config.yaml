@@ -11,7 +11,7 @@ logging:
     only_owner_alerts:
       type: exclude_logs
       match_any:
-        - 'jsonPayload.MESSAGE !~ "TUCKER_ALERT kind="'
+        - 'jsonPayload.MESSAGE !~ "TUCKER_ALERT [k]ind="'   # [k] matches "k" but stops this rule matching its own text
   service:
     pipelines:
       default_pipeline:
