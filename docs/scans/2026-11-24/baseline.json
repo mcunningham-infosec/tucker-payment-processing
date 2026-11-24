@@ -1,0 +1,44 @@
+{
+  "site": "https://tuckerpaymentprocessing.com",
+  "phase": "baseline (before fixes)",
+  "ssllabs": {
+    "scanner": "Qualys SSL Labs SSL Server Test v2.4.3",
+    "assessed_utc": "2026-11-24 21:16:17 UTC",
+    "servers": [
+      {"ip": "2606:4700:3035::ac43:999c", "tested_utc": "2026-11-24 21:12:17", "grade": "B"},
+      {"ip": "2606:4700:3036::6815:3db", "tested_utc": "2026-11-24 21:13:19", "grade": "B"},
+      {"ip": "104.21.3.219", "tested_utc": "2026-11-24 21:14:19", "grade": "B"},
+      {"ip": "172.67.153.156", "tested_utc": "2026-11-24 21:15:18", "grade": "B"}
+    ],
+    "notes": [
+      "This server supports TLS 1.0 and TLS 1.1. Grade capped to B.",
+      "This server supports TLS 1.3.",
+      "This server supports PQC (Post-Quantum Cryptography) key exchange.",
+      "HTTP Strict Transport Security (HSTS) with long duration deployed on this server.",
+      "Certificate #1: EC 256 bits (SHA384withECDSA); subject tuckerpaymentprocessing.com, SAN *.tuckerpaymentprocessing.com",
+      "Protocols: TLS 1.3 Yes, TLS 1.2 Yes, TLS 1.1 Yes, TLS 1.0 Yes"
+    ]
+  },
+  "securityheaders": {
+    "scanner": "securityheaders.com (Snyk)",
+    "report_time_utc": "2026-11-24 21:13:56 UTC",
+    "grade": "A+",
+    "present": ["Strict-Transport-Security: max-age=31536000", "X-Content-Type-Options: nosniff", "X-Frame-Options: DENY",
+                "Referrer-Policy: strict-origin-when-cross-origin",
+                "Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()",
+                "Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"]
+  },
+  "internet_nl": {
+    "scanner": "internet.nl website test",
+    "tested_utc": "2026-11-24 21:14 UTC",
+    "score": "75%",
+    "permalink": "https://internet.nl/site/tuckerpaymentprocessing.com/4434890/",
+    "results": {
+      "IPv6": "Passed (name servers and web server reachable over IPv6; same website on IPv6 and IPv4)",
+      "DNSSEC": "Failed (domain not signed)",
+      "HTTPS": "Failed: TLS version, cipher suites, hash function for key exchange failed (TLS 1.0/1.1 accepted); HTTPS available, redirect, HSTS, certificate chain/key/signature/name passed; CAA recommended",
+      "Security options": "Recommendation: X-Frame-Options, X-Content-Type-Options, CSP passed; Referrer-Policy information; security.txt missing",
+      "RPKI": "Passed"
+    }
+  }
+}

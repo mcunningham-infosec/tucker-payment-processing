@@ -1,0 +1,420 @@
+{
+  "site": "https://tuckerpaymentprocessing.com",
+  "date": "2026-11-24",
+  "intro": "Tucker Payment Processing was tested by independent, public security scanners. The first round found three gaps (old TLS versions still accepted, DNS not signed with DNSSEC, and no security.txt or CAA record). All were fixed the same afternoon and every scanner was run again. This summary shows both rounds.",
+  "method": "Method: each scanner was run against the live site from a normal web browser on 2026-11-24. Grades, times (UTC) and check results are recorded exactly as shown on each scanner's result page; the 'Verify it yourself' links run the same scan again live. Scans run by Michael Cunningham with AI assistance (Claude).",
+  "fixes_made": [
+    "Cloudflare minimum TLS version raised from 1.0 to 1.2: TLS 1.0 and 1.1 are now refused (SSL Labs B to A+).",
+    "DNSSEC enabled: the domain's DNS records are cryptographically signed and the DS record is published at the .com registry.",
+    "CAA records added: only approved certificate authorities may issue certificates for the domain.",
+    "security.txt published at /.well-known/security.txt (RFC 9116), pointing to a private GitHub vulnerability-reporting channel and SECURITY.md."
+  ],
+  "known_limits": [
+    "internet.nl still marks two TLS 1.2 details (cipher suites; hash function for key exchange) because Cloudflare keeps some older-style options for compatibility. Choosing exact cipher suites is not available on Cloudflare's Free plan. TLS 1.3 is preferred and post-quantum key exchange is supported.",
+    "Sucuri SiteCheck's malware scan was refused (HTTP 403) by Cloudflare's bot defense, which blocks automated scanners by design. Its blocklist check (9 lists) ran and is clean."
+  ],
+  "scans": [
+    {
+      "id": "ssl-labs",
+      "name": "Qualys SSL Labs SSL Server Test",
+      "scanner": "Qualys SSL Labs v2.4.3",
+      "checks_what": "HTTPS/TLS configuration: protocols, certificates, key exchange, cipher strength, HSTS",
+      "before": {
+        "grade": "B",
+        "time": "2026-11-24 21:16 UTC",
+        "bad": true
+      },
+      "after": {
+        "grade": "A+",
+        "time": "2026-11-24 21:26 UTC"
+      },
+      "summary": "All four Cloudflare edge addresses (two IPv4, two IPv6) graded A+ after TLS 1.0 and 1.1 were turned off. Before the fix every address was capped at B for accepting those old versions.",
+      "fixes": [
+        "Minimum TLS version raised to 1.2 at Cloudflare (SSL Labs: 'This server supports TLS 1.0 and TLS 1.1. Grade capped to B.')."
+      ],
+      "checks": [
+        {
+          "check": "2606:4700:3035::ac43:999c (IPv6)",
+          "before": "B",
+          "after": "A+",
+          "detail": "Tested 21:12 and 21:23 UTC"
+        },
+        {
+          "check": "2606:4700:3036::6815:3db (IPv6)",
+          "before": "B",
+          "after": "A+",
+          "detail": "Tested 21:13 and 21:24 UTC"
+        },
+        {
+          "check": "104.21.3.219 (IPv4)",
+          "before": "B",
+          "after": "A+",
+          "detail": "Tested 21:14 and 21:24 UTC"
+        },
+        {
+          "check": "172.67.153.156 (IPv4)",
+          "before": "B",
+          "after": "A+",
+          "detail": "Tested 21:15 and 21:25 UTC"
+        },
+        {
+          "check": "Protocols",
+          "before": "fail",
+          "after": "pass",
+          "detail": "Before: TLS 1.3, 1.2, 1.1, 1.0. After: TLS 1.3 and 1.2 only; SSL 2/3 never supported"
+        },
+        {
+          "check": "TLS 1.3",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Supported"
+        },
+        {
+          "check": "Post-quantum key exchange",
+          "before": "pass",
+          "after": "pass",
+          "detail": "PQC key exchange supported"
+        },
+        {
+          "check": "HSTS",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Long duration (max-age 31536000)"
+        },
+        {
+          "check": "Certificate",
+          "before": "pass",
+          "after": "pass",
+          "detail": "EC 256-bit, SHA384withECDSA; tuckerpaymentprocessing.com and *.tuckerpaymentprocessing.com"
+        }
+      ],
+      "notes": [
+        "Results were set to 'hidden' so the site is not listed on SSL Labs' public boards."
+      ],
+      "retest": "https://www.ssllabs.com/ssltest/analyze.html?d=tuckerpaymentprocessing.com&hideResults=on"
+    },
+    {
+      "id": "internet-nl",
+      "name": "Internet.nl Website Test",
+      "scanner": "internet.nl (Dutch Internet Standards Platform)",
+      "checks_what": "Modern standards: IPv6, DNSSEC, HTTPS/TLS, security headers, security.txt, route security (RPKI)",
+      "before": {
+        "grade": "75%",
+        "time": "2026-11-24 21:14 UTC",
+        "bad": true
+      },
+      "after": {
+        "grade": "96%",
+        "time": "2026-11-24 21:28 UTC"
+      },
+      "summary": "Score rose from 75% to 96%. DNSSEC, TLS version, CAA and security.txt went from failing or recommended to passing. The remaining 4% is two TLS 1.2 details that Cloudflare's Free plan does not let a site change.",
+      "fixes": [
+        "DNSSEC enabled (domain signed, DS record at the .com registry).",
+        "TLS 1.0 and 1.1 turned off.",
+        "CAA records added.",
+        "security.txt published."
+      ],
+      "checks": [
+        {
+          "check": "IPv6 (name servers and web server)",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Reachable over IPv6; same website on IPv6 and IPv4"
+        },
+        {
+          "check": "DNSSEC",
+          "before": "fail",
+          "after": "pass",
+          "detail": "Domain name signed"
+        },
+        {
+          "check": "HTTPS available, redirect, HSTS",
+          "before": "pass",
+          "after": "pass",
+          "detail": ""
+        },
+        {
+          "check": "TLS version",
+          "before": "fail",
+          "after": "pass",
+          "detail": "Only TLS 1.2 and 1.3 accepted"
+        },
+        {
+          "check": "Cipher suites",
+          "before": "fail",
+          "after": "limit",
+          "detail": "Cloudflare keeps some older TLS 1.2 suites; not changeable on the Free plan"
+        },
+        {
+          "check": "Hash function for key exchange",
+          "before": "fail",
+          "after": "limit",
+          "detail": "Same cause as cipher suites"
+        },
+        {
+          "check": "Cipher order, key exchange parameters, renegotiation, 0-RTT, EMS",
+          "before": "pass",
+          "after": "pass",
+          "detail": ""
+        },
+        {
+          "check": "Certificate (trust chain, key, signature, name)",
+          "before": "pass",
+          "after": "pass",
+          "detail": ""
+        },
+        {
+          "check": "CAA for domain",
+          "before": "recommendation",
+          "after": "pass",
+          "detail": "CAA records published"
+        },
+        {
+          "check": "Security headers (X-Frame-Options, X-Content-Type-Options, CSP)",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Referrer-Policy: information only"
+        },
+        {
+          "check": "security.txt",
+          "before": "recommendation",
+          "after": "pass",
+          "detail": "/.well-known/security.txt (RFC 9116)"
+        },
+        {
+          "check": "Route security (RPKI)",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Web server and name servers"
+        }
+      ],
+      "retest": "https://internet.nl/site/tuckerpaymentprocessing.com/",
+      "permalink": "https://internet.nl/site/tuckerpaymentprocessing.com/4434911/"
+    },
+    {
+      "id": "mozilla-observatory",
+      "name": "Mozilla HTTP Observatory",
+      "scanner": "Mozilla HTTP Observatory (MDN)",
+      "checks_what": "Web security best practices: CSP, cookies, CORS, redirects, HSTS, SRI, framing, cross-origin policies",
+      "before": {
+        "grade": "n/a",
+        "time": "run after the fixes only"
+      },
+      "after": {
+        "grade": "A+",
+        "time": "2026-11-24 about 21:29 UTC"
+      },
+      "summary": "A+ with a score of 120 out of 100 and 12 of 12 tests passed. The bonus points come from a strict Content-Security-Policy, Referrer-Policy, Subresource Integrity and frame protection.",
+      "checks": [
+        {
+          "check": "Content Security Policy",
+          "before": "",
+          "after": "pass",
+          "detail": "+5: implemented without 'unsafe-inline' or 'unsafe-eval'"
+        },
+        {
+          "check": "Cookies",
+          "before": "",
+          "after": "pass",
+          "detail": "No cookies detected"
+        },
+        {
+          "check": "Cross-Origin Resource Sharing",
+          "before": "",
+          "after": "pass",
+          "detail": "Content not visible via CORS"
+        },
+        {
+          "check": "Redirection",
+          "before": "",
+          "after": "pass",
+          "detail": "HTTP redirects to HTTPS on the same host"
+        },
+        {
+          "check": "Referrer Policy",
+          "before": "",
+          "after": "pass",
+          "detail": "+5: strict-origin-when-cross-origin"
+        },
+        {
+          "check": "Strict Transport Security",
+          "before": "",
+          "after": "pass",
+          "detail": "At least six months (max-age 31536000)"
+        },
+        {
+          "check": "Subresource Integrity",
+          "before": "",
+          "after": "pass",
+          "detail": "+5: all scripts loaded securely (self-hosted)"
+        },
+        {
+          "check": "X-Content-Type-Options",
+          "before": "",
+          "after": "pass",
+          "detail": "nosniff"
+        },
+        {
+          "check": "X-Frame-Options",
+          "before": "",
+          "after": "pass",
+          "detail": "+5: via CSP frame-ancestors 'none' and DENY"
+        },
+        {
+          "check": "Cross-Origin-Embedder-Policy",
+          "before": "",
+          "after": "info",
+          "detail": "Not implemented (optional; no score impact)"
+        },
+        {
+          "check": "Cross-Origin-Opener-Policy",
+          "before": "",
+          "after": "info",
+          "detail": "Not implemented (optional; no score impact)"
+        },
+        {
+          "check": "Cross-Origin-Resource-Policy",
+          "before": "",
+          "after": "info",
+          "detail": "Not implemented (optional; no score impact)"
+        }
+      ],
+      "notes": [
+        "Optional further hardening the scanner suggests: Cross-Origin-Opener/Embedder policies, default-src 'none' in the CSP, and HSTS preload. These are on the site's security-review list."
+      ],
+      "retest": "https://developer.mozilla.org/en-US/observatory/analyze?host=tuckerpaymentprocessing.com"
+    },
+    {
+      "id": "securityheaders",
+      "name": "SecurityHeaders.com",
+      "scanner": "securityheaders.com (Snyk)",
+      "checks_what": "HTTP security headers that protect visitors' browsers (XSS, clickjacking, sniffing, downgrade)",
+      "before": {
+        "grade": "A+",
+        "time": "2026-11-24 21:13 UTC"
+      },
+      "after": {
+        "grade": "A+",
+        "time": "2026-11-24 21:24 UTC"
+      },
+      "summary": "A+ in both rounds: all six major security headers are present, including a strict Content-Security-Policy with no inline scripts and no third-party code.",
+      "checks": [
+        {
+          "check": "Strict-Transport-Security",
+          "before": "pass",
+          "after": "pass",
+          "detail": "max-age=31536000"
+        },
+        {
+          "check": "Content-Security-Policy",
+          "before": "pass",
+          "after": "pass",
+          "detail": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        },
+        {
+          "check": "X-Frame-Options",
+          "before": "pass",
+          "after": "pass",
+          "detail": "DENY"
+        },
+        {
+          "check": "X-Content-Type-Options",
+          "before": "pass",
+          "after": "pass",
+          "detail": "nosniff"
+        },
+        {
+          "check": "Referrer-Policy",
+          "before": "pass",
+          "after": "pass",
+          "detail": "strict-origin-when-cross-origin"
+        },
+        {
+          "check": "Permissions-Policy",
+          "before": "pass",
+          "after": "pass",
+          "detail": "camera=(), microphone=(), geolocation=(), payment=()"
+        }
+      ],
+      "retest": "https://securityheaders.com/?q=https%3A%2F%2Ftuckerpaymentprocessing.com%2F&hide=on&followRedirects=on"
+    },
+    {
+      "id": "sucuri-sitecheck",
+      "name": "Sucuri SiteCheck",
+      "scanner": "Sucuri SiteCheck",
+      "checks_what": "Malware, defacement and website blocklists",
+      "before": {
+        "grade": "Clean",
+        "time": "2026-11-24 21:26 UTC"
+      },
+      "after": {
+        "grade": "Clean",
+        "time": "2026-11-24 21:26 UTC"
+      },
+      "summary": "Not blocklisted on any of the 9 lists checked. The malware scan itself was refused with HTTP 403 by Cloudflare's bot defense, which blocks automated scanners by design.",
+      "checks": [
+        {
+          "check": "Google Safe Browsing",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "McAfee",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "Sucuri Labs",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "ESET",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "PhishTank",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "Yandex",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "Opera",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Domain clean"
+        },
+        {
+          "check": "Blocklists checked in total",
+          "before": "pass",
+          "after": "pass",
+          "detail": "9 of 9 clean"
+        },
+        {
+          "check": "Malware scan",
+          "before": "info",
+          "after": "info",
+          "detail": "Refused (HTTP 403) by Cloudflare bot defense; the scanner's two header remarks describe Cloudflare's block page, not this site"
+        },
+        {
+          "check": "Website firewall",
+          "before": "pass",
+          "after": "pass",
+          "detail": "Firewall detected (Cloudflare)"
+        }
+      ],
+      "retest": "https://sitecheck.sucuri.net/results/https/tuckerpaymentprocessing.com"
+    }
+  ]
+}
