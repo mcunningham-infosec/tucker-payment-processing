@@ -16,13 +16,14 @@
   // Which page we're on: "home", "treats" or "cipher" (from the file name; "/" is the home page).
   var file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   var PAGE = file === "treats.html" ? "treats" : file === "cipher.html" ? "cipher" : file === "index.html" ? "home" : "";
-  if (!PAGE) { return; }
 
   // The tour. page = where the step happens; spot = what to highlight (a CSS selector, or none);
   // go = for the last step on a page, where Next takes the visitor.
   var STEPS = [
-    { page: "home", spot: ".top .logo",
-      say: "Woof! I'm Tucker. This payment company is pretend, but the AI is real. I'll show you the three places to try it: my chat, my treat store and Cipher's Lair. It takes about a minute." },
+    { page: "home", spot: null,
+      say: "Woof! I'm Tucker. Let me show you around: my chat, my treat store and Cipher's Lair. It takes about a minute, and you can close me any time." },
+    { page: "home", spot: "#real-tech",
+      say: "First, the important part: this is a real, live technology demonstration. The company and its customers are pretend, but nothing about the technology is fake: real AI, a real hardened server, real security controls and real attacks." },
     { page: "home", spot: ".chat-card",
       say: "This is me: a real AI support agent, powered by Google Gemini. If you like, ask me about company policies, or tap \"Verify as Penny\" and ask about her account. I only see a customer's data after code checks who they are. No need to try anything; just click Next whenever you're ready." },
     { page: "home", spot: ".chat-card .try .attack",
@@ -101,18 +102,17 @@
     bubble.appendChild(img); bubble.appendChild(body); bubble.appendChild(close);
     document.body.appendChild(bubble);
 
-    // The small "Tour" button that stays in the corner, so the tour can be started (or restarted) any time.
-    launcher = el("button", "tour-launch");
+    // "Restart the Tour" sits at the end of the site's tab row, so the tour can be started again from any page.
+    var tabs = document.querySelector("nav.tabs");
+    launcher = el("button", "tour-tab", "Restart the Tour");
     launcher.type = "button";
-    var li = el("img"); li.src = "assets/tucker_avatar_256.png"; li.alt = ""; li.width = 32; li.height = 32;
-    launcher.appendChild(li);
-    launcher.appendChild(el("span", "", "Take the tour"));
-    document.body.appendChild(launcher);
+    if (tabs) { tabs.appendChild(launcher); }
 
     nextBtn.addEventListener("click", next);
     backBtn.addEventListener("click", back);
     close.addEventListener("click", end);
-    launcher.addEventListener("click", function () { show(firstOn(PAGE)); });
+    launcher.addEventListener("click", function () { show(0); });
+    window.addEventListener("resize", function () { if (!bubble.hidden && current >= 0) { place(spotted); } });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !bubble.hidden) { end(); } });
   }
 
@@ -123,12 +123,8 @@
     bubble.classList.toggle("tour-cipher", who === "cipher");
   }
 
-  function firstOn(page) {
-    for (var i = 0; i < STEPS.length; i++) { if (STEPS[i].page === page) { return i; } }
-    return 0;
-  }
-
   function unspot() {
+    if (watcher) { watcher.disconnect(); }
     if (spotted) { spotted.classList.remove("tour-spot"); spotted = null; }
   }
 
@@ -144,12 +140,8 @@
     if (target) {
       target.classList.add("tour-spot");
       spotted = target;
-      var r = target.getBoundingClientRect();
-      window.scrollTo({ top: Math.max(0, r.top + window.pageYOffset - 90), behavior: "smooth" });
-      // On wide screens, keep the bubble on the other side from what Tucker is pointing at, so it doesn't cover it.
-      bubble.classList.toggle("tour-left", r.left + r.width / 2 > window.innerWidth / 2);
-    } else {
-      bubble.classList.remove("tour-left");
+      // Re-place if the item or the page around it changes size (e.g. products or images finish loading above it).
+      if (watcher) { watcher.observe(target); watcher.observe(document.body); }
     }
     guide(s.who);
     textEl.textContent = s.say;
@@ -157,9 +149,66 @@
     backBtn.hidden = i === 0;
     nextBtn.textContent = s.last ? "Done" : s.go ? "Take me there" : "Next";
     bubble.hidden = false;
-    launcher.hidden = true;
+    place(target);
     markOffered();
     nextBtn.focus({ preventScroll: true });
+  }
+
+  // Put the bubble right next to what the guide is talking about, never on top of it, and scroll so both are in
+  // view. Preference: just below the item, then beside it (wide screens), then just above it. With nothing to
+  // point at, the bubble sits in the middle of the screen.
+  var watcher = window.ResizeObserver ? new ResizeObserver(function () { if (spotted && !bubble.hidden) { place(spotted); } }) : null;
+
+  // Is the item pinned on screen while the page scrolls (CSS position:sticky, like the store's chat)?
+  function pinned(node) {
+    for (; node && node !== document.body; node = node.parentElement) {
+      if (getComputedStyle(node).position === "sticky") { return true; }
+    }
+    return false;
+  }
+
+  function place(target) {
+    var GAP = 14, EDGE = 10;
+    bubble.classList.remove("tour-center", "tour-fixed");
+    bubble.style.left = bubble.style.top = "";
+    if (!target) { bubble.classList.add("tour-center"); return; }
+
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    var w = bubble.offsetWidth, h = bubble.offsetHeight;
+    var r = target.getBoundingClientRect();
+    var clampX = function (v) { return Math.max(EDGE, Math.min(v, vw - w - EDGE)); };
+    var side = vw - r.right >= w + GAP + EDGE ? "right" : r.left >= w + GAP + EDGE ? "left" : "";
+    var x, y;
+
+    if (pinned(target)) {
+      // A pinned item stays put on screen, so the bubble is pinned next to it too, and nothing scrolls.
+      bubble.classList.add("tour-fixed");
+      if (r.bottom + GAP + h <= vh - EDGE) { x = clampX(r.left); y = r.bottom + GAP; }
+      else if (side) { x = side === "right" ? r.right + GAP : r.left - w - GAP; y = Math.max(EDGE, Math.min(r.top, vh - h - EDGE)); }
+      else { x = clampX(r.left); y = Math.max(EDGE, r.top - h - GAP); }
+      bubble.style.left = x + "px";
+      bubble.style.top = y + "px";
+      return;
+    }
+
+    var x0 = r.left + window.pageXOffset, y0 = r.top + window.pageYOffset;   // item's position on the page
+    var scrollTo;
+    if (r.height + GAP + h + 2 * EDGE <= vh) {                    // fits below: center the pair on screen
+      x = clampX(x0);
+      y = y0 + r.height + GAP;
+      scrollTo = y0 - (vh - (r.height + GAP + h)) / 2;
+    } else if (side) {                                             // tall item: beside it
+      x = side === "right" ? x0 + r.width + GAP : x0 - w - GAP;
+      y = y0;
+      scrollTo = y0 - 70;
+    } else {                                                       // tall and full width: just above it
+      x = clampX(x0);
+      y = Math.max(EDGE, y0 - h - GAP);
+      scrollTo = y - EDGE;
+    }
+    bubble.style.left = x + "px";
+    bubble.style.top = y + "px";
+    window.scrollTo({ top: Math.max(0, scrollTo), behavior: "smooth" });
   }
 
   // A one-off tip outside the numbered tour, e.g. after Cipher's attack finishes. Button goes to href.
@@ -172,9 +221,8 @@
     countEl.textContent = "";
     backBtn.hidden = true;
     nextBtn.textContent = label;
-    bubble.classList.remove("tour-left");
     bubble.hidden = false;
-    launcher.hidden = true;
+    place(null);
   }
 
   function pageFile(page) { return page === "home" ? "./" : page + ".html"; }
@@ -198,7 +246,6 @@
     note = null;
     unspot();
     bubble.hidden = true;
-    launcher.hidden = false;
     current = -1;
     markOffered();
   }
@@ -214,6 +261,7 @@
 
   function start() {
     build();
+    if (!PAGE) { return; }        // e.g. About Us and checkout: just the "Restart the Tour" button
     // After Cipher's attack finishes (cipher.js fires "cipher-done"), Tucker recommends the About Us page.
     if (PAGE === "cipher") {
       document.addEventListener("cipher-done", function () {

@@ -1,13 +1,14 @@
 /* tour.css - Tucker's guided tour (see tour.js). Works on the light pages and on the dark Lair. Mobile-first. */
 
-/* The speech bubble: pinned to the bottom of the screen on phones, bottom-right on wider screens. */
-.tour { position:fixed; left:10px; right:10px; bottom:10px; z-index:1000; display:flex; gap:12px; align-items:flex-start;
+/* The speech bubble. Placed on the page right next to what the guide is pointing at (tour.js works out where);
+   with nothing to point at, it sits in the middle of the screen. */
+.tour { position:absolute; z-index:1000; width:min(400px, calc(100vw - 20px)); display:flex; gap:12px; align-items:flex-start;
         background:#fffdf8; color:#2b2b2b; border:3px solid #1f5fbf; border-radius:18px; padding:12px 14px 12px 12px;
         box-shadow:0 10px 30px rgba(0,0,0,.35); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
         animation:tour-in .25s ease-out; }
+.tour.tour-fixed { position:fixed; }
+.tour.tour-center { position:fixed; left:50% !important; top:50% !important; transform:translate(-50%,-50%); animation:none; }
 .tour[hidden] { display:none; }
-@media (min-width:700px) { .tour { left:auto; right:20px; bottom:20px; width:400px; }
-                            .tour.tour-left { right:auto; left:20px; } }
 
 .tour-pic { width:56px; height:56px; border-radius:50%; flex:none; border:3px solid #ff8a1f; background:#fff; }
 .tour-body { flex:1; min-width:0; }
@@ -33,14 +34,10 @@
 .tour-spot { outline:3px solid #ff8a1f !important; outline-offset:4px; border-radius:12px;
              animation:tour-pulse 1.6s ease-in-out infinite; }
 
-/* The corner button for starting (or restarting) the tour. */
-.tour-launch { position:fixed; right:14px; bottom:14px; z-index:999; display:flex; align-items:center; gap:8px;
-               background:#1f5fbf; color:#fff; border:2px solid #fff; border-radius:999px; padding:4px 14px 4px 4px;
-               font:700 .9rem system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; cursor:pointer;
-               box-shadow:0 4px 14px rgba(0,0,0,.3); }
-.tour-launch img { width:32px; height:32px; border-radius:50%; background:#fff; }
-.tour-launch:hover, .tour-launch:focus-visible { background:#174a96; outline:none; }
-.tour-launch[hidden] { display:none; }
+/* "Restart the Tour", at the end of the site's tab row: same pill shape as the tabs, in Tucker orange. */
+.tabs .tour-tab { font:inherit; font-weight:700; color:#fff; background:#ff8a1f; border:2px solid #ff8a1f; border-radius:999px;
+                  padding:7px 16px; font-size:.95rem; cursor:pointer; }
+.tabs .tour-tab:hover, .tabs .tour-tab:focus-visible { background:#e5761a; border-color:#e5761a; outline:none; }
 
 @keyframes tour-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
 @keyframes tour-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(255,138,31,.55); } 50% { box-shadow:0 0 0 10px rgba(255,138,31,0); } }
