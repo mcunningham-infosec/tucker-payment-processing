@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var shown = { attacks: 0, soc: 0, actions: 0 }, timer = null, finished = false, introduced = false;
+  var shown = { attacks: 0, soc: 0, actions: 0 }, timer = null, finished = false, introduced = false, analyzing = false;
 
   function $(id) { return document.getElementById(id); }
 
@@ -46,7 +46,7 @@
   function intro(total) {
     if (introduced) { return; }
     introduced = true;
-    say("attack", "Mister Tucker. I am about to run " + total + " attacks against your little treat shop. " +
+    say("attack", "Muhahaha! I am about to run " + total + " attacks against your little treat shop. " +
                   "Let's see how long your defenses last.");
     line("log-attack", "cipher.announce(attacks = " + total + ")", "big");
     window.setTimeout(function () {
@@ -142,8 +142,15 @@
     shown.soc = (st.soc || []).length;
     (st.actions || []).slice(shown.actions).forEach(renderAction);
     shown.actions = (st.actions || []).length;
+    // All attacks are in but the AI's final report isn't back yet: say so, so the box never looks stuck.
+    if (st.status === "running" && shown.attacks >= total && shown.soc < 2 && !analyzing) {
+      analyzing = true;
+      line("log-soc", "squirrel.analyze(\"final\")  // run over: reading all " + total + " attacks and the web logs...", "warn");
+      say("soc", "That's all " + total + "! Reading the logs and writing up my final report...");
+    }
     if (st.status === "running") {
-      setStatus("Attack in progress: " + shown.attacks + " of " + total + "...");
+      setStatus(shown.attacks >= total ? "All " + total + " attacks done. The AI SOC Squirrel is writing its final report..."
+                                       : "Attack in progress: " + shown.attacks + " of " + total + "...");
       $("attack").disabled = true; $("attack").textContent = "Attacking...";
     }
     if ((st.status === "done" || st.status === "error") && !finished) { finish(st); }
@@ -174,7 +181,7 @@
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
     $("report-link").hidden = true;
     $("you-card").hidden = true; youShown = false;
-    shown = { attacks: 0, soc: 0, actions: 0 }; finished = false; introduced = false;
+    shown = { attacks: 0, soc: 0, actions: 0 }; finished = false; introduced = false; analyzing = false;
   }
 
   function start() {
