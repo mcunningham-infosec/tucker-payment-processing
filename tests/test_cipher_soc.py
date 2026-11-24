@@ -101,3 +101,27 @@ def test_payloads_are_defanged_before_reaching_the_visitor():
     for bad in ("<script>", "'", "../", "etc/passwd", "%0d%0a", "4111 1111 1111 1111"):
         assert bad not in out
     assert "1111" in out and "script" in out          # still readable to a person
+
+
+def test_halfway_squirrel_cannot_act_or_claim_a_block():
+    """Halfway, the AI only gets its read tool, can't propose actions, and any line claiming a block is
+    dropped. The injection flag comes from the actual logs, not the AI's word."""
+    half = ATTACKS[:2]                         # no planted log line yet, run not finished
+    seen = {}
+
+    class Spy(FakeLLM):
+        def generate(self, system, messages, decl):
+            seen["tools"] = [d["name"] for d in decl]
+            return ModelTurn(text='{"headline":"Locked the attacker out for 24h!","lines":["I spotted prompt '
+                             'injections!","I have locked out the attacker for 24h."],"verdict":"contained",'
+                             '"injection_spotted":true}', tokens_in=10, tokens_out=10)
+
+    rep = soc.check_in(Spy([]), half, final=False)
+    assert seen["tools"] == ["get_run_events"]
+    assert not any("24h" in l for l in rep["lines"]) and "24h" not in rep["headline"]
+    assert rep["injection_spotted"] is False
+    assert soc._run_tool("propose_action", {"action": "block_attacker_24h", "reason": "x"}, half, [], False)["accepted"] is False
+
+
+def test_squirrel_can_attribute_the_attacker_from_evidence():
+    assert "Cipher/1.0" in soc.timeline(ATTACKS)["attacker"]["user_agent"]
