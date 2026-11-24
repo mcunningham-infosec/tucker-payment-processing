@@ -11,7 +11,10 @@ Every transaction is a Tucker's Treats purchase: it points at an order made of r
 amount is that order's total (items + shipping + NJ tax, same rules as checkout).
 Dates are written relative to SEED_ANCHOR; the nightly reset slides them forward so the newest purchase
 is always yesterday (see db/nightly_reset.sql). The history never goes stale.
+
+Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
+# ruff: noqa: S608 - this script writes seed.sql offline from fixed, fictional data; every value goes through sql_str().
 import random
 from datetime import datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP

@@ -5,6 +5,7 @@
 -- KEEPS: the 30 seeded historical orders (6 per customer), the catalog and customers, and ops.ai_usage
 --        (the AI spend tally that the monthly $8 cap is counted from).
 -- Attack blocks (V2) are NOT reset here: each one expires on its own after a full 24 hours.
+-- Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 BEGIN;
 DELETE FROM demo.order_items WHERE order_id IN (SELECT id FROM demo.orders WHERE source = 'web');
 DELETE FROM demo.orders WHERE source = 'web';

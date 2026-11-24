@@ -8,6 +8,7 @@
 --                 It has no direct access to any demo table, so it can't edit or delete an order either.
 --   order_writer  NOLOGIN owner of demo.place_order(): the only role that can INSERT orders.
 --                 Nobody can UPDATE or DELETE orders.
+-- Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'tucker_app')   THEN CREATE ROLE tucker_app LOGIN;   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'tucker_store') THEN CREATE ROLE tucker_store LOGIN; END IF;

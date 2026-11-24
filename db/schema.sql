@@ -5,6 +5,7 @@
 --   ops  : the app's own operational records (AI spend, guardrail events, visit counts). The web app can
 --          INSERT here, but these tables never contain customer data and are never shown to the AI.
 -- No full card numbers exist anywhere: cards are stored as brand + last 4 digits + a random token.
+-- Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 
 DROP SCHEMA IF EXISTS demo CASCADE;
 DROP SCHEMA IF EXISTS ops CASCADE;
