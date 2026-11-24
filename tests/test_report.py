@@ -16,6 +16,8 @@ LOG = [
     '3.223.154.19 - - [24/Nov/2026:11:00:01 -0500] "GET /.env HTTP/1.1" 404 196 "-" "Mozilla/5.0 zgrab/0.x"',
     '3.223.154.19 - - [24/Nov/2026:11:00:02 -0500] "GET /admin/config.php HTTP/1.1" 404 196 "-" "Mozilla/5.0 zgrab/0.x"',
     '9.9.9.9 - - [24/Nov/2026:12:00:00 -0500] "GET /index.html HTTP/1.1" 200 10 "-" "<img src=x onerror=alert(1)><script>x</script>"',
+    '9.9.9.9 - - [24/Nov/2026:12:00:01 -0500] "GET /assets/site.css HTTP/1.1" 200 10 "-" "<img src=x onerror=alert(1)><script>x</script>"',
+    '5.5.5.5 - - [24/Nov/2026:12:30:00 -0500] "GET / HTTP/1.1" 200 9143 "-" "Mozilla/5.0 (Windows NT 10.0) Chrome/120"',
     '24.47.88.69 - - [23/Nov/2026:23:59:59 -0500] "GET / HTTP/2.0" 200 9143 "-" "Mozilla/5.0" cf="US|New Jersey|Howell"',
 ]
 ACT = {"events": {"message": 7, "injection_blocked": 2, "verify_ok": 1, "verify_fail": 1}, "chat_sessions": 2,
@@ -31,7 +33,7 @@ def _entries(tmp_path):
 
 def test_reads_only_this_day_and_skips_ciphers_loopback_traffic(tmp_path):
     e = _entries(tmp_path)
-    assert {x["ip"] for x in e} == {"24.47.88.69", "3.223.154.19", "9.9.9.9"}
+    assert {x["ip"] for x in e} == {"24.47.88.69", "3.223.154.19", "9.9.9.9", "5.5.5.5"}
     assert all(x["when"].date() == DAY for x in e)
     assert [x for x in e if x["ip"] == "24.47.88.69"][0]["city"] == "Howell"
 
@@ -42,11 +44,12 @@ def test_people_bots_and_scanners_are_told_apart(tmp_path):
     assert not me["bot"] and me["pages"]["/cipher.html"] == 1 and me["owner"] == "TEST-NET"
     assert me["where"] == "Howell, New Jersey, US"
     assert vis["3.223.154.19"]["bot"] and vis["3.223.154.19"]["scanner"]
+    assert vis["5.5.5.5"]["bot"]            # browser-like name, but never loaded the page's styles/scripts
 
 
 def test_report_flags_the_unusual_and_escapes_visitor_text(tmp_path):
     subject, text, html_body = report.build(DAY, _entries(tmp_path), ACT, lookup=lambda ip: "TEST-NET")
-    assert "7 chats" in subject and "to review" in subject
+    assert "2 visitors, 3 page views, 7 chats" in subject and "to review" in subject
     assert "probed for common weak spots" in text and "2 prompt-injection attempt(s) blocked" in text
     assert "zip_lockout" in text and "$0.05 of $0.75" in text
     assert "<script>" not in html_body and "<img" not in html_body          # visitor text can't inject HTML
