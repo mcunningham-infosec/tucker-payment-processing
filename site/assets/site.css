@@ -38,3 +38,9 @@ footer { margin:40px auto 0; font-size:.8rem; color:var(--muted); max-width:560p
   .bubble::after { left:calc(50% - 12px); }
   @keyframes pop { from { transform:translateX(-50%) scale(.6); opacity:0; } to { transform:translateX(-50%) scale(1); opacity:1; } }
 }
+/* Call-to-action: the way into the chat */
+.cta { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:800; font-size:1.1rem; border-radius:999px; padding:10px 24px; box-shadow:0 5px 0 rgba(31,95,191,.25); }
+.cta span { font-weight:600; opacity:.85; font-size:.9rem; }
+.cta:hover, .cta:focus-visible { background:#174a96; outline:none; }
+.bubble-cta { display:inline-block; background:var(--orange); color:#fff; text-decoration:none; font-weight:700; border-radius:999px; padding:8px 16px; margin-right:6px; font-size:.95rem; }
+.about a { color:var(--blue); }
