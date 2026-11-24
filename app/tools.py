@@ -102,6 +102,7 @@ def verify_identity(session: Session, customer_number: str = "", zip_code: str =
     if row and str(zip_code).strip() == row["zip"]:
         session.customer_id = row["id"]
         session.customer_first_name = row["full_name"].split()[0]
+        session.customer_ref = str(customer_number).strip().upper()
         return ({"verified": True, "first_name": session.customer_first_name},
                 {"type": "authz", "status": "ok", "label": "Identity verified (in Python, not by the AI)",
                  "detail": f"Session is now bound to customer {str(customer_number).upper()}. "

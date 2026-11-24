@@ -92,6 +92,16 @@ def chat(body: ChatIn, request: Request, response: Response):
     return result
 
 
+@app.get("/api/whoami")
+def whoami(request: Request):
+    """Who this browser is verified as (first name and customer number only), so every page's chat and the
+    checkout show the same person. Never creates a session, never returns account data."""
+    s = sessions.peek(request.cookies.get(COOKIE))
+    if s and s.customer_id:
+        return {"verified_as": s.customer_first_name, "customer_ref": s.customer_ref}
+    return {"verified_as": None, "customer_ref": None}
+
+
 @app.post("/api/reset")
 def reset(request: Request, response: Response):
     """Forget the visitor's chat and verified identity."""
@@ -143,4 +153,15 @@ def checkout(body: CheckoutIn, request: Request, response: Response):
     result = store.checkout(body.items[:20], s.id, events, extra, body.customer_ref, client_ip(request))
     if result.get("ok"):
         s.order_refs.append(result["confirmation"])
-    return {**result, "events": events}
+        shopper = body.customer_ref.strip().upper()
+        if s.customer_id and s.customer_ref and shopper != s.customer_ref:
+            # Picking a shopper proves nothing, so it must never GRANT access to that customer's account.
+            # Shopping as someone else signs the visitor out of the identity they verified instead.
+            was = s.customer_first_name
+            sessions.sign_out_customer(s)
+            events.append({"type": "authz", "status": "ok",
+                           "label": f"Signed out of {was}'s verified identity",
+                           "detail": f"You shopped as {shopper}. Choosing a shopper isn't proof of identity, so Tucker "
+                                     "won't treat you as that customer either. To see an account again, verify in the "
+                                     "home page chat with the customer number and ZIP code."})
+    return {**result, "events": events, "verified_as": s.customer_first_name}

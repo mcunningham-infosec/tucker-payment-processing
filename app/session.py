@@ -22,6 +22,7 @@ class Session:
     last_seen: float = field(default_factory=time.time)
     customer_id: int | None = None          # set ONLY by a successful identity check
     customer_first_name: str | None = None
+    customer_ref: str | None = None         # e.g. TPP-1001, set together with customer_id
     verify_attempts: int = 0
     message_times: list = field(default_factory=list)
     message_count: int = 0
@@ -48,6 +49,19 @@ def get_or_create(session_id: str | None) -> Session:
         _SESSIONS[s.id] = s
     s.last_seen = time.time()
     return s
+
+
+def peek(session_id: str | None) -> Session | None:
+    """Look up a live session without creating one (used by read-only status checks)."""
+    _expire_old()
+    return _SESSIONS.get(session_id or "")
+
+
+def sign_out_customer(s: Session):
+    """Forget who the visitor verified as (the chat history about that account goes too)."""
+    s.customer_id = s.customer_first_name = s.customer_ref = None
+    s.history = []
+    s.verify_attempts = 0
 
 
 def rotate(s: Session):
