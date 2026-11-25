@@ -25,6 +25,10 @@ the domain is verified there, and remove the null MX only if the domain should r
 
 ## Cloudflare settings that matter
 
-- SSL/TLS: minimum TLS 1.2 (HTTPS and HSTS are enforced by the server itself; see apache-hardening.conf).
+- SSL/TLS: minimum TLS 1.2; "Always Use HTTPS" on, so plain-HTTP requests are redirected at Cloudflare's edge
+  before they reach the server (the HSTS preload checker requires that no HSTS header is sent over HTTP).
+- HSTS: sent by the server (max-age two years, includeSubDomains, preload; see apache-hardening.conf). The domain was
+  submitted to the browser preload list at hstspreload.org on Nov 24, 2026 (status: pending). Once listed, removal
+  takes months, so every subdomain must stay HTTPS-only.
 - Caching: Browser Cache TTL = "Respect Existing Headers" (the server's Cache-Control rules decide).
 - Security: Bot Fight Mode on; Cloudflare managed ruleset on; Turnstile human check on Cipher's Lair.
