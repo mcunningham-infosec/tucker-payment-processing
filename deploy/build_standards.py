@@ -137,7 +137,7 @@ def index_page(docs: list) -> str:
         chips = " ".join(f'<span class="chip {CHIP[s]}">{c[s]} {e(s.lower())}</span>' for s in STATUSES if c[s])
         rows.append(f'        <li><a href="standard-{name}.html"><strong>{e(title)}</strong></a> &middot; <a href="standards/{name}.pdf">PDF</a><br>'
                     f'{e(summary)}<br>{chips}</li>')
-    body = f"""    <section class="card intro standard">
+    body = f"""    <section class="card intro policy standard">
       <p class="crumb"><a href="policies.html">&larr; AI Policies</a></p>
       <h1>Built to recognized standards</h1>
       <p>For each standard, Michael Cunningham mapped every requirement to what the site actually does, with links to the
