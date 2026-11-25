@@ -24,3 +24,19 @@ def test_policy_text_is_escaped():
     p = build_policy_pages.parse("# T <b>\nSub\n## H & co\nA <script>x</script> line")
     out = build_policy_pages.policy_page("x", p)
     assert "<script>x" not in out and "&lt;script&gt;" in out and "H &amp; co" in out
+
+
+def test_every_policy_has_a_current_pdf(tmp_path):
+    """Each policy's downloadable PDF exists and matches its Markdown (the build is byte-for-byte repeatable)."""
+    import importlib.util
+    import pathlib
+    root = pathlib.Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("bpp_pdf", root / "deploy" / "build_policy_pages.py")
+    bpp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bpp)
+    for src, _name, _summary in bpp.ORDER:
+        fresh = tmp_path / f"{src}.pdf"
+        bpp.pdf(src, bpp.parse((root / "policies" / f"{src}.md").read_text(encoding="utf-8")), fresh)
+        published = root / "site" / "policies" / f"{src}.pdf"
+        assert published.exists(), f"missing {published}: run python deploy/build_policy_pages.py"
+        assert published.read_bytes() == fresh.read_bytes(), f"{published.name} is out of date: rebuild it"
