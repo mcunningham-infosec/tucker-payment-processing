@@ -1,7 +1,7 @@
 """
 soc.py - the AI SOC Squirrel: a small, bounded AI security analyst that watches Cipher's run.
 
-How it works (and why it's bounded on purpose - OWASP LLM06 "Excessive Agency"):
+How it works (and why it's bounded on purpose - OWASP LLM03:2026 "Excessive Agency"):
   1. Python collects THIS run's events into a short, normalized timeline. The AI never touches log files,
      never sees other visitors' traffic, and every payload is shortened.
   2. Gemini gets a SOC runbook (below) plus the timeline, clearly marked as untrusted data.
@@ -34,7 +34,7 @@ Your teammate is Tucker, the cocker spaniel. A hacker cat named Cipher is attack
 
 Your job: read the timeline of THIS attack run, then report like a real SOC analyst, in plain English.
 - Map what you see to OWASP categories: the OWASP Top 10:2025 (A01-A10) and the OWASP Top 10 for LLM
-  Applications 2025 (LLM01-LLM10). ALWAYS use the exact category names given in run_data (for example
+  Applications 2026 (LLM01-LLM10). ALWAYS use the exact category names given in run_data (for example
   "A02 Security Misconfiguration"); never older OWASP names from memory. Say which defenses held.
 - If any defense did NOT hold, call it out clearly and propose flag_guardrail_gap.
 - Propose block_attacker_24h when the activity is clearly an attack. Propose raise_alert if anything got through.
