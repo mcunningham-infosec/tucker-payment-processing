@@ -65,6 +65,7 @@ and [SOC 2](docs/standards/soc-2.md). Each is published on the site as a page an
 | `policies/` | The AI and company policies Tucker answers from |
 | `deploy/` | Server setup and hardening; see [deploy/README.md](deploy/README.md) |
 | `docs/standards/` | The standards write-ups (source of the site's standards pages and PDFs) |
+| `ops/live_watch.py` | Hourly outside-in tamper check: every live file compared byte for byte with GitHub |
 | `docs/scans/` | Dated third-party scan results behind the scorecard PDFs |
 | `tests/` | Automated tests proving the guardrails work |
 
