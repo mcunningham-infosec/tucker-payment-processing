@@ -34,6 +34,7 @@ ORDER = [
     ("mitre-atlas", "MITRE ATLAS", "The attacker techniques that apply to the site's AI, from prompt injection to cost harvesting, and the defense against each."),
     ("nist-ai-rmf", "NIST AI Risk Management Framework", "How Tucker's risks are governed, mapped, measured and managed, across all 19 categories, with NIST's Generative AI Profile."),
     ("iso-42001", "ISO/IEC 42001:2023", "The AI management system behind Tucker: clauses 4 to 10 and the Annex A controls."),
+    ("iso-23894", "ISO/IEC 23894:2023", "AI risk management: how the site's AI risks are identified, analyzed, treated and monitored, and the AI-specific risk sources."),
     ("iso-42005", "ISO/IEC 42005:2025", "An AI system impact assessment of Tucker and the AI SOC Squirrel: intended use, misuse, data, benefits, harms and residual risk."),
     ("eu-ai-act", "EU AI Act", "Where Tucker sits in the EU's risk tiers, and the transparency duties that apply."),
     ("pci-dss", "PCI DSS v4.0.1", "All twelve requirements for the store and support chat, starting with the biggest control: keeping card data out."),
