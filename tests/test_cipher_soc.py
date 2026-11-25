@@ -87,6 +87,22 @@ def test_cipher_blocks_survive_the_nightly_reset(monkeypatch, admin):
     assert fresh.post("/api/cipher/start").json()["status"] == "blocked"
 
 
+def test_a_run_lost_to_a_restart_does_not_cost_the_visitor_their_day(monkeypatch, admin):
+    """The button press only holds the slot briefly; a run that never finishes (server restart, crash) lets the
+    visitor try again once the hold expires. A finished run blocks for 24 hours."""
+    from fastapi.testclient import TestClient
+    from app import limits, main
+    from app.cipher import api
+    _fake_runner(monkeypatch)                                       # the fake run never finishes, like a lost one
+    c = TestClient(main.app, base_url="https://testserver")
+    assert c.post("/api/cipher/start").json()["status"] == "started"
+    assert api._blocked(c.cookies.get(main.COOKIE), "testclient")   # held while it could still be running
+    monkeypatch.setattr(api, "PENDING_SECONDS", 0)                  # ...the hold expires
+    assert not api._blocked(c.cookies.get(main.COOKIE), "testclient")
+    limits.record("cipher_run_cookie", "finished-visitor", daily=False)   # what done() records at the end
+    assert api._blocked("finished-visitor", "")
+
+
 def test_lair_is_closed_until_switched_on(monkeypatch):
     from fastapi.testclient import TestClient
     from app import main
