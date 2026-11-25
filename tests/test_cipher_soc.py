@@ -235,3 +235,27 @@ def test_every_ai_attack_has_a_real_atlas_technique():
     ai = {a.id for a in ATTACKS if a.owasp.startswith("LLM")}
     assert set(ATLAS) == ai
     assert all(re.fullmatch(r"AML\.T\d{4}(\.\d{3})? .+", v) for v in ATLAS.values())
+
+
+def test_a_finished_run_records_the_24_hour_block(monkeypatch, admin):
+    """Runs the real end-of-run code (not a fake): it must finish cleanly and leave this browser and network
+    blocked for 24 hours, even after the short 'pending' hold has expired."""
+    from fastapi.testclient import TestClient
+    from app import main
+    from app.cipher import api, runner
+    monkeypatch.setenv("CIPHER_ENABLED", "1")
+    monkeypatch.delenv("CIPHER_ONE_PER_DAY", raising=False)
+    hooks, st = {}, {"status": "running", "total": 50, "attacks": [], "soc": [], "actions": [], "started": 0,
+                     "summary": {"attacks": 50, "held": 50, "failed": [], "seconds": 30}}
+    monkeypatch.setattr(runner, "busy", lambda: False)
+    monkeypatch.setattr(runner, "start", lambda **kw: hooks.update(kw) or "run1")
+    monkeypatch.setattr(runner, "state", lambda rid: st if rid else None)
+    monkeypatch.setattr(soc, "check_in", lambda *a, **k: {"headline": "ok", "lines": [], "verdict": "contained"})
+    monkeypatch.setattr(main, "get_llm", lambda: FakeLLM([]))        # no real AI in tests
+    c = TestClient(main.app, base_url="https://testserver")
+    assert c.post("/api/cipher/start").json()["status"] == "started"
+    hooks["on_done"]("run1", st)                          # the real done(): must not raise
+    assert st["blocked_for_24h"] is True and st["summary"]["held"] == 50
+    admin.execute("DELETE FROM ops.usage_events WHERE kind LIKE 'cipher_pending_%'")   # the short hold expires
+    sid = c.cookies.get(main.COOKIE)
+    assert api._blocked(sid, "") is True                  # still blocked: the 24-hour record is there
