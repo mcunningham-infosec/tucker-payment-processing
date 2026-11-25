@@ -25,6 +25,9 @@ KEEP_SECONDS = 3600
 
 _RUNS: dict = {}                    # run id -> live state the Lair page polls (memory only, kept one hour)
 _ACTIVE = threading.Lock()          # held while a run is in progress: only one attack run at a time, site-wide
+_CURRENT = {"started": 0.0}         # when the run in progress began (for the wait estimate other visitors see)
+_RECENT: list = []                  # how long the last few runs took, in seconds
+TYPICAL_SECONDS = 160               # a full run's usual length before any have been timed
 
 
 def _tidy():
@@ -40,10 +43,24 @@ def busy() -> bool:
     return _ACTIVE.locked()
 
 
+def typical_seconds() -> int:
+    """How long a run usually takes: the middle of the last few runs' times."""
+    return int(sorted(_RECENT)[len(_RECENT) // 2]) if _RECENT else TYPICAL_SECONDS
+
+
+def busy_remaining() -> int | None:
+    """While a run is in progress: a rough estimate of the seconds left (from how long recent runs took), so a
+    waiting visitor sees an honest wait. None when Cipher is free."""
+    if not _ACTIVE.locked():
+        return None
+    return max(0, int(typical_seconds() - (time.time() - _CURRENT["started"])))
+
+
 def start(on_alert=None, on_block=None, on_done=None, pace=None) -> str | None:
     """Start a run in the background. Returns its id, or None if another run is in progress."""
     if not _ACTIVE.acquire(blocking=False):
         return None
+    _CURRENT["started"] = time.time()
     _tidy()
     run_id, token = cipher.new_run_token()
     _RUNS[run_id] = {"run_id": run_id, "status": "running", "started": time.time(), "total": len(ATTACKS),
@@ -123,4 +140,6 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
         st["ended"] = time.time()
         st["summary"] = {"error": type(e).__name__}
     finally:
+        if st.get("ended"):
+            _RECENT[:] = (_RECENT + [st["ended"] - st["started"]])[-10:]
         _ACTIVE.release()

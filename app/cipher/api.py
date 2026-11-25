@@ -26,7 +26,7 @@ from pydantic import BaseModel
 
 from .. import alerts, db, limits
 from .. import session as sessions
-from . import detect, runner, soc
+from . import detect, line, runner, soc
 
 router = APIRouter()
 DAY = 86400
@@ -115,6 +115,16 @@ def _blocked(cookie_id: str, ip: str) -> bool:
             (bool(ip) and (used("cipher_run_ip", ip, DAY) or used("cipher_pending_ip", ip, PENDING_SECONDS))))
 
 
+def _line_info(sid: str) -> dict | None:
+    """This visitor's place in line, with a rough wait: the current run's time left plus a typical run for each
+    person ahead of them."""
+    info = line.check_in(sid, runner.busy())
+    if not info:
+        return None
+    info["wait"] = (runner.busy_remaining() or 0) + (info["position"] - 1) * runner.typical_seconds()
+    return info
+
+
 def setup(get_llm, client_ip, cookie_name, set_cookie):
     """Wire the router to the app's LLM, visitor-IP and cookie helpers (avoids a circular import)."""
 
@@ -138,10 +148,15 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                     "detail": "The AI SOC Squirrel blocked this browser and network from attacking for 24 hours."}
         if limits.over_limit("cipher_run_site", "site", RUNS_PER_DAY, DAY, daily=False):
             return {"status": "resting", "message": "Cipher has used up all nine lives for today. Come back tomorrow!"}
-        if runner.busy():
-            return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
-        if not _human(body.turnstile if body else "", ip):     # bots don't get to launch attack runs
+        # One real attack at a time. If Cipher is busy, or others are already waiting, this visitor joins a fair
+        # line instead of racing to click. They pass the human check when they join, so their turn doesn't ask again.
+        from_line = line.in_line(s.id)
+        if not from_line and not _human(body.turnstile if body else "", ip):     # bots don't get to launch or queue
             return {"status": "bot_check", "message": "Couldn't confirm you're a human. Please complete the check and try again."}
+        if not line.may_start(s.id, runner.busy()):
+            if line.join(s.id, runner.busy()) is None:
+                return {"status": "full", "message": "The line for Cipher is full right now. Please try again in a few minutes."}
+            return {"status": "queued", "line": _line_info(s.id)}
 
         # Hold this visitor's slot FIRST, so a second press (or a script) can't start another run. It's a short
         # hold: the 24-hour block is recorded in done(), only once the run really finishes.
@@ -205,8 +220,10 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                                       "detail": "Site owner emailed: a defense did not hold.", "outcome": "enforced"})
 
         run_id = runner.start(on_alert=alert, on_block=block, on_done=done)
-        if not run_id:
-            return {"status": "busy", "message": "Cipher is busy attacking for someone else. Try again in a minute."}
+        if not run_id:                               # someone else started in the same instant: wait in line
+            line.join(s.id, True)
+            return {"status": "queued", "line": _line_info(s.id)}
+        line.started(s.id)
         st = runner.state(run_id)
         # Shown back ONLY to this visitor, by code (never sent to the AI). Location comes from Cloudflare's
         # visitor-location headers (the server only accepts traffic from Cloudflare, so these can't be forged).
@@ -225,7 +242,11 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         st = runner.state(getattr(s, "cipher_run", None) or "") if s else None
         if not st:
             blocked = _blocked(s.id if s else "", client_ip(request))
-            return {"status": "blocked" if blocked else "none", "turnstile_sitekey": _turnstile_keys()[0]}
+            # Not this visitor's run: say whether Cipher is busy with someone else's, how long for, how many are
+            # waiting, and (if this visitor is in line) their place. Checking in like this keeps their place.
+            return {"status": "blocked" if blocked else "none", "turnstile_sitekey": _turnstile_keys()[0],
+                    "busy": runner.busy(), "busy_remaining": runner.busy_remaining(),
+                    "waiting": line.length(runner.busy()), "line": _line_info(s.id) if s else None}
         out = {k: st.get(k) for k in ("run_id", "status", "total", "attacks", "soc", "actions", "summary",
                                        "visitor", "blocked_for_24h", "started", "ended",
                                        "detections", "blocked_count", "blocked_source", "retry")}
