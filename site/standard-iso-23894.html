@@ -34,7 +34,7 @@
     <section class="card policy standard">
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>ISO/IEC 23894:2023 AI Risk Management</h1>
-      <p class="muted-line">How AI risk is identified, analyzed, treated and monitored for Tucker and the AI SOC Squirrel · Self-assessment · November 25, 2026</p>
+      <p class="muted-line">How AI risk is identified, analyzed, treated and monitored for the AI chatbot and the AI SOC · Self-assessment · November 25, 2026</p>
       <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/iso-23894.pdf">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. ISO/IEC 23894:2023 is guidance, not a certifiable standard: it adapts ISO 31000, the general risk management standard, to artificial intelligence. Within the ISO AI family it is the "how" of risk: ISO/IEC 42001 requires an organization to assess and treat AI risks, ISO/IEC 23894 describes how to do that well, and ISO/IEC 42005 covers the impact assessment. All three are written up on this site.</p>
@@ -66,7 +66,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-llm-top-10.md"><code>docs/standards/owasp-llm-top-10.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-agentic-top-10.md"><code>docs/standards/owasp-agentic-top-10.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/mitre-atlas.md"><code>docs/standards/mitre-atlas.md</code></a>.</p>
       </div>
       <div class="req"><h3>Risk analysis <span class="chip partly">Partly met</span></h3>
-        <p>Each risk is analyzed for how it could happen and what it would cost. Prompt injection, for example, is treated as near-certain to be attempted, so the question becomes what a successful one could do. Cipher's Lair tests 50 of these scenarios against the live site on demand. The analysis is qualitative; a larger organization would score likelihood and impact on a defined scale in a formal risk register.</p>
+        <p>Each risk is analyzed for how it could happen and what it would cost. Prompt injection, for example, is treated as near-certain to be attempted, so the question becomes what a successful one could do. The attack simulator tests 50 of these scenarios against the live site on demand. The analysis is qualitative; a larger organization would score likelihood and impact on a defined scale in a formal risk register.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>.</p>
       </div>
       <div class="req"><h3>Risk evaluation <span class="chip met">Met</span></h3>
@@ -95,11 +95,11 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/chat.js"><code>site/assets/chat.js</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
       </div>
       <div class="req"><h3>Level of automation <span class="chip met">Met</span></h3>
-        <p>Neither AI acts on its own. Tucker only answers questions, and the AI SOC Squirrel can only propose one of three actions, which Python accepts or rejects. Blocking an attacker is automated, but by a code rule with a fixed threshold, not by the AI.</p>
+        <p>Neither AI acts on its own. The AI chatbot only answers questions, and the AI SOC can only propose one of three actions, which Python accepts or rejects. Blocking an attacker is automated, but by a code rule with a fixed threshold, not by the AI.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>.</p>
       </div>
       <div class="req"><h3>Machine learning risk sources <span class="chip met">Met</span></h3>
-        <p>The site trains nothing, so training-data quality, bias in training and model drift from retraining don't arise here. The model is Google's hosted Gemini with its version fixed in one setting, and the only data that shapes answers is four policy documents under version control.</p>
+        <p>The site trains nothing, so training-data quality, bias in training and model drift from retraining don't arise here. The model is Google's hosted Gemini with the model named in one setting, and the only data that shapes answers is four policy documents under version control.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>.</p>
       </div>
       <div class="req"><h3>System hardware issues <span class="chip partly">Partly met</span></h3>
@@ -111,7 +111,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/api.py"><code>app/cipher/api.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>.</p>
       </div>
       <div class="req"><h3>Technology readiness <span class="chip met">Met</span></h3>
-        <p>Large language models are new and can behave unpredictably, so the design treats the model as the least trusted part of the system. It runs at a low temperature, it is bounded by code on every side and every AI failure has a safe fallback: Tucker naps or apologizes, and the security report is built from plain facts.</p>
+        <p>Large language models are new and can behave unpredictably, so the design treats the model as the least trusted part of the system. It runs at a low temperature, it is bounded by code on every side and every AI failure has a safe fallback: the AI chatbot shows a fixed "temporarily unavailable" message or apologizes, and the security report is built from plain facts.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
       </div>
       <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-23894.md">docs/standards/iso-23894.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
