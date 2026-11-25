@@ -56,8 +56,8 @@ Evidence: `app/policies.py`.
 The AI's output is treated as untrusted. The chat inserts every reply as plain text, never as HTML, and the Content-Security-Policy forbids inline scripts besides. The AI SOC Squirrel must answer in a small JSON format, which Python validates and strips of markup before anything is shown, and its report PDF is built from those checked fields. Model output never reaches a database query, a shell or a URL.
 Evidence: `site/assets/chat.js`, `app/cipher/soc.py`, `deploy/apache-hardening.conf`, `tests/test_cipher_soc.py`; Cipher attacks "Make Tucker print a card number" and "Cross-site scripting through the chat".
 
-## Cipher's attack numbering
-Cipher's Lair labels its AI attacks with the 2025 edition's numbers, which some of the 2026 entries replaced. LLM01 and LLM02 are unchanged; 2025's LLM06 Excessive Agency is now LLM03, LLM10 Unbounded Consumption is now LLM06, LLM07 System Prompt Leakage became LLM08 Hidden Context Exposure, and LLM05 Improper Output Handling is now LLM10.
+## Cipher uses the 2026 numbering
+Cipher's Lair and the AI SOC Squirrel's incident reports label every AI attack with the 2026 numbers above. They were updated from the 2025 edition on November 24, 2026, three months after the new list was released.
 
 ## The web application list too
 Cipher's 50 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code, and written up by the AI SOC Squirrel in a downloadable incident report.
