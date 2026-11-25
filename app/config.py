@@ -29,8 +29,10 @@ class Settings:
     price_in_per_m: float = float(_env("PRICE_IN_PER_M", "0.30"))
     price_out_per_m: float = float(_env("PRICE_OUT_PER_M", "2.50"))
 
-    # Cost guardrails. Google's own hard cap on the Gemini API is $9/month;
-    # the app stops first, at $8, so visitors see "Tucker's taking a nap" instead of an error.
+    # Cost guardrails. These defaults are deliberately small for a fresh install; the live site sets its own in
+    # /etc/tucker/tucker.env (at launch: $5 a day, $50 a month). Google's own hard cap on the Gemini API (a Cloud
+    # Billing spend cap, $60 a month at launch) sits behind them; the app normally stops first, so visitors see
+    # "Tucker's taking a nap" instead of an error.
     monthly_cap_usd: float = float(_env("MONTHLY_CAP_USD", "8.00"))
     daily_cap_usd: float = float(_env("DAILY_CAP_USD", "0.75"))
     # Fair share: no single network can use up the shared daily AI budget for everyone else.
