@@ -30,6 +30,9 @@ from . import detect, runner, soc
 
 router = APIRouter()
 DAY = 86400
+# A run in progress holds the visitor's slot only this long (twice the 5-minute run cap). The 24-hour block is
+# recorded when the run FINISHES, so a run lost to a server restart or crash doesn't cost the visitor their day.
+PENDING_SECONDS = 600
 RUNS_PER_DAY = int(os.environ.get("CIPHER_RUNS_PER_DAY", "25"))
 
 
@@ -106,8 +109,10 @@ def _blocked(cookie_id: str, ip: str) -> bool:
     LAUNCH CHECKLIST (last step): remove it / set it to 1."""
     if os.environ.get("CIPHER_ONE_PER_DAY", "1") == "0":
         return False
-    return (limits.over_limit("cipher_run_cookie", cookie_id, 1, DAY, daily=False) or
-            (bool(ip) and limits.over_limit("cipher_run_ip", ip, 1, DAY, daily=False)))
+    def used(kind, value, window):
+        return limits.over_limit(kind, value, 1, window, daily=False)
+    return (used("cipher_run_cookie", cookie_id, DAY) or used("cipher_pending_cookie", cookie_id, PENDING_SECONDS) or
+            (bool(ip) and (used("cipher_run_ip", ip, DAY) or used("cipher_pending_ip", ip, PENDING_SECONDS))))
 
 
 def setup(get_llm, client_ip, cookie_name, set_cookie):
@@ -138,11 +143,12 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
         if not _human(body.turnstile if body else "", ip):     # bots don't get to launch attack runs
             return {"status": "bot_check", "message": "Couldn't confirm you're a human. Please complete the check and try again."}
 
-        # Record the block FIRST: a second press (or a script) can't start another run.
-        limits.record("cipher_run_cookie", s.id, daily=False)
+        # Hold this visitor's slot FIRST, so a second press (or a script) can't start another run. It's a short
+        # hold: the 24-hour block is recorded in done(), only once the run really finishes.
+        limits.record("cipher_pending_cookie", s.id, daily=False)
         if ip:
-            limits.record("cipher_run_ip", ip, daily=False)
-        limits.record("cipher_run_site", "site", daily=False)
+            limits.record("cipher_pending_ip", ip, daily=False)
+        limits.record("cipher_run_site", "site", daily=False)       # the site-wide daily cap counts every start
 
         def _checkin(st, when, note=""):
             """Ask the AI SOC Squirrel to look at the run so far ('alert', read-only) or close it out ('final',
@@ -184,7 +190,11 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                             + (f"; GOT THROUGH: {', '.join(s['failed'][:4])}" if s.get("failed") else "")
                             + ("; source blocked by rule" if st.get("blocked_source") else ""))
             now = time.time()
-            # Enforced by policy no matter what the AI said (the block was recorded when the button was pressed).
+            # The run finished, so it now counts: record the 24-hour block for this browser and network.
+            limits.record("cipher_run_cookie", s.id, daily=False)
+            if ip:
+                limits.record("cipher_run_ip", ip, daily=False)
+            # Enforced by policy no matter what the AI said.
             st["actions"].append({"t": now, "actor": "Policy (enforced by code)", "action": "block_attacker_24h",
                                   "detail": "This browser and network can't start another attack run for 24 hours.",
                                   "outcome": "enforced", "expires": st["started"] + DAY})
