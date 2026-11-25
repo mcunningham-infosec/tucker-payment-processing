@@ -17,6 +17,11 @@
 .flow li.flow-ai::before { background:var(--orange); }
 .flow li.flow-ai .flow-k { color:#c2620c; }
 
+/* The two flows (AI chat, AI SOC): stacked on phones, side by side on wide screens. */
+.flows { display:grid; grid-template-columns:1fr; gap:18px; margin-top:8px; }
+@media (min-width:760px) { .flows { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.flow-title { margin:6px 0 0; font-size:1.02rem; color:var(--ink, #1b1f24); }
+
 /* Each AI is bounded: three side-by-side cards on wide screens. */
 .bounds { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; margin-top:10px; }
 @media (min-width:760px) { .bounds { grid-template-columns:repeat(3,minmax(0,1fr)); } }

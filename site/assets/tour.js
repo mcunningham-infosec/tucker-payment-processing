@@ -54,8 +54,10 @@
 
     { page: "about", spot: "#about-intro",
       say: "Welcome back, it's Tucker! This is the About Us page: how everything you just saw actually works." },
-    { page: "about", spot: "#about-flow",
-      say: "This is the path every chat message takes: seven checkpoints, with the AI boxed in by code on both sides." },
+    { page: "about", spot: "#flow-chat", beside: true,
+      say: "Here's how both AIs work, starting with me. Every chat message passes seven checkpoints in order, and I sit in the middle: code checks what goes in, decides whose data I may see, and masks what comes out." },
+    { page: "about", spot: "#flow-soc", beside: true,
+      say: "And here's the AI SOC Squirrel. Code-run rules wake it, it only sees this attack's evidence, it can only propose actions from a fixed menu, and Python checks every number it states. Same pattern both times: code on both sides, the AI in the middle, never in charge." },
     { page: "about", spot: "#about-bounds",
       say: "Each AI here is bounded: what it can do, and what it can never do. Code enforces the limits, not the AI." },
     { page: "about", spot: "#about-policies",
@@ -219,6 +221,7 @@
     var r = target.getBoundingClientRect();
     var clampX = function (v) { return Math.max(EDGE, Math.min(v, vw - w - EDGE)); };
     var side = vw - r.right >= w + GAP + EDGE ? "right" : r.left >= w + GAP + EDGE ? "left" : "";
+    var besideStep = current >= 0 && STEPS[current] && STEPS[current].beside;   // e.g. one column of a two-column layout
     var x, y;
 
     if (pinned(target)) {
@@ -234,7 +237,15 @@
 
     var x0 = r.left + window.pageXOffset, y0 = r.top + window.pageYOffset;   // item's position on the page
     var scrollTo;
-    if (r.height + GAP + h + 2 * EDGE <= vh) {                    // fits below: center the pair on screen
+    if (besideStep && side) {                                      // asked for: bubble beside the item, its top in view
+      x = side === "right" ? x0 + r.width + GAP : x0 - w - GAP;
+      y = y0;
+      scrollTo = y0 - 70;
+    } else if (besideStep) {                                       // no room beside (phones): just above it
+      x = clampX(x0);
+      y = Math.max(EDGE, y0 - h - GAP);
+      scrollTo = y - EDGE;
+    } else if (r.height + GAP + h + 2 * EDGE <= vh) {             // fits below: center the pair on screen
       x = clampX(x0);
       y = y0 + r.height + GAP;
       scrollTo = y0 - (vh - (r.height + GAP + h)) / 2;
