@@ -155,7 +155,10 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             return {"status": "bot_check", "message": "Couldn't confirm you're a human. Please complete the check and try again."}
         if not line.may_start(s.id, runner.busy()):
             if line.join(s.id, runner.busy()) is None:
-                return {"status": "full", "message": "The line for Cipher is full right now. Please try again in a few minutes."}
+                wait = (runner.busy_remaining() or 0) + (line.MAX_LINE - 1) * runner.typical_seconds()
+                return {"status": "full", "wait": wait,
+                        "message": f"The line for Cipher is full right now (about {max(1, round(wait / 60))} minutes). "
+                                   "It's busy, not broken: please check back later."}
             return {"status": "queued", "line": _line_info(s.id)}
 
         # Hold this visitor's slot FIRST, so a second press (or a script) can't start another run. It's a short
