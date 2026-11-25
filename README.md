@@ -35,9 +35,10 @@ flowchart LR
 ## Standards
 A requirement-by-requirement write-up, with links to the code and tests that prove each claim, for the
 [OWASP Top 10 for LLM Applications 2026](docs/standards/owasp-llm-top-10.md), the
-[OWASP Top 10 for Agentic Applications 2026](docs/standards/owasp-agentic-top-10.md), [MITRE ATLAS](docs/standards/mitre-atlas.md), the [NIST AI RMF](docs/standards/nist-ai-rmf.md),
-[ISO/IEC 42001](docs/standards/iso-42001.md) with [ISO/IEC 23894 risk management](docs/standards/iso-23894.md) and an [ISO/IEC 42005 impact assessment](docs/standards/iso-42005.md), the [EU AI Act](docs/standards/eu-ai-act.md), [PCI DSS v4.0.1](docs/standards/pci-dss.md)
-and [SOC 2](docs/standards/soc-2.md). Each is published on the site as a page and a PDF. They are self-assessments, not audits.
+[OWASP Top 10 for Agentic Applications 2026](docs/standards/owasp-agentic-top-10.md), [MITRE ATLAS](docs/standards/mitre-atlas.md), the [NIST AI RMF](docs/standards/nist-ai-rmf.md) with its [Generative AI Profile (NIST AI 600-1)](docs/standards/nist-ai-600-1.md),
+[ISO/IEC 42001](docs/standards/iso-42001.md) with [ISO/IEC 23894 risk management](docs/standards/iso-23894.md) and an [ISO/IEC 42005 impact assessment](docs/standards/iso-42005.md), the [EU AI Act](docs/standards/eu-ai-act.md), [Colorado's AI laws](docs/standards/colorado-ai-laws.md),
+[bank model risk management (SR 26-2, formerly SR 11-7)](docs/standards/model-risk-management.md), [PCI DSS v4.0.1](docs/standards/pci-dss.md),
+[SOC 2](docs/standards/soc-2.md) and [ISO/IEC 27001](docs/standards/iso-27001.md). Each is published on the site as a page and a PDF. They are self-assessments, not audits.
 
 ## Guardrails
 - **The model never decides authorization.** Tucker's tools are read-only lookups; who is verified and whose data can be read is decided in Python.
