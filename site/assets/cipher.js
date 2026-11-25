@@ -283,6 +283,9 @@
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
         if (st.status === "none") { if (live) { lost(); } return; }
         live = st.status === "running";
+        if (!live && st.can_run_again === false && !finished) {   // reloaded after a finished run: blocked from the start
+          $("attack").disabled = true; $("attack").textContent = "Cipher is blocked";
+        }
         render(st);
         if (st.status === "running") { timer = window.setTimeout(poll, 900); }
       })
