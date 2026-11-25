@@ -279,7 +279,7 @@
     fetch("api/cipher/status", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (st) {
-        if (st.turnstile_sitekey && !st.run_id) { loadTurnstile(st.turnstile_sitekey); }
+        if (st.turnstile_sitekey && (!st.run_id || st.can_run_again)) { loadTurnstile(st.turnstile_sitekey); }   // whenever a run is allowed
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
         if (st.status === "none") { if (live) { lost(); } return; }
         live = st.status === "running";
@@ -309,8 +309,8 @@
       ? s.held + " of " + s.attacks + " attacks stopped" : "run complete";
     showYou(st.visitor);
     $("report-link").hidden = false;
-    if (st.can_run_again) {                   // owner testing mode: the 24-hour rule is switched off
-      $("attack").disabled = false; $("attack").textContent = "Attack again (testing mode)";
+    if (st.can_run_again) {                   // allowed again (block cleared, or the owner's testing mode)
+      $("attack").disabled = false; $("attack").textContent = "Attack again";
       setStatus("Your last run: " + held + ". Your SOC report is ready.");
       return;
     }
