@@ -145,7 +145,7 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
             return {"status": "blocked", "run_id": s.cipher_run, "message": "Dammit, I'm blocked!"}
         if _blocked(s.id, ip):
             return {"status": "blocked", "message": "Dammit, I'm blocked!",
-                    "detail": "The AI SOC Squirrel blocked this browser and network from attacking for 24 hours."}
+                    "detail": "You've used today's attack. Each browser and network gets one attack run every 24 hours."}
         if limits.over_limit("cipher_run_site", "site", RUNS_PER_DAY, DAY, daily=False):
             return {"status": "resting", "message": "Cipher has used up all nine lives for today. Come back tomorrow!"}
         # One real attack at a time. If Cipher is busy, or others are already waiting, this visitor joins a fair
