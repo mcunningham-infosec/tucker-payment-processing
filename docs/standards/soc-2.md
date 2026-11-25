@@ -2,7 +2,7 @@
 How the site's controls line up with the AICPA criteria a SOC 2 auditor tests · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who has led SOC 2 Type II audits. It is not a SOC 2 report: only an independent CPA firm can issue one. It works like a readiness review, describing the design of each control and the evidence an auditor would ask for. A Type II report would also test that the controls operated over a period of months, which a new demonstration site cannot show.
+This is a self-assessment written by Michael Cunningham, who has led a SOC 2 Type II audit. It is not a SOC 2 report: only an independent CPA firm can issue one. It works like a readiness review, describing the design of each control and the evidence an auditor would ask for. A Type II report would also test that the controls operated over a period of months, which a new demonstration site cannot show.
 The criteria are the AICPA's 2017 Trust Services Criteria (with the 2022 revised points of focus), the version auditors use today. In late 2026 the AICPA proposed updated criteria, including new attention to AI, for examinations starting on or after December 31, 2027. The common criteria (CC1 to CC9) make up the Security category every SOC 2 report covers; the other four categories are optional and are covered briefly at the end.
 
 ## Security: the common criteria
@@ -23,7 +23,7 @@ Evidence: `docs/standards/`, `app/store.py`, `tests/test_store.py`.
 
 ### CC4: Monitoring activities
 **Status: Met**
-Controls are checked continuously and independently. More than 70 automated tests check the controls. Cipher's Lair attacks the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and every gap they found was fixed the same day.
+Controls are checked continuously and independently. More than 80 automated tests check the controls. The attack simulator runs real attacks against the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and the three gaps the first round found were fixed the same day; the findings still open are recorded with the scan results.
 Evidence: `tests/`, `app/cipher/detect.py`, `docs/scans/`.
 
 ### CC5: Control activities
@@ -33,12 +33,12 @@ Evidence: `app/chat.py`, `app/guardrails.py`, `app/config.py`, `db/roles.sql`, `
 
 ### CC6: Logical and physical access
 **Status: Met**
-Admin access needs a Google identity with 2-step verification through the Identity-Aware Proxy; there is no public SSH. The firewall admits web traffic only from Cloudflare. Database logins use the operating system's identity, with no passwords, and least privilege (the store's login can call one function and nothing else). Secrets live only on the server, never in the repository. All traffic is encrypted with TLS 1.2 or 1.3. Physical security is inherited from Google Cloud.
+Admin access needs a Google identity with 2-step verification through the Identity-Aware Proxy; there is no public SSH. The firewall admits web traffic only from Cloudflare. Database logins use the operating system's identity, with no passwords, and least privilege (the store's login can place orders only through one database function). Secrets live only on the server, never in the repository. All traffic is encrypted with TLS 1.2 or 1.3. Physical security is inherited from Google Cloud.
 Evidence: `deploy/gcp-firewall.md`, `deploy/postgres-store-login.md`, `db/roles.sql`, `app/config.py`.
 
 ### CC7: System operations
 **Status: Met**
-Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source and block it for 24 hours after 50. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC Squirrel writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.
+Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source and refuse it for the rest of the run after 50; each browser and network may start one attack run per 24 hours. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.
 Evidence: `app/cipher/detect.py`, `app/alerts.py`, `deploy/alert-policy.json`, `deploy/auto-maintenance.sh`, `db/nightly_reset.sql`.
 
 ### CC8: Change management
@@ -69,7 +69,7 @@ Evidence: `db/schema.sql`, `app/guardrails.py`, `db/nightly_reset.sql`, `deploy/
 
 ### Privacy
 **Status: Met**
-A published data retention policy states what is collected and for how long. The one cookie is strictly necessary, there is no tracking or advertising, visitor IP addresses are never sent to the AI, and limit counters store only an anonymous code that changes every day, never a raw IP address.
+A published data retention policy states what is collected and for how long. The one cookie is strictly necessary, there is no tracking or advertising, visitor IP addresses are never sent to the AI, and limit counters store only anonymous codes, never a raw IP address; most change every day, and the ones behind the one-run-per-day attack limit are deleted after two days.
 Evidence: `policies/data-retention.md`, `app/limits.py`, `tests/test_limits.py`.
 
 ## Where AI fits

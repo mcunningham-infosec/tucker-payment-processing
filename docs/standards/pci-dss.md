@@ -2,7 +2,7 @@
 How the store and support chat are built to the payment card industry's security standard · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who spent more than 25 years in payments security running PCI programs. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.
+This is a self-assessment written by Michael Cunningham, who has run PCI DSS programs in payments companies for more than twenty years. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.
 The most important PCI decision is made before any control: keep card data out. A full card number is never typed into this site, never sent by a browser, never stored and never shown to the AI. Cards exist only as the last four digits and a random token standing in for a vaulted card, the way a merchant using a payment processor's tokenization works. That design shrinks the cardholder data environment to almost nothing, which is the cheapest and strongest PCI control there is.
 
 ## The twelve requirements
@@ -13,8 +13,8 @@ Evidence: `deploy/gcp-firewall.md`, `deploy/auto-maintenance.sh`.
 
 ### Requirement 2: Apply secure configurations to all system components
 **Status: Met**
-The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files, and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and Cipher's Lair checks these settings on every run.
-Evidence: `deploy/apache-hardening.conf`, `app/main.py`; Cipher's nine security misconfiguration attacks.
+The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files, and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and the attack simulator checks these settings on every run.
+Evidence: `deploy/apache-hardening.conf`, `app/main.py`; the attack simulator's nine security misconfiguration attacks.
 
 ### Requirement 3: Protect stored account data
 **Status: Met**
@@ -33,7 +33,7 @@ Evidence: `deploy/auto-maintenance.sh`.
 
 ### Requirement 6: Develop and maintain secure systems and software
 **Status: Met**
-Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, dependencies are pinned, and more than 70 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only.
+Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, runtime dependencies are pinned (one held to a major version), and more than 80 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only.
 Evidence: `requirements.txt`, `tests/`, `deploy/apache-hardening.conf`, `app/store.py`, `tests/test_store.py`.
 
 ### Requirement 7: Restrict access by business need to know
@@ -57,7 +57,7 @@ Evidence: `app/report.py`, `app/alerts.py`, `deploy/ops-agent-config.yaml`, `dep
 
 ### Requirement 11: Test security of systems and networks regularly
 **Status: Partly met**
-Testing is frequent: Cipher's Lair runs 50 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.
+Testing is frequent: the attack simulator runs 50 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.
 Evidence: `app/cipher/attacks.py`, `docs/scans/`.
 
 ### Requirement 12: Support information security with policies and programs
@@ -66,4 +66,4 @@ Published security policies cover card security, data retention and AI use, and 
 Evidence: `policies/`, `SECURITY.md`.
 
 ## Where the AI fits
-PCI DSS has no AI-specific requirement, but an AI that can see card data is in scope like any other system. Tucker is kept out of the card data environment by design: he never receives a full card number, his replies are filtered for anything that looks like one, and he cannot move money or change a card. The principle is the one PCI applies to any connected system: treat the AI as untrusted and control what it can reach.
+PCI DSS has no AI-specific requirement, but an AI that can see card data is in scope like any other system. The AI chatbot is kept out of the card data environment by design: it never receives a full card number, its replies are filtered for anything that looks like one, and it cannot move money or change a card. The principle is the one PCI applies to any connected system: treat the AI as untrusted and control what it can reach.
