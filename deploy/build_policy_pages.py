@@ -62,6 +62,9 @@ def page(title: str, description: str, body: str) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>{e(title)} - Tucker Payment Processing</title>
   <meta name="description" content="{e(description)}">
   <link rel="stylesheet" href="assets/site.css?v={VERSION}">
