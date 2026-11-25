@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+  Colorado AI laws: SB 26-189 and HB 26-1263 - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Colorado AI laws: SB 26-189 and HB 26-1263 - Tucker Payment Processing</title>
+  <meta name="description" content="Colorado AI laws: SB 26-189 and HB 26-1263: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
+  <link rel="stylesheet" href="assets/site.css?v=20261125c">
+  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
+  <link rel="stylesheet" href="assets/about.css?v=20261125c">
+  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
+  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html">About Us</a>
+      <a href="policies.html">AI Policies</a>
+      <a href="standards.html" aria-current="page">Standards</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card policy standard">
+      <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
+      <h1>Colorado AI laws: SB 26-189 and HB 26-1263</h1>
+      <p class="muted-line">Colorado&#x27;s automated decision law, which replaced the Colorado AI Act, and its new chatbot law · Self-assessment · November 25, 2026</p>
+      <p class="std-summary"><span class="chip met">2 met</span> <span class="chip partly">3 partly met</span> <span class="chip na">3 not applicable</span> <a class="scan-all" href="standards/colorado-ai-laws.pdf">Download PDF</a></p>
+      <h2>About this document</h2>
+      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not legal advice. Tucker Payment Processing is fictional and has no Colorado customers; as with the EU AI Act write-up, the useful question is what these laws would require of a real payment company running this same chatbot for people in Colorado, and whether the design already meets it.</p>
+      <p>Colorado passed the first broad US state AI law in 2024, the Colorado AI Act (SB 24-205). It never took effect. On May 14, 2026, Colorado repealed and replaced it with SB 26-189, a narrower law about automated decision-making technology used in consequential decisions, including access to financial and lending services. Its duties begin on January 1, 2027, and the attorney general is writing the rules. The old law's broad duty of care against algorithmic discrimination, and its safe harbor for following the NIST AI RMF or ISO/IEC 42001, are gone.</p>
+      <p>A second law matters more for a chatbot: HB 26-1263, signed on May 29, 2026, sets rules for operators of public conversational AI services, with its design duties applying from January 1, 2027. Its exact exclusions depend on the final text and the attorney general's rules, so this assessment treats Tucker as covered.</p>
+      <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/eu-ai-act.md"><code>docs/standards/eu-ai-act.md</code></a>.</p>
+      <h2>SB 26-189: automated decisions</h2>
+      <div class="req"><h3>Tucker and consequential decisions <span class="chip na">Not applicable</span></h3>
+        <p>The law applies when automated technology materially influences a consequential decision about a person, such as approving credit, setting a price or opening an account. Tucker influences no decision: he reads a verified customer's own records, explains policies and points to the secure portal or the disputes team. He cannot approve, deny, refund or change anything, so there is no adverse decision to explain.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>The AI SOC analyst and blocking <span class="chip na">Not applicable</span></h3>
+        <p>Blocking a source of attacks could, in a real payment company, keep a customer from reaching a financial service, so it is worth checking. The block here is made by fixed code rules after repeated attacks, not by the AI, and it lasts 24 hours. The AI SOC analyst only writes the report and proposes actions from a fixed menu; it decides nothing about a person.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Records <span class="chip na">Not applicable</span></h3>
+        <p>If either AI ever did influence a consequential decision, the law would require records for at least three years. The site keeps records briefly on purpose, for privacy: web logs for two days, demo data reset nightly. A real deployment that came into scope would need a separate, longer-lived record of each decision. The AI's instructions and tools are already in version control, so how it behaved at any point is on record.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/data-retention.md"><code>policies/data-retention.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
+      </div>
+      <h2>HB 26-1263: chatbots</h2>
+      <div class="req"><h3>Telling people they are talking to an AI <span class="chip met">Met</span></h3>
+        <p>Operators must disclose that a user is interacting with AI. Tucker's greeting in every chat says he is an AI assistant, his label on the page reads "AI Support Agent", he says so whenever asked, and every reply the model writes is marked as AI-generated in the data the page receives.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/index.html"><code>site/index.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>A protocol for suicidal ideation and self-harm <span class="chip partly">Partly met</span></h3>
+        <p>Operators must have a protocol for messages about suicidal ideation or self-harm that refers the person to a crisis service. Tucker declines anything outside Tucker Payment Processing and steers back, so he will not give harmful advice, but he has no specific response that points the person to help, such as the 988 Suicide and Crisis Lifeline. This is a real gap. The fix is a check that runs before the AI, like the prompt-injection check, and answers with a fixed crisis-referral message.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Not implying professional services <span class="chip met">Met</span></h3>
+        <p>Operators may not imply that the chatbot's output is equivalent to advice from a licensed professional. Tucker discusses only the company's own accounts, orders and policies, declines opinions and other topics, and sends account changes and disputes to the right team.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Protections for minors <span class="chip partly">Partly met</span></h3>
+        <p>For users under 18, the law adds repeated AI disclosure, no points or rewards to drive engagement, measures against sexually explicit content and statements that simulate emotional dependence, and privacy controls. Tucker has no rewards, his topic limit keeps conversations to payments, and he says he is an AI. His playful dog persona is light, but the site does not know a visitor's age, so it cannot switch that persona off or repeat the disclosure specifically for minors.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Annual reporting to the attorney general <span class="chip partly">Partly met</span></h3>
+        <p>Operators must report on their crisis protocol each year. Guardrail events are already counted and summarized every night, so crisis referrals could be counted the same way once the protocol exists.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>.</p>
+      </div>
+      <h2>The bottom line</h2>
+      <p>Under SB 26-189, the site is out of scope for the same reason it stays out of the EU AI Act's high-risk tier: the AI decides nothing about anyone. If a real company let an AI approve credit or decide disputes, it would owe consumers notice, a plain-language explanation within 30 days of an adverse decision, a way to correct their data and a human review. Under HB 26-1263, AI disclosure is met, and the one gap that matters is a crisis-referral protocol, which a real company should add before January 1, 2027.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/colorado-ai-laws.md">docs/standards/colorado-ai-laws.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261125c" defer></script>
+</body>
+</html>

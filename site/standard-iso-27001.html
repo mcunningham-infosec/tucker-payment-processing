@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  ISO/IEC 27001:2022 - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ISO/IEC 27001:2022 - Tucker Payment Processing</title>
+  <meta name="description" content="ISO/IEC 27001:2022: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
+  <link rel="stylesheet" href="assets/site.css?v=20261125c">
+  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
+  <link rel="stylesheet" href="assets/about.css?v=20261125c">
+  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
+  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html">About Us</a>
+      <a href="policies.html">AI Policies</a>
+      <a href="standards.html" aria-current="page">Standards</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card policy standard">
+      <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
+      <h1>ISO/IEC 27001:2022</h1>
+      <p class="muted-line">The information security management system behind the site: clauses 4 to 10 and the Annex A controls · Self-assessment · November 25, 2026</p>
+      <p class="std-summary"><span class="chip met">10 met</span> <span class="chip partly">6 partly met</span> <span class="chip na">2 not applicable</span> <a class="scan-all" href="standards/iso-27001.pdf">Download PDF</a></p>
+      <h2>About this document</h2>
+      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not a certification: only an accredited certification body can issue one. ISO/IEC 27001 is the international standard for an information security management system (ISMS). The current edition is ISO/IEC 27001:2022, with Amendment 1 (2024), which asks organizations to consider whether climate change is relevant to their security. Certificates to the old 2013 edition stopped being valid on October 31, 2025.</p>
+      <p>The standard has two parts. Clauses 4 to 10 describe the management system: scope, leadership, risk assessment, operation, measurement and improvement. Annex A lists 93 controls in four themes: organizational (37), people (8), physical (14) and technological (34). ISO/IEC 42001, the AI management system standard, is built on the same structure, so the two fit together; the AI side is covered in the ISO/IEC 42001 write-up.</p>
+      <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-42001.md"><code>docs/standards/iso-42001.md</code></a>.</p>
+      <h2>The management system (clauses 4 to 10)</h2>
+      <div class="req"><h3>Clause 4: Context and scope <span class="chip met">Met</span></h3>
+        <p>The scope is the website, its API, its two AI systems, its database and the server and cloud services that run them. The interested parties are visitors, the people who test it, the vendors and the owner. On climate (Amendment 1), it was considered and judged not relevant to the site's security beyond the choice of hosting provider.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/SECURITY.md"><code>SECURITY.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 5: Leadership <span class="chip partly">Partly met</span></h3>
+        <p>There is one accountable owner, a published security policy and published company policies, and security is designed in rather than added later. A one-person company cannot show what an auditor would test in a larger one: management commitment across a team and assigned security roles.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/SECURITY.md"><code>SECURITY.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 6: Planning and risk assessment <span class="chip partly">Partly met</span></h3>
+        <p>Risks are identified and treated in writing: the AI risks in the ISO/IEC 23894 and NIST write-ups, the web and AI attacks in the OWASP write-ups, and the payment risks in the PCI DSS write-up, each linked to the control that answers it. What is missing is a single formal Statement of Applicability that lists all 93 Annex A controls with a decision for each; this document covers them by theme.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-23894.md"><code>docs/standards/iso-23894.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-llm-top-10.md"><code>docs/standards/owasp-llm-top-10.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/pci-dss.md"><code>docs/standards/pci-dss.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 7: Support <span class="chip met">Met</span></h3>
+        <p>Documented information is kept in version control, so every policy, configuration and control has a history. Policies are published, and the owner brings 25 years of security leadership to the work.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/README.md"><code>deploy/README.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 8: Operation <span class="chip met">Met</span></h3>
+        <p>The planned controls run every day: automated updates, nightly data resets, a nightly security report, real-time alerts and spend caps. Changes are planned and deployed by one scripted command.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/nightly_reset.sql"><code>db/nightly_reset.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 9: Performance evaluation <span class="chip partly">Partly met</span></h3>
+        <p>Security is measured continuously: automated tests, five independent public scanners, Cipher's 50 live attacks and an outside-in check that the files the live site serves match the published code. A certification auditor would also expect a formal internal audit programme and management reviews on a set schedule, which do not exist here.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/ops/live_watch.py"><code>ops/live_watch.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Clause 10: Improvement <span class="chip met">Met</span></h3>
+        <p>Problems are fixed and the fix is tested: every gap the public scanners found was closed the same day, and each defense that failed during an attack run is flagged for a human to fix.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
+      </div>
+      <h2>Annex A controls</h2>
+      <div class="req"><h3>Organizational controls (A.5) <span class="chip partly">Partly met</span></h3>
+        <p>Policies for information security, acceptable use of AI, data retention and card security are written and published (A.5.1, A.5.10). Threat intelligence comes from OWASP and MITRE ATLAS, and Cipher's Lair turns it into tests (A.5.7). Suppliers and cloud services are known and limited to what each needs (A.5.19 to A.5.23). Incidents are detected, alerted, investigated by the AI SOC analyst and fixed (A.5.24 to A.5.28). The gap is segregation of duties (A.5.3): one person builds, approves and deploys.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/about.html"><code>site/about.html</code></a>.</p>
+      </div>
+      <div class="req"><h3>People controls (A.6) <span class="chip na">Not applicable</span></h3>
+        <p>Screening, employment terms, awareness training and disciplinary processes apply to staff, and the company has none. The one people control that does apply, remote working (A.6.7), is met: all administration goes through Google's identity-checked tunnel with two-step verification.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/gcp-firewall.md"><code>deploy/gcp-firewall.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Physical controls (A.7) <span class="chip na">Not applicable</span></h3>
+        <p>The company has no office or data center. Physical security is inherited from Google Cloud, whose data centers hold their own ISO/IEC 27001 certification. A real company would keep Google's certificate on file as supplier evidence.</p>
+      </div>
+      <div class="req"><h3>Access control and authentication (A.8.2 to A.8.5) <span class="chip met">Met</span></h3>
+        <p>There is no public SSH and no admin port open to the internet; admin access needs a Google identity with two-step verification. Database logins use the operating system's identity, with no passwords to steal, and each part of the app gets only the access it needs: the chat reads, and the store can call one function. Tucker can only read a customer's data after the identity check.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/gcp-firewall.md"><code>deploy/gcp-firewall.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/roles.sql"><code>db/roles.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/postgres-store-login.md"><code>deploy/postgres-store-login.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Malware, vulnerabilities and configuration (A.8.7 to A.8.9) <span class="chip met">Met</span></h3>
+        <p>The server installs security updates itself and restarts cleanly. Dependabot watches every library for known vulnerabilities and malware, and the server's hardening (security headers, blocked methods, hidden files) is kept in version control and re-checked by Cipher's Lair.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>.</p>
+      </div>
+      <div class="req"><h3>Deletion, masking and leak prevention (A.8.10 to A.8.12) <span class="chip met">Met</span></h3>
+        <p>Web logs are deleted after two days and the demo data resets every night. Anything in the AI's reply that looks like a full card number is masked before it is shown, and no full card number exists anywhere in the system.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/logrotate-apache2"><code>deploy/logrotate-apache2</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/nightly_reset.sql"><code>db/nightly_reset.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/schema.sql"><code>db/schema.sql</code></a>.</p>
+      </div>
+      <div class="req"><h3>Backup and redundancy (A.8.13 to A.8.14) <span class="chip partly">Partly met</span></h3>
+        <p>Everything needed to rebuild the site, from code and configuration to the database schema and demo data, is in the repository, and the data restores itself to a known state every night. There is one server and no standby, which is acceptable for a demonstration but would not meet a commitment to customers.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/schema.sql"><code>db/schema.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/seed.sql"><code>db/seed.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/README.md"><code>deploy/README.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Logging and monitoring (A.8.15 to A.8.16) <span class="chip met">Met</span></h3>
+        <p>Web requests, guardrail events and blocked attacks are logged. Detection rules raise an alert after repeated attacks from one source and block it for 24 hours; real-time alerts reach the owner by email, and a nightly report summarizes the day. Logs are kept briefly on purpose, for privacy, which limits how far back an investigation can look.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/alert-policy.json"><code>deploy/alert-policy.json</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Network security and cryptography (A.8.20 to A.8.24) <span class="chip met">Met</span></h3>
+        <p>The firewall admits web traffic only from Cloudflare, which adds a web application firewall and bot defense. Only TLS 1.2 and 1.3 are accepted, HSTS is preloaded, and the domain uses DNSSEC and CAA. Independent scanners rated the configuration A+.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/gcp-firewall.md"><code>deploy/gcp-firewall.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-cloudflare.conf"><code>deploy/apache-cloudflare.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/dns.md"><code>deploy/dns.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>.</p>
+      </div>
+      <div class="req"><h3>Secure development and testing (A.8.25 to A.8.29) <span class="chip met">Met</span></h3>
+        <p>Security is part of the design from the start. Every change on GitHub is scanned by CodeQL and secret scanning, 88 automated tests check the security behavior, and Cipher's Lair attacks the live site with 50 real attacks. Secrets never enter the repository.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>Change management (A.8.32) <span class="chip partly">Partly met</span></h3>
+        <p>Every change is recorded in GitHub and deployed by one scripted command that waits for any attack run in progress to finish. The gap is independent approval: the builder also approves and deploys, where an auditor would expect a second reviewer.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>.</p>
+      </div>
+      <h2>The bottom line</h2>
+      <p>The technical controls are strong, because they are built into code and configuration rather than left to people. The gaps are the ones any one-person company has: no segregation of duties, no internal audit or management review cycle, and no formal Statement of Applicability. A company preparing for certification would close those first.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-27001.md">docs/standards/iso-27001.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261125c" defer></script>
+</body>
+</html>
