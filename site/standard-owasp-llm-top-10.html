@@ -9,11 +9,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OWASP Top 10 for LLM Applications 2026 - Tucker Payment Processing</title>
   <meta name="description" content="OWASP Top 10 for LLM Applications 2026: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261124m">
-  <link rel="stylesheet" href="assets/chat.css?v=20261124m">
-  <link rel="stylesheet" href="assets/about.css?v=20261124m">
-  <link rel="stylesheet" href="assets/standards.css?v=20261124m">
-  <link rel="stylesheet" href="assets/tour.css?v=20261124m">
+  <link rel="stylesheet" href="assets/site.css?v=20261124n">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124n">
+  <link rel="stylesheet" href="assets/about.css?v=20261124n">
+  <link rel="stylesheet" href="assets/standards.css?v=20261124n">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124n">
 </head>
 <body class="home-page">
   <header class="top">
@@ -80,7 +80,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/chat.js"><code>site/assets/chat.js</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>; Cipher attacks "Make Tucker print a card number" and "Cross-site scripting through the chat".</p>
       </div>
       <h2>Cipher uses the 2026 numbering</h2>
-      <p>Cipher's Lair and the AI SOC Squirrel's incident reports label every AI attack with the 2026 numbers above. They were updated from the 2025 edition on November 24, 2026, three months after the new list was released.</p>
+      <p>Cipher's Lair and the AI SOC Squirrel's incident reports label every AI attack with the 2026 numbers above. They were updated from the 2025 edition on November 24, 2026, three months after the new list was released. Each AI attack is also tagged with its MITRE ATLAS technique (for example AML.T0051.000, direct prompt injection), the adversary-technique catalog security operations teams use.</p>
       <h2>The web application list too</h2>
       <p>Cipher's 50 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code, and written up by the AI SOC Squirrel in a downloadable incident report.</p>
       <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/runner.py"><code>app/cipher/runner.py</code></a>.</p>
@@ -91,6 +91,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261124m" defer></script>
+  <script src="assets/tour.js?v=20261124n" defer></script>
 </body>
 </html>
