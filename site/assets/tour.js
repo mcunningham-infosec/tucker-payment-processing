@@ -77,7 +77,7 @@
   };
 
   var OFFERED = "tucker-tour-offered";
-  var bubble, picEl, textEl, tipEl, countEl, backBtn, nextBtn, launcher, spotted = null, current = -1;
+  var bubble, picEl, textEl, tipEl, countEl, backBtn, nextBtn, launcher, spotted = null, current = -1, toured = false;
   var note = null;   // set while Tucker shows a one-off tip (not a tour step): where its button goes
 
   // Create an element with an optional class and TEXT content (never HTML).
@@ -169,6 +169,7 @@
     if (!s) { return end(); }
     if (s.page !== PAGE) { location.href = pageFile(s.page) + "?tour=" + i; return; }
     current = i;
+    toured = true;          // the tour ran on this page, so its follow-up tips are welcome
     note = null;
     unspot();
     var target = s.spot ? document.querySelector(s.spot) : null;
@@ -307,6 +308,7 @@
     // After Cipher's attack finishes (cipher.js fires "cipher-done"), Tucker recommends the About Us page.
     if (PAGE === "cipher") {
       document.addEventListener("cipher-done", function () {
+        if (!toured) { return; }      // only for visitors taking the tour, not everyone who runs Cipher
         setTimeout(function () {
           tip("Nice work, you survived Cipher! Want to see how all of this is built? The About Us page covers the " +
               "architecture, the AI policies behind me, and the code on GitHub if you really want to dig in.",

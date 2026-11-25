@@ -204,7 +204,8 @@
     var s = st.summary || {};
     line("log-attack", "Connection Terminated...", "big");
     say("attack", "Drats, foiled again! I'll get you next time, Tucker! Meow!");
-    var held = s.held + " of " + s.attacks + " attacks stopped";
+    var held = (typeof s.held === "number" && typeof s.attacks === "number")
+      ? s.held + " of " + s.attacks + " attacks stopped" : shown.attacks + " attacks run";
     line("log-defense", "tucker.summary(\"" + held + "\")", "big");
     say("defense", "Stop trying to steal my treats, Cipher! ... Good job, Squirrel!");
     document.dispatchEvent(new CustomEvent("cipher-done"));   // tour.js: Tucker then suggests the About page
@@ -221,7 +222,8 @@
       $("attack").disabled = true;
       $("attack").textContent = "Cipher is blocked";
     }
-    setStatus("Run complete in " + s.seconds + "s: " + held + ". Your SOC report is ready.");
+    setStatus((typeof s.seconds === "number" ? "Run complete in " + s.seconds + "s: " : "Run complete: ") + held +
+              ". Your SOC report is ready.");
   }
 
   // Queue everything new since the last poll, in time order (attacks, defenses, rules, AI check-ins).
