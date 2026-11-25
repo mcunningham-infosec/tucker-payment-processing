@@ -4,6 +4,8 @@ Python validates everything it says, and a broken or tricked AI never changes wh
 
 Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
+import re
+
 from app.cipher import soc
 from app.llm import FakeLLM, ModelTurn
 
@@ -225,3 +227,11 @@ def test_code_corrects_a_wrong_count_and_wake_up_appears_only_once():
     both = {"headline": "Wake up, Tucker! Cipher is hammering us", "lines": ["Wake up, Tucker! Our rule just woke us up."]}
     soc._verify(both, {"categories_seen": 2, "raw_web_log_lines": []}, final=False)
     assert both["headline"].startswith("Wake up") and both["lines"][0] == "Our rule just woke us up."
+
+
+def test_every_ai_attack_has_a_real_atlas_technique():
+    """Each AI attack carries a MITRE ATLAS technique (AML.Txxxx), and every tag points at a real attack."""
+    from app.cipher.attacks import ATLAS, ATTACKS
+    ai = {a.id for a in ATTACKS if a.owasp.startswith("LLM")}
+    assert set(ATLAS) == ai
+    assert all(re.fullmatch(r"AML\.T\d{4}(\.\d{3})? .+", v) for v in ATLAS.values())
