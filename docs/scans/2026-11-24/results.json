@@ -1,17 +1,24 @@
 {
   "site": "https://tuckerpaymentprocessing.com",
   "date": "2026-11-24",
-  "intro": "Tucker Payment Processing was tested by independent, public security scanners. The first round found three gaps (old TLS versions still accepted, DNS not signed with DNSSEC, and no security.txt or CAA record). All were fixed the same afternoon and every scanner was run again. This summary shows both rounds.",
-  "method": "Method: each scanner was run against the live site from a normal web browser on 2026-11-24. Grades, times (UTC) and check results are recorded exactly as shown on each scanner's result page; the 'Verify it yourself' links run the same scan again live. Scans run by Michael Cunningham with AI assistance (Claude).",
+  "intro": "Tucker Payment Processing was tested by independent, public security scanners. The first round found three gaps (old TLS versions still accepted, DNS not signed with DNSSEC, and no security.txt or CAA record). All were fixed the same afternoon and every scanner was run again. That evening the site was hardened further (email spoofing lockdown, HSTS preload, cross-origin isolation headers, ping disabled) and the scanners were run a third time. This summary shows the first round and the latest results.",
+  "method": "Method: each scanner was run against the live site from a normal web browser on 2026-11-24 (US Eastern; the evening round is dated 2026-11-25 in UTC). Grades, times (UTC) and check results are recorded exactly as shown on each scanner's result page; the 'Verify it yourself' links run the same scan again live. Scans run by Michael Cunningham with AI assistance (Claude).",
   "fixes_made": [
     "Cloudflare minimum TLS version raised from 1.0 to 1.2: TLS 1.0 and 1.1 are now refused (SSL Labs B to A+).",
     "DNSSEC enabled: the domain's DNS records are cryptographically signed and the DS record is published at the .com registry.",
     "CAA records added: only approved certificate authorities may issue certificates for the domain.",
-    "security.txt published at /.well-known/security.txt (RFC 9116), pointing to a private GitHub vulnerability-reporting channel and SECURITY.md."
+    "security.txt published at /.well-known/security.txt (RFC 9116), pointing to a private GitHub vulnerability-reporting channel and SECURITY.md.",
+    "Email spoofing lockdown: the domain sends no email, so SPF (-all), DMARC (p=reject), an empty DKIM key and a null MX record tell every mail server to reject anything claiming to be from it.",
+    "HSTS strengthened to two years with includeSubDomains and preload, Cloudflare 'Always Use HTTPS' turned on, and the domain submitted to the browser HSTS preload list (pending).",
+    "Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy headers added (Mozilla Observatory +20).",
+    "Ping (ICMP) to the server disabled at the Google Cloud firewall; web traffic still only accepted from Cloudflare.",
+    "Rate limits count an IPv6 visitor by their whole /64 network, so rotating addresses can't dodge them.",
+    "Dependabot security update merged (dnspython 2.9.2)."
   ],
   "known_limits": [
     "internet.nl still marks two TLS 1.2 details (cipher suites; hash function for key exchange) because Cloudflare keeps some older-style options for compatibility. Choosing exact cipher suites is not available on Cloudflare's Free plan. TLS 1.3 is preferred and post-quantum key exchange is supported.",
-    "Sucuri SiteCheck's malware scan was refused (HTTP 403) by Cloudflare's bot defense, which blocks automated scanners by design. Its blocklist check (9 lists) ran and is clean."
+    "Sucuri SiteCheck's malware scan was refused (HTTP 403) by Cloudflare's bot defense, which blocks automated scanners by design. Its blocklist check (9 lists) ran and is clean.",
+    "Cross-Origin-Embedder-Policy is deliberately not set: it would break Cloudflare Turnstile, the human check that protects Cipher's Lair."
   ],
   "scans": [
     {
@@ -105,9 +112,9 @@
       },
       "after": {
         "grade": "96%",
-        "time": "2026-11-24 21:28 UTC"
+        "time": "2026-11-25 01:21 UTC"
       },
-      "summary": "Score rose from 75% to 96%. DNSSEC, TLS version, CAA and security.txt went from failing or recommended to passing. The remaining 4% is two TLS 1.2 details that Cloudflare's Free plan does not let a site change.",
+      "summary": "Score rose from 75% to 96%. DNSSEC, TLS version, CAA and security.txt went from failing or recommended to passing. The remaining 4% is two TLS 1.2 details that Cloudflare's Free plan does not let a site change. Re-run after the evening hardening: still 96%, same two Cloudflare limits.",
       "fixes": [
         "DNSSEC enabled (domain signed, DS record at the .com registry).",
         "TLS 1.0 and 1.1 turned off.",
@@ -189,7 +196,7 @@
         }
       ],
       "retest": "https://internet.nl/site/tuckerpaymentprocessing.com/",
-      "permalink": "https://internet.nl/site/tuckerpaymentprocessing.com/4434911/"
+      "permalink": "https://internet.nl/site/tuckerpaymentprocessing.com/4435095/"
     },
     {
       "id": "mozilla-observatory",
@@ -202,9 +209,9 @@
       },
       "after": {
         "grade": "A+",
-        "time": "2026-11-24 about 21:29 UTC"
+        "time": "2026-11-25 about 01:35 UTC"
       },
-      "summary": "A+ with a score of 120 out of 100 and 12 of 12 tests passed. The bonus points come from a strict Content-Security-Policy, Referrer-Policy, Subresource Integrity and frame protection.",
+      "summary": "A+ with a score of 140 out of 100 and 12 of 12 tests passed (120 in the afternoon round). The bonus points come from a strict Content-Security-Policy, Referrer-Policy, Subresource Integrity, frame protection and, added that evening, Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy (+10 each).",
       "checks": [
         {
           "check": "Content Security Policy",
@@ -240,7 +247,7 @@
           "check": "Strict Transport Security",
           "before": "",
           "after": "pass",
-          "detail": "At least six months (max-age 31536000)"
+          "detail": "Two years (max-age 63072000), includeSubDomains, preload; preload listing pending"
         },
         {
           "check": "Subresource Integrity",
@@ -264,23 +271,23 @@
           "check": "Cross-Origin-Embedder-Policy",
           "before": "",
           "after": "info",
-          "detail": "Not implemented (optional; no score impact)"
+          "detail": "Not set on purpose: it would break the Turnstile human check (no score impact)"
         },
         {
           "check": "Cross-Origin-Opener-Policy",
           "before": "",
-          "after": "info",
-          "detail": "Not implemented (optional; no score impact)"
+          "after": "pass",
+          "detail": "+10: same-origin"
         },
         {
           "check": "Cross-Origin-Resource-Policy",
           "before": "",
-          "after": "info",
-          "detail": "Not implemented (optional; no score impact)"
+          "after": "pass",
+          "detail": "+10: same-origin"
         }
       ],
       "notes": [
-        "Optional further hardening the scanner suggests: Cross-Origin-Opener/Embedder policies, default-src 'none' in the CSP, and HSTS preload. These are on the site's security-review list."
+        "Remaining optional suggestions: default-src 'none' in the CSP, and the HSTS preload bonus once the browser preload list includes the domain (submitted 2026-11-24). Cross-Origin-Embedder-Policy is left off on purpose (see Known limits)."
       ],
       "retest": "https://developer.mozilla.org/en-US/observatory/analyze?host=tuckerpaymentprocessing.com"
     },
@@ -295,7 +302,7 @@
       },
       "after": {
         "grade": "A+",
-        "time": "2026-11-24 21:24 UTC"
+        "time": "2026-11-25 01:21 UTC"
       },
       "summary": "A+ in both rounds: all six major security headers are present, including a strict Content-Security-Policy with no inline scripts and no third-party code.",
       "checks": [
@@ -303,7 +310,7 @@
           "check": "Strict-Transport-Security",
           "before": "pass",
           "after": "pass",
-          "detail": "max-age=31536000"
+          "detail": "max-age=63072000; includeSubDomains; preload"
         },
         {
           "check": "Content-Security-Policy",
@@ -334,6 +341,18 @@
           "before": "pass",
           "after": "pass",
           "detail": "camera=(), microphone=(), geolocation=(), payment=()"
+        },
+        {
+          "check": "Cross-Origin-Opener-Policy",
+          "before": "",
+          "after": "pass",
+          "detail": "same-origin (added in the evening round)"
+        },
+        {
+          "check": "Cross-Origin-Resource-Policy",
+          "before": "",
+          "after": "pass",
+          "detail": "same-origin (added in the evening round)"
         }
       ],
       "retest": "https://securityheaders.com/?q=https%3A%2F%2Ftuckerpaymentprocessing.com%2F&hide=on&followRedirects=on"
