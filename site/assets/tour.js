@@ -63,7 +63,7 @@
     { page: "about", spot: "#about-policies",
       say: "Michael wrote the company's policies first, then built me to follow them. You can read every one on the AI Policies tab." },
     { page: "about", spot: "#about-standards",
-      say: "This one matters. Michael checked this site against ten recognized standards, from the OWASP AI Top 10s and MITRE ATLAS to ISO 42001, the EU AI Act and PCI DSS: every requirement mapped to the code that proves it, and every gap admitted. They're all on the Standards tab, with PDFs." },
+      say: "This one matters. Michael checked this site against fourteen recognized standards and laws, from the OWASP AI Top 10s and MITRE ATLAS to ISO 42001, the EU AI Act, bank model risk guidance, ISO 27001 and PCI DSS: every requirement mapped to the code that proves it, and every gap admitted. They're all on the Standards tab, with PDFs." },
     { page: "about", spot: "#about-tech",
       say: "The technology underneath: Google Cloud, Gemini, Cloudflare, zero-trust admin access and least privilege everywhere." },
     { page: "about", spot: "#about-scans",
