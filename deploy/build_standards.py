@@ -32,13 +32,17 @@ ORDER = [
     ("owasp-llm-top-10", "OWASP Top 10 for LLM Applications 2026", "Each of the ten AI risks, such as prompt injection, sensitive data disclosure and excessive agency, and the control that answers it."),
     ("owasp-agentic-top-10", "OWASP Top 10 for Agentic Applications 2026", "The risks of AI that uses tools and takes actions, from goal hijack to rogue agents, and why both of the site's AI agents have agency without authority."),
     ("mitre-atlas", "MITRE ATLAS", "The attacker techniques that apply to the site's AI, from prompt injection to cost harvesting, and the defense against each."),
-    ("nist-ai-rmf", "NIST AI Risk Management Framework", "How Tucker's risks are governed, mapped, measured and managed, across all 19 categories, with NIST's Generative AI Profile."),
-    ("iso-42001", "ISO/IEC 42001:2023", "The AI management system behind Tucker: clauses 4 to 10 and the Annex A controls."),
+    ("nist-ai-rmf", "NIST AI Risk Management Framework", "How the AI chatbot's risks are governed, mapped, measured and managed, across all 19 categories."),
+    ("nist-ai-600-1", "NIST AI 600-1: Generative AI Profile", "The twelve risks NIST names for generative AI, from confabulation to value chain risk, and how each is handled."),
+    ("iso-42001", "ISO/IEC 42001:2023", "The AI management system behind the AI chatbot: clauses 4 to 10 and the Annex A controls."),
     ("iso-23894", "ISO/IEC 23894:2023", "AI risk management: how the site's AI risks are identified, analyzed, treated and monitored, and the AI-specific risk sources."),
-    ("iso-42005", "ISO/IEC 42005:2025", "An AI system impact assessment of Tucker and the AI SOC Squirrel: intended use, misuse, data, benefits, harms and residual risk."),
-    ("eu-ai-act", "EU AI Act", "Where Tucker sits in the EU's risk tiers, and the transparency duties that apply."),
+    ("iso-42005", "ISO/IEC 42005:2025", "An AI system impact assessment of the AI chatbot and the AI SOC: intended use, misuse, data, benefits, harms and residual risk."),
+    ("eu-ai-act", "EU AI Act", "Where the AI chatbot sits in the EU's risk tiers, and the transparency duties that apply."),
+    ("colorado-ai-laws", "Colorado AI laws: SB 26-189 and HB 26-1263", "Colorado's automated decision law, which replaced the Colorado AI Act, and its new chatbot law, both from January 2027."),
+    ("model-risk-management", "Model Risk Management: SR 26-2 (formerly SR 11-7)", "The US banking agencies' model risk guidance, which now leaves generative AI out, applied to the site's AI the way a bank would."),
     ("pci-dss", "PCI DSS v4.0.1", "All twelve requirements for the store and support chat, starting with the biggest control: keeping card data out."),
     ("soc-2", "SOC 2 Trust Services Criteria", "A readiness review against the criteria a SOC 2 auditor tests, CC1 to CC9 plus the optional categories."),
+    ("iso-27001", "ISO/IEC 27001:2022", "The information security management system: clauses 4 to 10 and all four themes of the Annex A controls."),
 ]
 STATUSES = ["Met", "Partly met", "Not applicable"]
 CHIP = {"Met": "met", "Partly met": "partly", "Not applicable": "na"}
@@ -200,17 +204,21 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
 
     c = counts(doc)
     summary = " &nbsp; ".join(f'<font color="{COLOR[s]}"><b>{c[s]} {s.lower()}</b></font>' for s in STATUSES if c[s])
-    story = [Paragraph("Tucker Payment Processing &middot; Standards self-assessment", S["org"]),
+    story = [Paragraph("Tucker Payment Processing &middot; Standards self-assessment by Michael Cunningham", S["org"]),
              Paragraph(rl(doc["title"]), S["title"]), Paragraph(rl(doc["subtitle"]), S["sub"]),
              Paragraph(summary, S["body"])]
     for sec in doc["sections"]:
         # A section heading is never left alone at the foot of a page: it travels with its first paragraph or item.
         heading = [Paragraph(rl(sec["heading"]), S["h2"])]
         first = [Paragraph(rl(t), S["body"]) for t in sec["paras"][:1]]
-        story.append(KeepTogether(heading + first) if first or not sec["items"] else heading[0])
-        story += [Paragraph(rl(t), S["body"]) for t in sec["paras"][1:]]
-        if sec.get("evidence"):
-            story.append(Paragraph("<b>Evidence:</b> " + rl(sec["evidence"]), S["ev"]))
+        rest = [Paragraph(rl(t), S["body"]) for t in sec["paras"][1:]]
+        # A section's Evidence line stays on the same page as the paragraph above it.
+        ev = [Paragraph("<b>Evidence:</b> " + rl(sec["evidence"]), S["ev"])] if sec.get("evidence") else []
+        if rest:
+            story.append(KeepTogether(heading + first) if first or not sec["items"] else heading[0])
+            story += rest[:-1] + [KeepTogether(rest[-1:] + ev)]
+        else:
+            story.append(KeepTogether(heading + first + ev) if first or not sec["items"] else heading[0])
         lone_heading = not first and not sec.get("evidence")
         for it in sec["items"]:
             head = Table([[Paragraph(rl(it["heading"]), S["h3"]),
@@ -228,7 +236,7 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
                 lone_heading = False
             story.append(KeepTogether(block))
     story += [Spacer(1, 10), Paragraph(f"Source: {REPO}/blob/main/docs/standards/{name}.md &middot; Live site: https://tuckerpaymentprocessing.com", S["small"]),
-              Paragraph("Written by Michael Cunningham with AI assistance (Claude). A self-assessment, not an audit, certification "
+              Paragraph("Written by Michael Cunningham. A self-assessment, not an audit, certification "
                         "or legal opinion. Tucker Payment Processing is a fictional company and processes no real payments.", S["small"])]
 
     def footer(canvas, d):
