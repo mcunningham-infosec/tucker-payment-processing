@@ -185,7 +185,7 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
         "org": dict(fontName="Helvetica-Bold", fontSize=9, textColor=BLUE),
         "title": dict(fontName="Helvetica-Bold", fontSize=19, leading=23, textColor=INK, spaceBefore=2),
         "sub": dict(fontName="Helvetica", fontSize=9.5, leading=13, textColor=MUTED, spaceAfter=4),
-        "h2": dict(fontName="Helvetica-Bold", fontSize=12, textColor=BLUE, spaceBefore=12, spaceAfter=4),
+        "h2": dict(fontName="Helvetica-Bold", fontSize=12, textColor=BLUE, spaceBefore=12, spaceAfter=4, keepWithNext=1),
         "h3": dict(fontName="Helvetica-Bold", fontSize=10, leading=13, textColor=INK, spaceBefore=8, spaceAfter=2),
         "body": dict(fontName="Helvetica", fontSize=9.3, leading=13.2, textColor=INK, spaceAfter=4),
         "ev": dict(fontName="Helvetica", fontSize=8, leading=11, textColor=MUTED, spaceAfter=2),
@@ -204,10 +204,14 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
              Paragraph(rl(doc["title"]), S["title"]), Paragraph(rl(doc["subtitle"]), S["sub"]),
              Paragraph(summary, S["body"])]
     for sec in doc["sections"]:
-        story.append(Paragraph(rl(sec["heading"]), S["h2"]))
-        story += [Paragraph(rl(t), S["body"]) for t in sec["paras"]]
+        # A section heading is never left alone at the foot of a page: it travels with its first paragraph or item.
+        heading = [Paragraph(rl(sec["heading"]), S["h2"])]
+        first = [Paragraph(rl(t), S["body"]) for t in sec["paras"][:1]]
+        story.append(KeepTogether(heading + first) if first or not sec["items"] else heading[0])
+        story += [Paragraph(rl(t), S["body"]) for t in sec["paras"][1:]]
         if sec.get("evidence"):
             story.append(Paragraph("<b>Evidence:</b> " + rl(sec["evidence"]), S["ev"]))
+        lone_heading = not first and not sec.get("evidence")
         for it in sec["items"]:
             head = Table([[Paragraph(rl(it["heading"]), S["h3"]),
                            Paragraph(f'<font color="{COLOR.get(it["status"], "#5b6470")}"><b>{rl(it["status"].upper())}</b></font>',
@@ -218,6 +222,10 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
             block = [head, Spacer(1, 3)] + [Paragraph(rl(t), S["body"]) for t in it["paras"]]
             if it["evidence"]:
                 block.append(Paragraph("<b>Evidence:</b> " + rl(it["evidence"]), S["ev"]))
+            if lone_heading:                      # heading followed directly by an item: keep them together
+                story.pop()
+                block = heading + block
+                lone_heading = False
             story.append(KeepTogether(block))
     story += [Spacer(1, 10), Paragraph(f"Source: {REPO}/blob/main/docs/standards/{name}.md &middot; Live site: https://tuckerpaymentprocessing.com", S["small"]),
               Paragraph("Written by Michael Cunningham with AI assistance (Claude). A self-assessment, not an audit, certification "
@@ -229,12 +237,13 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
         canvas.setFillColor(MUTED)
         canvas.drawString(0.75 * inch, 0.5 * inch, f"Tucker Payment Processing (fictional company) - {doc['title']} - self-assessment")
         canvas.drawRightString(7.75 * inch, 0.5 * inch, f"Page {d.page}")
+        canvas.drawCentredString(4.25 * inch, 0.33 * inch, _policy.COPYRIGHT)
         canvas.restoreState()
 
     path.parent.mkdir(parents=True, exist_ok=True)
     SimpleDocTemplate(str(path), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch, topMargin=0.7 * inch,
                       bottomMargin=0.8 * inch, title=doc["title"], author="Michael Cunningham", invariant=1,
-                      subject="Tucker Payment Processing standards self-assessment").build(story, onFirstPage=footer, onLaterPages=footer)
+                      subject="Tucker Payment Processing standards self-assessment", keywords=_policy.COPYRIGHT).build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 if __name__ == "__main__":

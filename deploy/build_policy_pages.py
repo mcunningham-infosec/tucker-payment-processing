@@ -23,6 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 SITE = ROOT / "site"
 VERSION = "20261125b"          # same asset version as the other pages (see apache-hardening.conf)
+COPYRIGHT = "\u00a9 2026 Michael Cunningham. All rights reserved."   # on every page of every PDF, and in its metadata
 GITHUB = "https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/"
 
 # Display order, page name and a one-line summary for the policy list.
@@ -140,7 +141,7 @@ def pdf(src: str, p: dict, path: pathlib.Path):
         "org": dict(fontName="Helvetica-Bold", fontSize=9, textColor=BLUE),
         "title": dict(fontName="Helvetica-Bold", fontSize=19, leading=23, textColor=INK, spaceBefore=2),
         "sub": dict(fontName="Helvetica", fontSize=9.5, leading=13, textColor=MUTED, spaceAfter=4),
-        "h2": dict(fontName="Helvetica-Bold", fontSize=12, textColor=BLUE, spaceBefore=12, spaceAfter=4),
+        "h2": dict(fontName="Helvetica-Bold", fontSize=12, textColor=BLUE, spaceBefore=12, spaceAfter=4, keepWithNext=1),
         "body": dict(fontName="Helvetica", fontSize=9.3, leading=13.2, textColor=INK, spaceAfter=4),
         "small": dict(fontName="Helvetica", fontSize=8, leading=11, textColor=MUTED),
     }.items()}
@@ -163,12 +164,13 @@ def pdf(src: str, p: dict, path: pathlib.Path):
         canvas.setFillColor(MUTED)
         canvas.drawString(0.75 * inch, 0.5 * inch, f"Tucker Payment Processing (fictional company) - {p['title']}")
         canvas.drawRightString(7.75 * inch, 0.5 * inch, f"Page {d.page}")
+        canvas.drawCentredString(4.25 * inch, 0.33 * inch, COPYRIGHT)
         canvas.restoreState()
 
     path.parent.mkdir(parents=True, exist_ok=True)
     SimpleDocTemplate(str(path), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch, topMargin=0.7 * inch,
                       bottomMargin=0.8 * inch, title=p["title"], author="Michael Cunningham", invariant=1,
-                      subject="Tucker Payment Processing company policy").build(story, onFirstPage=footer, onLaterPages=footer)
+                      subject="Tucker Payment Processing company policy", keywords=COPYRIGHT).build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 def build() -> dict:

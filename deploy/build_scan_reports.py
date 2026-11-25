@@ -20,7 +20,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 BLUE, ORANGE, INK, MUTED = colors.HexColor("#1f5fbf"), colors.HexColor("#ff8a1f"), colors.HexColor("#1b1f24"), colors.HexColor("#5b6470")
@@ -40,6 +40,8 @@ S = {
 LABEL = {"recommendation": "ADVISED"}       # short labels so the status columns stay narrow
 STATUS_COLOR = {"pass": OK, "fixed": OK, "fail": BAD, "info": MUTED, "recommendation": WARN, "limit": WARN}
 
+
+COPYRIGHT = "\u00a9 2026 Michael Cunningham. All rights reserved."   # on every page of every PDF, and in its metadata
 
 def hx(c):
     """A ReportLab color as a #rrggbb string (for inline <font> tags)."""
@@ -87,6 +89,7 @@ def footer(canvas, doc, line):
     canvas.setFillColor(MUTED)
     canvas.drawString(0.75 * inch, 0.5 * inch, line)
     canvas.drawRightString(7.75 * inch, 0.5 * inch, f"Page {doc.page}")
+    canvas.drawCentredString(4.25 * inch, 0.33 * inch, COPYRIGHT)
     canvas.restoreState()
 
 
@@ -122,15 +125,16 @@ def scanner_pdf(data, scan, out):
         story.append(Paragraph("Notes", S["h2"]))
         for n in scan["notes"]:
             story.append(Paragraph("&bull; " + esc(n), S["body"]))
-    story.append(Paragraph("Verify it yourself", S["h2"]))
-    story.append(Paragraph(f'Run the same scan live: <link href="{esc(scan["retest"])}" color="#1f5fbf">{esc(scan["retest"])}</link>', S["body"]))
+    # The closing block (how to re-run the scan, and how it was run) stays together, never split across pages.
+    close = [Paragraph("Verify it yourself", S["h2"]),
+             Paragraph(f'Run the same scan live: <link href="{esc(scan["retest"])}" color="#1f5fbf">{esc(scan["retest"])}</link>', S["body"])]
     if scan.get("permalink"):
-        story.append(Paragraph(f'Scanner\'s saved result: <link href="{esc(scan["permalink"])}" color="#1f5fbf">{esc(scan["permalink"])}</link>', S["body"]))
-    story.append(Spacer(1, 10))
-    story.append(Paragraph(esc(data["method"]), S["small"]))
+        close.append(Paragraph(f'Scanner\'s saved result: <link href="{esc(scan["permalink"])}" color="#1f5fbf">{esc(scan["permalink"])}</link>', S["body"]))
+    close += [Spacer(1, 10), Paragraph(esc(data["method"]), S["small"])]
+    story.append(KeepTogether(close))
     doc = SimpleDocTemplate(str(out), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch, topMargin=0.7 * inch,
                             bottomMargin=0.8 * inch, title=f'{scan["name"]} - {data["site"]} - {data["date"]}',
-                            author="Michael Cunningham", subject="Independent security scan results", creator="tuckerpaymentprocessing.com")
+                            author="Michael Cunningham", subject="Independent security scan results", creator="tuckerpaymentprocessing.com", keywords=COPYRIGHT)
     line = f'Tucker Payment Processing (fictional company) - {scan["name"]} - {data["date"]}'
     doc.build(story, onFirstPage=lambda c, d: footer(c, d, line), onLaterPages=lambda c, d: footer(c, d, line))
 
@@ -163,7 +167,7 @@ def summary_pdf(data, out):
     story.append(Paragraph(esc(data["method"]), S["small"]))
     doc = SimpleDocTemplate(str(out), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch, topMargin=0.7 * inch,
                             bottomMargin=0.8 * inch, title=f'Security Scan Summary - {data["site"]} - {data["date"]}',
-                            author="Michael Cunningham", subject="Independent security scan results", creator="tuckerpaymentprocessing.com")
+                            author="Michael Cunningham", subject="Independent security scan results", creator="tuckerpaymentprocessing.com", keywords=COPYRIGHT)
     line = f'Tucker Payment Processing (fictional company) - Security Scan Summary - {data["date"]}'
     doc.build(story, onFirstPage=lambda c, d: footer(c, d, line), onLaterPages=lambda c, d: footer(c, d, line))
 
