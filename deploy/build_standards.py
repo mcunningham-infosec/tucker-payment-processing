@@ -39,7 +39,7 @@ ORDER = [
     ("iso-23894", "ISO/IEC 23894:2023", "AI risk management: how the site's AI risks are identified, analyzed, treated and monitored, and the AI-specific risk sources."),
     ("iso-42005", "ISO/IEC 42005:2025", "An AI system impact assessment of the AI chatbot and the AI SOC: intended use, misuse, data, benefits, harms and residual risk."),
     ("eu-ai-act", "EU AI Act", "Where the AI chatbot sits in the EU's risk tiers, and the transparency duties that apply."),
-    ("colorado-ai-laws", "Colorado AI laws: SB 26-189 and HB 26-1263", "Colorado's automated decision law, which replaced the Colorado AI Act, and its new chatbot law, both from January 2027."),
+    ("colorado-ai-laws", "Colorado AI laws: SB 26-189 and HB 26-1263", "Colorado's automated decision law, which replaced the Colorado AI Act, and its new chatbot law, both taking effect January 1, 2027."),
     ("model-risk-management", "Model Risk Management: SR 26-2 (formerly SR 11-7)", "The US banking agencies' model risk guidance, which now leaves generative AI out, applied to the site's AI the way a bank would."),
     ("pci-dss", "PCI DSS v4.0.1", "All twelve requirements for the store and support chat, starting with the biggest control: keeping card data out."),
     ("soc-2", "SOC 2 Trust Services Criteria", "A readiness review against the criteria a SOC 2 auditor tests, CC1 to CC9 plus the optional categories."),
