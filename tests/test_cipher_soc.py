@@ -363,3 +363,25 @@ def test_your_turn_starts_without_a_second_human_check(monkeypatch):
     assert len(checks) == n and started == [1]                                # no second human check
     assert line.length(busy=False) == 0                                       # they left the line
     line.reset()
+
+
+def test_a_full_line_says_how_long_the_wait_is(monkeypatch):
+    """The 31st person is told the line is full and roughly how long it is, so it reads as busy, not broken."""
+    from fastapi.testclient import TestClient
+    from app.cipher import api as cipher_api, line, runner
+    from app.main import app
+    line.reset()
+    monkeypatch.setattr(cipher_api, "_human", lambda token, ip: True)
+    monkeypatch.setattr(cipher_api, "_open", lambda: True)
+    monkeypatch.setattr(cipher_api, "_blocked", lambda cookie_id, ip: False)
+    monkeypatch.setattr(runner, "_RECENT", [160.0])
+    for k in range(line.MAX_LINE):
+        line.join(f"v{k}", busy=True)
+    assert runner._ACTIVE.acquire(blocking=False)
+    try:
+        r = TestClient(app).post("/api/cipher/start", json={"turnstile": "ok"}).json()
+        assert r["status"] == "full" and "busy, not broken" in r["message"]
+        assert 29 * 160 <= r["wait"] <= 30 * 160 and "minutes" in r["message"]
+    finally:
+        runner._ACTIVE.release()
+        line.reset()
