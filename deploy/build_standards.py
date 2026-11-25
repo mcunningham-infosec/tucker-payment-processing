@@ -115,7 +115,7 @@ def standard_page(name: str, doc: dict) -> str:
     e = html.escape
     c = counts(doc)
     chips = " ".join(f'<span class="chip {CHIP[s]}">{c[s]} {e(s.lower())}</span>' for s in STATUSES if c[s])
-    parts = ['    <section class="card policy standard">\n      <p class="crumb"><a href="standards.html">&larr; All standards</a></p>',
+    parts = ['    <section class="card policy standard">\n      <p class="crumb"><a href="standards.html">&larr; Standards</a></p>',
              f"      <h1>{e(doc['title'])}</h1>",
              f'      <p class="muted-line">{e(doc["subtitle"])}</p>',
              f'      <p class="std-summary">{chips} <a class="scan-all" href="standards/{name}.pdf">Download PDF</a></p>']
@@ -145,8 +145,7 @@ def index_page(docs: list) -> str:
         chips = " ".join(f'<span class="chip {CHIP[s]}">{c[s]} {e(s.lower())}</span>' for s in STATUSES if c[s])
         rows.append(f'        <li><a href="standard-{name}.html"><strong>{e(title)}</strong></a> &middot; <a href="standards/{name}.pdf">PDF</a><br>'
                     f'{e(summary)}<br>{chips}</li>')
-    body = f"""    <section class="card intro policy standard">
-      <p class="crumb"><a href="policies.html">&larr; AI Policies</a></p>
+    body = f"""    <section class="card intro standard">
       <h1>Built to recognized standards</h1>
       <p>For each standard, Michael Cunningham mapped every requirement to what the site actually does, with links to the
         code, configuration or test that proves it. Where the site falls short, or a one-person company can't show what
