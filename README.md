@@ -16,7 +16,7 @@ Designed and built by **Michael Cunningham** with AI-assisted development, from 
 | **Tucker's Treats** | A demo store. Prices, card and address come from the database, never the browser; Tucker can answer questions about your order. |
 | **Cipher's Lair** | Press one button and **Cipher** (a scripted attacker) runs real attacks against the site, mapped to the OWASP Top 10 for LLMs. Tucker's defenses respond, and the **AI SOC Squirrel** (a bounded Gemini agent) watches the real server logs and writes an incident report you can download as a PDF. |
 | **About Us** | How it is built, the AI policies, the technology and the site's security scorecard. |
-| **AI Policies** | The company's policies, which Tucker answers from (retrieval-augmented generation). |
+| **AI Policies** | The company's policies, which Tucker answers from (retrieval-augmented generation), and a write-up for each standard the site is built to. |
 
 A guided tour (Tucker, then Cipher) walks first-time visitors through all of it.
 
@@ -31,6 +31,12 @@ flowchart LR
   AP --> LOG[Server logs] --> SOC[AI SOC Squirrel]
   ADMIN[Owner] -->|Identity-Aware Proxy + 2FA| VM[GCP VM]
 ```
+
+## Standards
+A requirement-by-requirement write-up, with links to the code and tests that prove each claim, for the
+[OWASP Top 10 for LLM Applications 2026](docs/standards/owasp-llm-top-10.md), the [NIST AI RMF](docs/standards/nist-ai-rmf.md),
+[ISO/IEC 42001](docs/standards/iso-42001.md), the [EU AI Act](docs/standards/eu-ai-act.md), [PCI DSS v4.0.1](docs/standards/pci-dss.md)
+and [SOC 2](docs/standards/soc-2.md). Each is published on the site as a page and a PDF. They are self-assessments, not audits.
 
 ## Guardrails
 - **The model never decides authorization.** Tucker's tools are read-only lookups; who is verified and whose data can be read is decided in Python.
@@ -57,6 +63,7 @@ flowchart LR
 | `db/` | Schema, least-privilege roles, fictional seed data and the nightly reset |
 | `policies/` | The AI and company policies Tucker answers from |
 | `deploy/` | Server setup and hardening; see [deploy/README.md](deploy/README.md) |
+| `docs/standards/` | The standards write-ups (source of the site's standards pages and PDFs) |
 | `docs/scans/` | Dated third-party scan results behind the scorecard PDFs |
 | `tests/` | Automated tests proving the guardrails work |
 
