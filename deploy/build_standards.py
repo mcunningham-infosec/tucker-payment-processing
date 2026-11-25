@@ -16,6 +16,7 @@ Everything is HTML-escaped first, so a write-up can never inject markup into a p
 
 Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
+import hashlib
 import html
 import importlib.util
 import pathlib
@@ -51,6 +52,14 @@ _spec = importlib.util.spec_from_file_location("build_policy_pages", ROOT / "dep
 _policy = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_policy)
 
+
+
+def pdf_href(name: str) -> str:
+    """Link to a standard's PDF, with a version taken from its source, so a cache can never serve an old PDF."""
+    src = SRC / f"{name}.md"
+    if not src.exists():
+        return f"standards/{name}.pdf"
+    return f"standards/{name}.pdf?v={hashlib.sha256(src.read_bytes()).hexdigest()[:10]}"
 
 def _page(title: str, description: str, body: str) -> str:
     """A site page in the standard frame, with the standards stylesheet and the Standards tab marked as current."""
@@ -122,7 +131,7 @@ def standard_page(name: str, doc: dict) -> str:
     parts = ['    <section class="card policy standard">\n      <p class="crumb"><a href="standards.html">&larr; Standards</a></p>',
              f"      <h1>{e(doc['title'])}</h1>",
              f'      <p class="muted-line">{e(doc["subtitle"])}</p>',
-             f'      <p class="std-summary">{chips} <a class="scan-all" href="standards/{name}.pdf">Download PDF</a></p>']
+             f'      <p class="std-summary">{chips} <a class="scan-all" href="{pdf_href(name)}">Download PDF</a></p>']
     for sec in doc["sections"]:
         parts.append(f"      <h2>{e(sec['heading'])}</h2>")
         parts += [f"      <p>{inline(t)}</p>" for t in sec["paras"]]
@@ -147,7 +156,7 @@ def index_page(docs: list) -> str:
     for name, title, summary, doc in docs:
         c = counts(doc)
         chips = " ".join(f'<span class="chip {CHIP[s]}">{c[s]} {e(s.lower())}</span>' for s in STATUSES if c[s])
-        rows.append(f'        <li><a href="standard-{name}.html"><strong>{e(title)}</strong></a> &middot; <a href="standards/{name}.pdf">PDF</a><br>'
+        rows.append(f'        <li><a href="standard-{name}.html"><strong>{e(title)}</strong></a> &middot; <a href="{pdf_href(name)}">PDF</a><br>'
                     f'{e(summary)}<br>{chips}</li>')
     body = f"""    <section class="card intro standard">
       <h1>Built to recognized standards</h1>
@@ -205,7 +214,7 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
     c = counts(doc)
     summary = " &nbsp; ".join(f'<font color="{COLOR[s]}"><b>{c[s]} {s.lower()}</b></font>' for s in STATUSES if c[s])
     story = [Paragraph("Tucker Payment Processing &middot; Standards self-assessment by Michael Cunningham", S["org"]),
-             Paragraph(rl(doc["title"]), S["title"]), Paragraph(rl(doc["subtitle"]), S["sub"]),
+             Paragraph(rl(doc["title"]), S["title"]), Paragraph(re.sub(r"(\w+) (\d{1,2}), (\d{4})", r"\1&nbsp;\2,&nbsp;\3", rl(doc["subtitle"])), S["sub"]),
              Paragraph(summary, S["body"])]
     for sec in doc["sections"]:
         # A section heading is never left alone at the foot of a page: it travels with its first paragraph or item.

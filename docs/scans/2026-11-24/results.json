@@ -2,7 +2,7 @@
   "site": "https://tuckerpaymentprocessing.com",
   "date": "2026-11-24",
   "intro": "Tucker Payment Processing was tested by independent, public security scanners. The first round found three gaps (old TLS versions still accepted, DNS not signed with DNSSEC, and no security.txt or CAA record). All were fixed the same afternoon and every scanner was run again. That evening the site was hardened further (email spoofing lockdown, HSTS preload, cross-origin isolation headers, ping disabled) and the scanners were run a third time. This summary shows the first round and the latest results.",
-  "method": "Method: each scanner was run against the live site from a normal web browser on 2026-11-24 (US Eastern; the evening round is dated 2026-11-25 in UTC). Grades, times (UTC) and check results are recorded exactly as shown on each scanner's result page; the 'Verify it yourself' links run the same scan again live. Scans run by Michael Cunningham with AI assistance (Claude).",
+  "method": "Method: each scanner was run against the live site from a normal web browser on 2026-11-24 (US Eastern; the evening round is dated 2026-11-25 in UTC). Grades, times (UTC) and check results are recorded exactly as shown on each scanner's result page; the 'Verify it yourself' links run the same scan again live. Scans run by Michael Cunningham.",
   "fixes_made": [
     "Cloudflare minimum TLS version raised from 1.0 to 1.2: TLS 1.0 and 1.1 are now refused (SSL Labs B to A+).",
     "DNSSEC enabled: the domain's DNS records are cryptographically signed and the DS record is published at the .com registry.",

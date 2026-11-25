@@ -48,7 +48,7 @@ Evidence: `app/tools.py`, `app/cipher/soc.py`.
 
 ### MAP 3: Capabilities, goals, benefits and costs are understood
 **Status: Met**
-Each AI's capabilities are listed on the About page in "can" and "cannot" terms. Costs are measured per call and capped daily and monthly, and the fallback when the AI is unavailable or over budget is designed in: the AI chatbot shows a fixed "temporarily unavailable" message, and the SOC report falls back to plain facts from code.
+Each AI's capabilities are listed on the About page in "can" and "cannot" terms. Costs are measured per call and capped daily and monthly, and the fallback when the AI is unavailable or over budget is designed in: the AI chatbot shows a fixed message saying it is unavailable, and the SOC report falls back to plain facts from code.
 Evidence: `site/about.html`, `app/spend.py`, `app/cipher/soc.py`, `tests/test_cipher_soc.py`.
 
 ### MAP 4: Risks are mapped for every component, including third parties
@@ -90,7 +90,7 @@ Evidence: `app/tools.py`, `db/roles.sql`, `docs/scans/2026-11-24/results.json`.
 
 ### MANAGE 2: Benefits are maximized and harms minimized, with fallbacks
 **Status: Met**
-Every AI failure has a safe fallback. If Gemini fails, the AI chatbot apologizes instead of erroring. If the budget is spent, it shows a fixed "temporarily unavailable" message. If the AI SOC returns garbage or nothing at all, the report is built from plain facts by code, and the attacker is blocked by code regardless.
+Every AI failure has a safe fallback. If Gemini fails, the AI chatbot shows a fixed error message instead of failing. If the budget is spent, it shows a fixed message saying it is unavailable. If the AI SOC returns garbage or nothing at all, the report is built from plain facts by code, and the attacker is blocked by code regardless.
 Evidence: `app/chat.py`, `app/spend.py`, `app/cipher/soc.py`, `tests/test_guardrails.py`, `tests/test_cipher_soc.py`.
 
 ### MANAGE 3: Third-party risks are managed

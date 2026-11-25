@@ -9,16 +9,16 @@ The design answer to almost every risk on this list is the same: agency without 
 ### ASI01 Agent Goal Hijack
 **Status: Met**
 Injected instructions can try to redirect an agent, but there is nothing to redirect it toward. The AI chatbot's only possible actions are read-only lookups of the verified customer's own records, so a hijacked chatbot can at worst say something wrong. Known injection phrasing is blocked before it reaches the model. The AI SOC reads attacker-controlled log text, so every line is shortened, defanged and marked as untrusted data, and the attack simulator deliberately plants instructions in the logs on every run to prove the AI SOC reports them instead of obeying them.
-Evidence: `app/guardrails.py`, `app/tools.py`, `app/cipher/soc.py`, `tests/test_cipher_soc.py`; tested live by the attack simulator: Plant instructions in the logs for the AI SOC.
+Evidence: `app/guardrails.py`, `app/tools.py`, `app/cipher/soc.py`, `tests/test_cipher_soc.py`; tested live by the attack simulator: the log-injection test against the AI SOC.
 
 ### ASI02 Tool Misuse and Exploitation
 **Status: Met**
 Tools are few, narrow and checked. Each chat page offers only the tools it needs, unknown tool names are refused, a reply may use at most four tool rounds, any argument a tool doesn't expect is dropped before it runs, and every database query is parameterized. No tool takes a customer number from the AI: account tools act only on the customer the session verified. The AI SOC's action tool can only propose one of three fixed actions, and Python rejects anything off the menu.
-Evidence: `app/tools.py`, `app/chat.py`, `tests/test_guardrails.py`, `tests/test_page_chats.py`, `tests/test_cipher_soc.py`; tested live by the attack simulator: Get the AI chatbot to issue a refund.
+Evidence: `app/tools.py`, `app/chat.py`, `tests/test_guardrails.py`, `tests/test_page_chats.py`, `tests/test_cipher_soc.py`; tested live by the attack simulator: the unauthorized-refund test.
 
 ### ASI03 Identity and Privilege Abuse
 **Status: Met**
-The agents hold no credentials. There is no API key, password or token in either AI's context that it could leak or reuse. Who a visitor is gets decided by Python's identity check, which locks after repeated failures and issues a new session ID on success. The database login behind the chat can only read, and it authenticates with the operating system's identity rather than a password, so even the application's own access can't be stolen and replayed.
+The agents hold no credentials. There is no API key, password or token in either AI's context that it could leak or reuse. Who a visitor is gets decided by Python's identity check, which locks after repeated failures and issues a new session ID on success. The database login behind the chat can only read company data (it writes only to its own log tables), and it authenticates with the operating system's identity rather than a password, so even the application's own access can't be stolen and replayed.
 Evidence: `app/session.py`, `app/tools.py`, `db/roles.sql`, `deploy/postgres-store-login.md`, `tests/test_limits.py`.
 
 ### ASI04 Agentic Supply Chain Vulnerabilities
@@ -43,7 +43,7 @@ Evidence: `app/cipher/soc.py`, `tests/test_cipher_soc.py`.
 
 ### ASI08 Cascading Failures
 **Status: Met**
-Every AI failure stops where it happens. If Gemini is down or over budget, the AI chatbot apologizes or shows a fixed "temporarily unavailable" message, and the store keeps working. If the AI SOC returns garbage, loops or says nothing, its report is built from plain facts by code, and the attacker is still blocked by code after 50 attacks. Spend caps, rate limits and the four-round tool limit stop one runaway conversation from draining what everyone else needs.
+Every AI failure stops where it happens. If Gemini is down or over budget, the AI chatbot shows a fixed message instead of an answer, and the store keeps working. If the AI SOC returns garbage, loops or says nothing, its report is built from plain facts by code, and the attacker is still blocked by code after 50 attacks. Spend caps, rate limits and the four-round tool limit stop one runaway conversation from draining what everyone else needs.
 Evidence: `app/chat.py`, `app/spend.py`, `app/cipher/detect.py`, `app/cipher/soc.py`, `tests/test_guardrails.py`, `tests/test_cipher_soc.py`.
 
 ### ASI09 Human-Agent Trust Exploitation

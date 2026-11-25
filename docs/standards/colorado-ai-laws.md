@@ -26,7 +26,7 @@ Evidence: `policies/data-retention.md`, `app/chat.py`.
 ## HB 26-1263: chatbots
 ### Telling people they are talking to an AI
 **Status: Met**
-Operators must disclose that a user is interacting with AI. The AI chatbot's greeting in every chat says it is an AI assistant, its label on the page reads "AI Support Agent", it says so whenever asked, and every reply the model writes is marked as AI-generated in the data the page receives.
+Operators must disclose, repeatedly and when asked, that a user is interacting with AI. The AI chatbot's greeting in every chat says it is an AI assistant, the chat window's status line reads "AI support agent" for the whole conversation, its label on the page reads "AI Support Agent", it says so whenever asked, and every reply the model writes is marked as AI-generated in the data the page receives.
 Evidence: `site/index.html`, `app/chat.py`.
 
 ### A protocol for suicidal ideation and self-harm
@@ -41,7 +41,7 @@ Evidence: `app/chat.py`, `policies/ai-assistant-policy.md`.
 
 ### Protections for minors
 **Status: Partly met**
-For users under 18, the law adds a duty to estimate users' ages by commercially reasonable methods, repeated AI disclosure, no points or rewards to drive engagement, measures against sexually explicit content and statements that simulate emotional dependence, and privacy controls. The AI chatbot has no rewards, its topic limit keeps conversations to payments, and it says it is an AI. The gap is age: the site makes no attempt to estimate a visitor's age, which the law requires, so it cannot tone down the chatbot's informal style or repeat the disclosure specifically for minors.
+The law requires operators to estimate each user's age by commercially reasonable methods and, for users under 18, adds repeated AI disclosure, no points or rewards to drive engagement, measures against sexually explicit content and statements that simulate emotional dependence, and privacy controls. The AI chatbot has no rewards, its topic limit keeps conversations to payments, and it says it is an AI. The gap is age: the site makes no attempt to estimate a visitor's age, which the law requires, so it cannot tone down the chatbot's informal style or repeat the disclosure specifically for minors.
 Evidence: `app/chat.py`.
 
 ### Annual reporting to the attorney general
