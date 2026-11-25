@@ -197,3 +197,22 @@ def test_oversized_requests_are_refused_unread():
     r = c.post("/api/chat", content=b'{"message":"' + b"m" * (20 * 1024) + b'"}', headers={"Content-Type": "application/json"})
     assert r.status_code == 413
     assert c.post("/api/quote", json={"items": [{"sku": "TT-101", "qty": 1}]}).status_code == 200
+
+
+def test_ai_spend_days_start_at_midnight_eastern(admin):
+    """The daily cap counts from midnight Eastern, not midnight UTC (7 PM Eastern), even on a UTC database."""
+    from psycopg import sql
+    from app import db
+    name = sql.Identifier(admin.execute("SELECT current_database()").fetchone()[0])
+    admin.execute(sql.SQL("ALTER DATABASE {} SET timezone = 'UTC'").format(name))      # the app's connections use UTC
+    admin.execute("""
+        INSERT INTO ops.ai_usage (called_at, model, input_tokens, output_tokens, cost_usd)
+        SELECT start + interval '1 minute', 'x', 0, 0, 0.10 FROM (SELECT (date_trunc('day', now() AT TIME ZONE
+               'America/New_York') AT TIME ZONE 'America/New_York') AS start) t
+        UNION ALL
+        SELECT start - interval '1 minute', 'x', 0, 0, 0.25 FROM (SELECT (date_trunc('day', now() AT TIME ZONE
+               'America/New_York') AT TIME ZONE 'America/New_York') AS start) t""")
+    try:
+        assert round(db.ai_spend_since("day"), 2) == 0.10     # only today's (Eastern) call counts
+    finally:
+        admin.execute(sql.SQL("ALTER DATABASE {} RESET timezone").format(name))
