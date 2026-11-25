@@ -153,6 +153,27 @@
         <a class="scan-all" href="scans/2026-11-24/summary.pdf">Download the summary (PDF)</a></p>
     </section>
 
+    <section id="about-tamper" class="card">
+      <h2>Tamper protection</h2>
+      <p>Encryption and strong headers protect visitors on the way to the site. They can't tell you whether the pages themselves
+        were changed. A defaced page or a planted script on a payment company's website is a reputational disaster, so the
+        site's own content is checked continuously.</p>
+      <p>Every hour, an automated check fetches every page, script and image from the live site, exactly as a visitor receives
+        them, and compares each file byte for byte against the published code on GitHub. Any difference alerts Michael
+        immediately. The check runs outside the server, so an attacker who gets onto the server can't quietly switch it off.</p>
+      <p>The first run taught a lesson: every page failed. Nothing had been tampered with. Cloudflare, the security service in
+        front of the site, adds two small scripts of its own to each page, one for bot detection and one for analytics. A naive
+        check would raise false alarms forever, and a careless fix ("ignore Cloudflare's scripts") would hand attackers a hiding
+        place. Instead, the check removes Cloudflare's additions only when they match Cloudflare's exact code, down to this
+        site's own analytics ID. Anything that merely looks like Cloudflare's code is treated as tampering. Five kinds of
+        simulated tampering were tested, including a fake script dressed up as Cloudflare's, and all five were caught.
+        <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/ops/live_watch.py">Read the code</a>.</p>
+      <p><strong>Coming next:</strong> a second check on the server itself. If it finds a confirmed difference, it takes the
+        site offline behind a maintenance page until the files are restored. It's built to wait out deploys in progress and to
+        never trigger just because GitHub is unreachable. It will run in alert-only mode first, because a security control
+        that takes down a healthy site is its own kind of incident.</p>
+    </section>
+
     <section id="about-code" class="card">
       <h2>Dig into the code</h2>
       <p>Everything is open to read on GitHub. Security that only works while the code is secret isn't security. Good places to start:</p>
