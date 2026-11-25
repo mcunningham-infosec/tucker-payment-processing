@@ -184,7 +184,7 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
         _ev(events, "output", "ok", "Output filter: nothing sensitive found")
     history += [("user", text), ("model", reply)]
     db.record_event(db.event_session(session.id, session.client_ip), "message", "")
-    return _result(session, reply, events)
+    return _result(session, reply, events, ai_generated=True)
 
 
 def _known_visitor(session: Session, page: str) -> str:
@@ -197,7 +197,8 @@ def _known_visitor(session: Session, page: str) -> str:
             "details (cards, transactions, profile); for those, point them to the chat on the home page.")
 
 
-def _result(session: Session, reply: str, events: list, napping: bool = False) -> dict:
-    """Package the reply for the web page."""
-    return {"reply": reply, "events": events, "napping": napping,
+def _result(session: Session, reply: str, events: list, napping: bool = False, ai_generated: bool = False) -> dict:
+    """Package the reply for the web page. ai_generated is a machine-readable mark (EU AI Act Article 50(2)):
+    true when the model wrote the reply, false for the app's own fixed messages (nap, blocked, error)."""
+    return {"reply": reply, "events": events, "napping": napping, "ai_generated": ai_generated,
             "verified_as": session.customer_first_name}
