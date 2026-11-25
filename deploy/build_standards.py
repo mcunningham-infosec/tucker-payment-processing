@@ -30,8 +30,11 @@ REPO = "https://github.com/mcunningham-infosec/tucker-payment-processing"
 # Display order, page name and a one-line summary (shown on the list pages).
 ORDER = [
     ("owasp-llm-top-10", "OWASP Top 10 for LLM Applications 2026", "Each of the ten AI risks, such as prompt injection, sensitive data disclosure and excessive agency, and the control that answers it."),
+    ("owasp-agentic-top-10", "OWASP Top 10 for Agentic Applications 2026", "The risks of AI that uses tools and takes actions, from goal hijack to rogue agents, and why both of the site's AI agents have agency without authority."),
+    ("mitre-atlas", "MITRE ATLAS", "The attacker techniques that apply to the site's AI, from prompt injection to cost harvesting, and the defense against each."),
     ("nist-ai-rmf", "NIST AI Risk Management Framework", "How Tucker's risks are governed, mapped, measured and managed, across all 19 categories, with NIST's Generative AI Profile."),
     ("iso-42001", "ISO/IEC 42001:2023", "The AI management system behind Tucker: clauses 4 to 10 and the Annex A controls."),
+    ("iso-42005", "ISO/IEC 42005:2025", "An AI system impact assessment of Tucker and the AI SOC Squirrel: intended use, misuse, data, benefits, harms and residual risk."),
     ("eu-ai-act", "EU AI Act", "Where Tucker sits in the EU's risk tiers, and the transparency duties that apply."),
     ("pci-dss", "PCI DSS v4.0.1", "All twelve requirements for the store and support chat, starting with the biggest control: keeping card data out."),
     ("soc-2", "SOC 2 Trust Services Criteria", "A readiness review against the criteria a SOC 2 auditor tests, CC1 to CC9 plus the optional categories."),
