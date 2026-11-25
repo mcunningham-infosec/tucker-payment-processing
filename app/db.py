@@ -99,9 +99,13 @@ def record_ai_usage(model: str, tokens_in: int, tokens_out: int, cost: float):
                   (model, tokens_in, tokens_out, cost))
 
 
-_SPEND_SQL = {   # two fixed queries (no string building), one per cap
-    "month": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= date_trunc('month', now())",
-    "day": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= date_trunc('day', now())",
+# Two fixed queries (no string building), one per cap. Days and months are counted in Eastern time, the site's
+# time zone, whatever the database's own setting: otherwise "today" would reset at midnight UTC (7 PM Eastern).
+_SPEND_SQL = {
+    "month": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= "
+             "(date_trunc('month', now() AT TIME ZONE 'America/New_York') AT TIME ZONE 'America/New_York')",
+    "day": "SELECT COALESCE(SUM(cost_usd),0) AS total FROM ops.ai_usage WHERE called_at >= "
+           "(date_trunc('day', now() AT TIME ZONE 'America/New_York') AT TIME ZONE 'America/New_York')",
 }
 
 
