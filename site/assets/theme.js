@@ -1,5 +1,5 @@
 /*
- * theme.js - the "Play the Theme Song!" button: Play starts the song, Stop stops it and rewinds.
+ * theme.js - the theme song button (Tucker's Treats and Cipher's Lair): Play starts the song, Stop stops it and rewinds.
  * Self-hosted MP3, no third-party player (so the site's strict Content Security Policy stays intact).
  * Nothing plays or downloads until the visitor clicks.
  *
@@ -21,12 +21,13 @@
     var time = document.getElementById("theme-time");
     if (!btn || !audio) { return; }
     var lbl = btn.querySelector(".lbl"), ico = btn.querySelector(".ico");
+    var playLabel = btn.getAttribute("data-label") || "Play the Theme Song!";   // each page can name its song
 
     // Show the button as playing or stopped.
     function setPlaying(on) {
       btn.setAttribute("aria-pressed", on ? "true" : "false");
       btn.classList.toggle("playing", on);
-      lbl.textContent = on ? "Stop" : "Play the Theme Song!";
+      lbl.textContent = on ? "Stop" : playLabel;
       ico.textContent = on ? "\u25A0" : "\u266B";
       if (!on) { time.textContent = ""; }
     }
