@@ -281,7 +281,13 @@
       .then(function (st) {
         if (st.turnstile_sitekey && (!st.run_id || st.can_run_again)) { loadTurnstile(st.turnstile_sitekey); }   // whenever a run is allowed
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
-        if (st.status === "none") { if (live) { lost(); } return; }
+        if (st.status === "none") {
+          if (live) { lost(); return; }
+          if (st.line) { inLine(st.line); return; }                      // waiting in line (or reloaded while waiting)
+          if (waiting) { droppedOut(); return; }
+          if (st.busy || st.waiting) { invite(st); } else if (inviting) { cipherFree(); }
+          return;
+        }
         live = st.status === "running";
         if (!live && !finished && shown.attacks === 0) { finishedEarlier(st); return; }   // page reloaded after the run
         render(st);
@@ -339,26 +345,101 @@
     queue = []; finishQueued = false; displayed = 0;
   }
 
+  // One real attack at a time, site-wide. When Cipher is busy, visitors join a fair line instead of racing to
+  // click: the page shows their place and a rough wait, checks in every few seconds with a visible countdown
+  // (that check-in keeps their place), and starts their run automatically when it's their turn.
+  var waiting = false, inviting = false, waitTick = null, inviteTimer = null, info = null, nextCheck = 0, RECHECK = 5;
+  function mmss(s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
+  function stopTimers() {
+    if (waitTick) { window.clearInterval(waitTick); waitTick = null; }
+    if (inviteTimer) { window.clearTimeout(inviteTimer); inviteTimer = null; }
+  }
+  // Cipher is busy (or others are waiting) and this visitor isn't in line yet: offer a place.
+  function invite(st) {
+    inviting = true;
+    var btn = $("attack");
+    btn.disabled = false; btn.textContent = "Get in line";
+    var left = typeof st.busy_remaining === "number" && st.busy_remaining > 0 ? " (about " + mmss(st.busy_remaining) + " left)" : "";
+    var who = st.waiting ? " " + st.waiting + (st.waiting === 1 ? " person is" : " people are") + " waiting." : "";
+    setStatus("Cipher is attacking for another visitor" + left + "." + who + " Confirm you're human, then press the button to get in line.");
+    if (inviteTimer) { window.clearTimeout(inviteTimer); }
+    inviteTimer = window.setTimeout(poll, 10000);       // keep the wait up to date
+  }
+  function cipherFree() {
+    inviting = false; stopTimers();
+    var btn = $("attack");
+    btn.disabled = false; btn.textContent = "Attack Tucker's Treats!";
+    setStatus("Cipher's free now. Confirm you're human, then press the button.");
+  }
+  // In line: show the place and wait, count down to the next check-in, and start automatically on our turn.
+  function inLine(l) {
+    inviting = false;
+    if (inviteTimer) { window.clearTimeout(inviteTimer); inviteTimer = null; }
+    info = l;
+    if (!waiting) { say("attack", "Hold on, I'm busy attacking for someone else. You're in line!"); }
+    waiting = true;
+    if (l.your_turn) { yourTurn(); return; }
+    var btn = $("attack");
+    btn.disabled = true; btn.textContent = l.position === 1 ? "You're next in line" : "You're #" + l.position + " in line";
+    nextCheck = RECHECK;
+    if (!waitTick) { waitTick = window.setInterval(waitStep, 1000); }
+    waitShow();
+  }
+  function waitShow() {
+    var wait = info && typeof info.wait === "number" ? (info.wait > 0 ? ", about " + mmss(info.wait) : ", any moment now") : "";
+    var place = info.position === 1 ? "You're next in line" : "You're #" + info.position + " in line";
+    setStatus(place + wait + ". Keep this page open to hold your place. Checking again in " + nextCheck + "...");
+  }
+  function waitStep() {
+    if (info && info.wait > 0) { info.wait -= 1; }
+    nextCheck -= 1;
+    if (nextCheck > 0) { waitShow(); return; }
+    setStatus("Checking your place in line...");
+    nextCheck = RECHECK;
+    poll();
+  }
+  function yourTurn() {
+    waiting = false; stopTimers();
+    say("attack", "Your turn! Here I come.");
+    setStatus("It's your turn! Starting Cipher's attack...");
+    send("");                                           // you passed the human check when you joined the line
+  }
+  function droppedOut() {
+    waiting = false; stopTimers();
+    var btn = $("attack");
+    btn.disabled = false; btn.textContent = "Get in line";
+    setStatus("You lost your place in line (the page stopped checking in, or your turn passed). Press the button to get back in line.");
+  }
+
   // The button press: send the human-check token (the only thing sent) and start polling.
   function start() {
     var btn = $("attack");
     if (tsKey && !tsToken) { setStatus("One quick check first: confirm you're human (the box next to the button)."); return; }
+    var token = tsToken;
+    resetTurnstile();                          // tokens are single-use
+    send(token);
+  }
+
+  // Ask the server to start a run (or put this visitor in line), and act on the answer.
+  function send(token) {
+    var btn = $("attack");
     if (finished) { clearBoxes(); }
     btn.disabled = true;                       // the server ignores extra presses too
     btn.textContent = "Attacking...";
-    var token = tsToken;
-    resetTurnstile();                          // tokens are single-use
     fetch("api/cipher/start", { method: "POST", credentials: "same-origin",
                                headers: { "Content-Type": "application/json" },
                                body: JSON.stringify({ turnstile: token }) })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (d.status === "started" || d.status === "running") {
+          waiting = inviting = false; stopTimers();
           line("log-attack", "cipher.connect(\"tuckerpaymentprocessing.com\")  // from inside the server", "dim");
           intro(d.total || 50);
           poll();
         } else if (d.status === "blocked") {
           blockedState();
+        } else if (d.status === "queued") {
+          inLine(d.line);
         } else {
           btn.disabled = false; btn.textContent = "Attack Tucker's Treats!";
           setStatus(d.message || "Cipher can't attack right now.");
