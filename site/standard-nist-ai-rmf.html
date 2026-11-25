@@ -1,0 +1,129 @@
+<!doctype html>
+<!--
+  NIST AI Risk Management Framework (AI RMF 1.0) - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NIST AI Risk Management Framework (AI RMF 1.0) - Tucker Payment Processing</title>
+  <meta name="description" content="NIST AI Risk Management Framework (AI RMF 1.0): how Tucker Payment Processing (a fictional company) meets it, with evidence.">
+  <link rel="stylesheet" href="assets/site.css?v=20261124m">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124m">
+  <link rel="stylesheet" href="assets/about.css?v=20261124m">
+  <link rel="stylesheet" href="assets/standards.css?v=20261124m">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124m">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html">About Us</a>
+      <a href="policies.html" aria-current="page">AI Policies</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card policy standard">
+      <p class="crumb"><a href="standards.html">&larr; All standards</a></p>
+      <h1>NIST AI Risk Management Framework (AI RMF 1.0)</h1>
+      <p class="muted-line">How Tucker&#x27;s risks are governed, mapped, measured and managed · Self-assessment · November 24, 2026</p>
+      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">5 partly met</span> <a class="scan-all" href="standards/nist-ai-rmf.pdf">Download PDF</a></p>
+      <h2>About this document</h2>
+      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. Tucker Payment Processing is a fictional company with a real AI: Tucker, a customer-support agent, and the AI SOC Squirrel, a bounded security analyst, both running on Google Gemini. The NIST AI RMF (NIST AI 100-1, January 2023) is voluntary and organizes AI risk work into four functions: Govern, Map, Measure and Manage. Below, each of its 19 categories is mapped to what the site actually does, with the evidence. It also draws on NIST's Generative AI Profile (NIST AI 600-1, July 2024).</p>
+      <p>A one-person demonstration cannot show everything a large organization needs, such as committees, workforce programs and formal sign-offs. Where a category depends on that, it is marked Partly met, with what a real company would add.</p>
+      <h2>Govern: a culture of risk management</h2>
+      <div class="req"><h3>GOVERN 1: Policies, processes and procedures are in place and followed <span class="chip met">Met</span></h3>
+        <p>The policies were written before the AI was built, and the AI follows them. The AI Assistant Use Policy (TPP-AI-01) sets what Tucker may and may not do, and the card security, refunds and data retention policies set the rules he explains. Tucker answers from these exact documents, and an automated test fails if the published policy pages drift from them. Every guardrail the policy promises is enforced in code and covered by a test.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_policy_pages.py"><code>tests/test_policy_pages.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>GOVERN 2: Accountability is clear, and people are trained <span class="chip partly">Partly met</span></h3>
+        <p>One accountable owner, named on every page and in every source file: Michael Cunningham, who designed, built and runs the site and receives every alert and the nightly security report. In a real company this would be a RACI across the product owner, security, legal, compliance and an AI risk committee, with AI-specific training for each role.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>GOVERN 3: Diverse perspectives and accessibility inform risk decisions <span class="chip partly">Partly met</span></h3>
+        <p>The site is designed for non-technical visitors: plain-language explanations, a guided tour and pages tested on phones and desktops. But all design decisions were made by one person. A real program would bring in reviewers from different backgrounds and test with users with disabilities.</p>
+      </div>
+      <div class="req"><h3>GOVERN 4: The organization considers and communicates AI risk <span class="chip met">Met</span></h3>
+        <p>Risk is communicated openly. The Behind the Scenes panel shows every guardrail as it fires on each message, the About page explains each AI's limits, the code is public, and the security scorecard publishes independent scan results, including the ones that failed at first and how they were fixed.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/about.html"><code>site/about.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/chat.js"><code>site/assets/chat.js</code></a>.</p>
+      </div>
+      <div class="req"><h3>GOVERN 5: Feedback from people outside the team is collected and used <span class="chip met">Met</span></h3>
+        <p>Anyone can report a vulnerability privately through GitHub, as published in the security policy and in a standard security.txt file. Anyone can also test the defenses live in Cipher's Lair.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/SECURITY.md"><code>SECURITY.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/.well-known/security.txt"><code>site/.well-known/security.txt</code></a>.</p>
+      </div>
+      <div class="req"><h3>GOVERN 6: Third-party AI and software risks are addressed <span class="chip met">Met</span></h3>
+        <p>Third parties are known and bounded. Google Gemini (paid tier: chats are not used for training) receives no IP addresses and no full card data, and the spend caps protect against runaway use. Dependencies are pinned and watched by Dependabot, code by CodeQL and secret scanning. Cloudflare's human check is the only third-party script, and only on Cipher's Lair.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>.</p>
+      </div>
+      <h2>Map: understand the context and the risks</h2>
+      <div class="req"><h3>MAP 1: The context is established and understood <span class="chip met">Met</span></h3>
+        <p>The purpose, users and setting are documented: a public demonstration of AI governance for a fictional payment company, used by anonymous visitors, holding only fictional data. The stakes are clear too. In a real payment company, the same chatbot would touch cardholder data, money and customer trust.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>MAP 2: The AI system is categorized <span class="chip met">Met</span></h3>
+        <p>Two AI systems, each categorized by what it can do. Tucker is a customer-facing conversational agent with read-only tools. The AI SOC Squirrel is an internal analyst that reads one attack run's events and proposes actions from a fixed menu. Neither makes decisions about people: no credit, eligibility or fraud decisions.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>MAP 3: Capabilities, goals, benefits and costs are understood <span class="chip met">Met</span></h3>
+        <p>Each AI's capabilities are listed on the About page in "can" and "cannot" terms. Costs are measured per call and capped daily and monthly, and the fallback when the AI is unavailable or over budget is designed in: Tucker naps, and the SOC report falls back to plain facts from code.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/about.html"><code>site/about.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>MAP 4: Risks are mapped for every component, including third parties <span class="chip met">Met</span></h3>
+        <p>Each component's risks are mapped to a control: the model (prompt injection, disclosure, misinformation), the tools (excessive agency), the retrieval library (poisoning), the web layer (the OWASP web Top 10), the database (least privilege) and the suppliers (Gemini, Cloudflare, Python packages). The mapping is published as the OWASP write-up beside this one, and Cipher tests 50 of those risks live.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-llm-top-10.md"><code>docs/standards/owasp-llm-top-10.md</code></a>.</p>
+      </div>
+      <div class="req"><h3>MAP 5: Impacts on people are characterized <span class="chip met">Met</span></h3>
+        <p>The impacts that matter for a support chatbot are privacy (exposing someone's account or card), financial harm (a wrongful refund or charge) and deception (people not knowing they are talking to an AI). The design answers each: account data only after identity verification and only that customer's own, no money-moving tools at all, and Tucker identifies himself as an AI.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/session.py"><code>app/session.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
+      </div>
+      <h2>Measure: test and track the risks</h2>
+      <div class="req"><h3>MEASURE 1: Methods and metrics are chosen and used <span class="chip met">Met</span></h3>
+        <p>More than 70 automated tests check the guardrails with a scripted stand-in model, so they run without calling the real AI. In production, every guardrail event is counted and reported nightly: blocked injections, masked outputs, lockouts, naps and spend.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a> (FakeLLM), <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>MEASURE 2: The system is evaluated for trustworthiness <span class="chip partly">Partly met</span></h3>
+        <p>Security, privacy, safety and transparency are tested in code and live: Cipher runs 50 attacks against the real site, and the results are checked by code rather than by the attacker's script. Independent public scanners graded the site's security A+ (96% on internet.nl). What a real program would add: a measured accuracy evaluation of Tucker's answers and a bias review, which a fictional-data demo can't meaningfully run.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>.</p>
+      </div>
+      <div class="req"><h3>MEASURE 3: Risks are tracked over time <span class="chip met">Met</span></h3>
+        <p>The owner's nightly report tracks visitors, guardrail events, Cipher runs, anything unusual and AI spend against the caps, and real-time alerts fire when a limit starts biting. Dated scan results are kept in the repository.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/alert-policy.json"><code>deploy/alert-policy.json</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>.</p>
+      </div>
+      <div class="req"><h3>MEASURE 4: Feedback on whether the measurements work is collected <span class="chip partly">Partly met</span></h3>
+        <p>What real use shows feeds back into the measurements. For example, a deploy restart that interrupted an attack run was caught, measured and fixed, with a test added. A real program would hold a regular review of whether its metrics still catch what matters.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>.</p>
+      </div>
+      <h2>Manage: act on the risks</h2>
+      <div class="req"><h3>MANAGE 1: Risks are prioritized and responded to <span class="chip met">Met</span></h3>
+        <p>The highest risks (data disclosure and unauthorized actions) are removed by design rather than filtered: the AI simply has no power to act. Lower risks are reduced in layers. Findings are fixed quickly: on November 24, 2026 every gap the independent scanners found was fixed the same day.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/roles.sql"><code>db/roles.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/scans/2026-11-24/results.json"><code>docs/scans/2026-11-24/results.json</code></a>.</p>
+      </div>
+      <div class="req"><h3>MANAGE 2: Benefits are maximized and harms minimized, with fallbacks <span class="chip met">Met</span></h3>
+        <p>Every AI failure has a safe fallback. If Gemini fails, Tucker apologizes instead of erroring. If the budget is spent, he naps. If the SOC AI returns garbage or nothing at all, the report is built from plain facts by code, and the attacker is blocked by code regardless.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>MANAGE 3: Third-party risks are managed <span class="chip met">Met</span></h3>
+        <p>The model provider is limited by contract tier (no training on the data), by data minimization (no IPs or full card numbers) and by spend caps. Software dependencies are updated through reviewed Dependabot pull requests, and the server installs operating system security updates automatically every day.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>MANAGE 4: Response, recovery and communication are planned and monitored <span class="chip partly">Partly met</span></h3>
+        <p>Detection and response for attacks are built in: code rules alert after 15 blocked attacks from one source and block the source for 24 hours after 50, and the AI SOC Squirrel writes an incident report. Demo data resets nightly to a known state. A real company would add a written AI incident response plan, customer notification steps and recovery drills.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/nightly_reset.sql"><code>db/nightly_reset.sql</code></a>.</p>
+      </div>
+      <h2>The Generative AI Profile</h2>
+      <p>NIST AI 600-1 lists twelve risks specific to generative AI. The ones that apply to a support chatbot are covered above: confabulation (MEASURE 2 and the OWASP misinformation entry), data privacy (MAP 5), information security (prompt injection and the OWASP list), human-AI configuration (Tucker always discloses he is an AI and cannot act on his own), and value chain and component integration (GOVERN 6, MANAGE 3). The others, such as chemical, biological, radiological and nuclear (CBRN) information, violent or obscene content, and intellectual property, are reduced by the topic limit, which keeps Tucker to Tucker Payment Processing questions only.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/nist-ai-rmf.md">docs/standards/nist-ai-rmf.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261124m" defer></script>
+</body>
+</html>

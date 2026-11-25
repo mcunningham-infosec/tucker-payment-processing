@@ -1,0 +1,77 @@
+<!doctype html>
+<!--
+  EU AI Act (Regulation (EU) 2024/1689) - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EU AI Act (Regulation (EU) 2024/1689) - Tucker Payment Processing</title>
+  <meta name="description" content="EU AI Act (Regulation (EU) 2024/1689): how Tucker Payment Processing (a fictional company) meets it, with evidence.">
+  <link rel="stylesheet" href="assets/site.css?v=20261124m">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124m">
+  <link rel="stylesheet" href="assets/about.css?v=20261124m">
+  <link rel="stylesheet" href="assets/standards.css?v=20261124m">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124m">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html">About Us</a>
+      <a href="policies.html" aria-current="page">AI Policies</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card policy standard">
+      <p class="crumb"><a href="standards.html">&larr; All standards</a></p>
+      <h1>EU AI Act (Regulation (EU) 2024/1689)</h1>
+      <p class="muted-line">Where Tucker sits in the EU&#x27;s risk tiers, and the duties that apply · Self-assessment · November 24, 2026</p>
+      <p class="std-summary"><span class="chip met">3 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">3 not applicable</span> <a class="scan-all" href="standards/eu-ai-act.pdf">Download PDF</a></p>
+      <h2>About this document</h2>
+      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not legal advice. Tucker Payment Processing is a fictional US company with no EU customers, so the AI Act would not apply to it in practice. This document asks a more useful question: if a real payment company deployed this same chatbot to customers in the EU, what would the Act require, and does the design already meet it?</p>
+      <p>The Act sorts AI by risk. Some practices are banned outright. "High-risk" systems face the heaviest duties. Systems that talk to people, or generate content, have transparency duties. The rest have few or none. The dates reflect the Digital Omnibus on AI (Regulation (EU) 2026/1744), in force since July 27, 2026, which pushed back some deadlines.</p>
+      <h2>Classification</h2>
+      <div class="req"><h3>Prohibited practices (Article 5) <span class="chip na">Not applicable</span></h3>
+        <p>Neither AI does anything on the banned list, such as manipulative techniques that cause harm, social scoring or exploiting people's vulnerabilities. Tucker is a support assistant; he cannot persuade anyone to spend money, and he has no tool that could.</p>
+      </div>
+      <div class="req"><h3>High-risk systems (Article 6, Annex III) <span class="chip na">Not applicable</span></h3>
+        <p>Payment companies need to watch this one. Annex III lists AI used to assess a person's creditworthiness or set their credit score as high-risk (fraud detection is excluded). Tucker makes no decision about anyone: no credit, eligibility, pricing or fraud decisions. He only reads a verified customer's own records and explains policies. If a real company later let a chatbot like this one decide disputes or offer credit, it would become high-risk. Under the Digital Omnibus, the Annex III duties now apply from December 2, 2027.</p>
+      </div>
+      <div class="req"><h3>Transparency: telling people they are talking to an AI (Article 50(1)) <span class="chip met">Met</span></h3>
+        <p>This is the duty that applies, from August 2, 2026: people must be told they are dealing with an AI unless it is obvious. Tucker's greeting in every chat says he is an AI assistant, his label on the home page reads "AI Support Agent", and his instructions require him to say he is an AI if asked. The AI SOC Squirrel is labeled "AI Security Analyst", and its incident report names it as the author.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/index.html"><code>site/index.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/treats.html"><code>site/treats.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/checkout.html"><code>site/checkout.html</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>Transparency: marking AI-generated content (Article 50(2)) <span class="chip partly">Partly met</span></h3>
+        <p>Providers of AI that generates text must also mark it as AI-generated in a machine-readable way, where technically feasible, from August 2, 2026 (December 2, 2026 for systems already on the market before then). Every reply Tucker's model writes carries an "ai_generated: true" mark in the data the website receives; the app's own fixed messages, such as "Tucker's taking a nap", are marked false. The AI SOC Squirrel's incident report PDF names the AI as its author in the file's metadata. There is no settled industry standard yet for marking chat text, so a real company would adopt the European Commission's code of practice on marking AI-generated content once it is final.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/report-pdf.js"><code>site/assets/report-pdf.js</code></a>.</p>
+      </div>
+      <h2>Other duties</h2>
+      <div class="req"><h3>AI literacy (Article 4) <span class="chip met">Met</span></h3>
+        <p>Companies that provide or deploy AI should make sure the people working with it understand it. The Digital Omnibus softened the original wording, but the expectation remains. The site's builder and only operator wrote its AI policies, designed its guardrails and documents how each AI works and fails.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/about.html"><code>site/about.html</code></a>.</p>
+      </div>
+      <div class="req"><h3>General-purpose AI model duties (Articles 53 to 55) <span class="chip na">Not applicable</span></h3>
+        <p>These fall on the company that makes the underlying model (Google, for Gemini), not on a company that builds a chatbot on top of it. A real deployer would keep Google's published documentation for the model on file.</p>
+      </div>
+      <div class="req"><h3>Data protection alongside the Act <span class="chip met">Met</span></h3>
+        <p>The AI Act sits on top of the GDPR, which would apply to a real EU deployment. The design already practices data minimization: no IP addresses are sent to the AI, chat text is not stored with IP addresses, web logs are kept for at most two days, the only cookie is strictly necessary (so no cookie banner is needed), and the model provider does not train on the chats.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/data-retention.md"><code>policies/data-retention.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/logrotate-apache2"><code>deploy/logrotate-apache2</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/limits.py"><code>app/limits.py</code></a>.</p>
+      </div>
+      <h2>The bottom line</h2>
+      <p>As built, Tucker is a limited-risk AI system. Its main duty, telling people they are talking to an AI, is met in every chat. The content-marking duty is partly met while the EU finalizes its marking standards. The design choice that keeps it out of the high-risk tier is the same one that makes it secure: the AI decides nothing about anyone.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/eu-ai-act.md">docs/standards/eu-ai-act.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261124m" defer></script>
+</body>
+</html>

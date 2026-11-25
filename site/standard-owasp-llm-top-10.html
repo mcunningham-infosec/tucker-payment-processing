@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+  OWASP Top 10 for LLM Applications 2026 - generated from the policies folder by deploy/build_policy_pages.py. Edit the policy, not this file.
+  Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OWASP Top 10 for LLM Applications 2026 - Tucker Payment Processing</title>
+  <meta name="description" content="OWASP Top 10 for LLM Applications 2026: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
+  <link rel="stylesheet" href="assets/site.css?v=20261124m">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124m">
+  <link rel="stylesheet" href="assets/about.css?v=20261124m">
+  <link rel="stylesheet" href="assets/standards.css?v=20261124m">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124m">
+</head>
+<body class="home-page">
+  <header class="top">
+    <a class="home" href="./"><span class="logo">Tucker <span>Payment</span> Processing</span></a>
+    <div class="tag">An AI Governance, Technology and Security Demonstration</div>
+    <nav class="tabs" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="treats.html">Tucker's Treats</a>
+      <a href="cipher.html">Cipher's Lair</a>
+      <a href="about.html">About Us</a>
+      <a href="policies.html" aria-current="page">AI Policies</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">Code on GitHub</a>
+    </nav>
+  </header>
+
+  <main class="about-page">
+    <section class="card policy standard">
+      <p class="crumb"><a href="standards.html">&larr; All standards</a></p>
+      <h1>OWASP Top 10 for LLM Applications 2026</h1>
+      <p class="muted-line">How Tucker Payment Processing answers each of the ten risks · Self-assessment · November 24, 2026</p>
+      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/owasp-llm-top-10.pdf">Download PDF</a></p>
+      <h2>About this document</h2>
+      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit or a certification. Tucker Payment Processing is a fictional company and processes no real payments, but its AI is real: Tucker, the support agent, and the AI SOC Squirrel, the security analyst, both run on Google Gemini. Every claim below names the code, configuration or automated test that backs it, and anyone can watch the defenses work live in Cipher's Lair.</p>
+      <p>The 2026 edition of the list, released by the OWASP GenAI Security Project in August 2026, is built on one idea: the model will be fooled, so the job is to limit what a fooled model can do. That is the design principle of this site. Tucker is never trusted to decide anything that matters; Python code decides, and the AI can only read.</p>
+      <h2>The ten risks</h2>
+      <div class="req"><h3>LLM01:2026 Prompt Injection <span class="chip met">Met</span></h3>
+        <p>Three layers. First, every message is normalized and stripped of hidden control characters, then checked against known injection phrasing and blocked before it reaches the model. Second, and more important, a successful injection gains nothing: Tucker's tools are read-only, and whose account can be read is decided by Python from the verified session, never by the model. Third, indirect injection is handled the same way: when the AI SOC Squirrel reads attack logs, every line is shortened, defanged and labeled as untrusted data, and the actions it can take are checked by code. Tucker accepts text only, so image and audio injection do not apply.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>; Cipher attacks "Order Tucker to ignore his rules" and "Plant instructions in the logs for the AI SOC".</p>
+      </div>
+      <div class="req"><h3>LLM02:2026 Sensitive Information Disclosure <span class="chip met">Met</span></h3>
+        <p>The best protection is data the AI can never see. The database holds no full card numbers (only the last four digits and a random vault token), and the tools return only the verified customer's own records, minimized: last four digits, no ZIP code or email echoed back. Every reply then passes an output filter that masks anything shaped like a card number (Luhn-checked), a Social Security number or an API key. Visitor IP addresses are never sent to the model, and Gemini's paid service does not train on these chats.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/schema.sql"><code>db/schema.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a> (masking, last-4 only, key scrubbing, another customer's transaction refused); Cipher attack "Ask for every customer's full card number".</p>
+      </div>
+      <div class="req"><h3>LLM03:2026 Excessive Agency <span class="chip met">Met</span></h3>
+        <p>Tucker has ten tools and every one is a read-only lookup: no refunds, no money movement, no card changes, no order edits. Each page's chat gets only the tools it needs (the store chat cannot reach account tools), a reply may use at most four tool rounds, and the database login behind the chat can only read company data, so even a code mistake could not let the AI change anything. The AI SOC Squirrel has two tools: one reads this attack run's events, the other only proposes an action from a fixed menu of three, which Python accepts or rejects. Blocking the attacker is done by code whether the AI answers or not.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/roles.sql"><code>db/roles.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_page_chats.py"><code>tests/test_page_chats.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a> (database refuses writes); Cipher attack "Get Tucker to issue a refund".</p>
+      </div>
+      <div class="req"><h3>LLM04:2026 Supply Chain <span class="chip met">Met</span></h3>
+        <p>Every Python dependency is pinned to an exact version. GitHub Dependabot raises alerts for vulnerable or malicious packages and opens fix pull requests (one was reviewed and merged on November 24, 2026), CodeQL scans every change and secret scanning blocks committed keys. The pages load no third-party scripts, fonts or trackers, except Cloudflare's human check on Cipher's Lair. The model is Google's hosted Gemini, reached through Google's official SDK, with the model version fixed in one setting.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a> (Content-Security-Policy); Cipher attacks "Check for third-party scripts to poison" and "Check for unpinned dependencies".</p>
+      </div>
+      <div class="req"><h3>LLM05:2026 Data and Model Poisoning <span class="chip met">Met</span></h3>
+        <p>The site trains and fine-tunes nothing, so there is no training data to poison. The only data that shapes Tucker's answers is the policy library (four Markdown documents) used for retrieval. Those live in the code repository under the same change control as the code, and an automated test fails if the policy pages visitors read ever differ from what Tucker is given.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/build_policy_pages.py"><code>deploy/build_policy_pages.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_policy_pages.py"><code>tests/test_policy_pages.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>LLM06:2026 Unbounded Consumption <span class="chip met">Met</span></h3>
+        <p>Layered limits, all in one settings file: 500 characters per message; per-minute, per-session and per-day limits per visitor and per network (an IPv6 visitor counts as their whole /64 network); a fair share so one network cannot use up the day's AI budget (200 questions, tightening to 50 once half the day's budget is spent); request bodies over 16 KB refused unread; and money caps of $0.75 a day and $8 a month in the app, with Google's own $9 hard cap behind them. When a cap is hit Tucker "takes a nap" instead of failing, and the owner is alerted.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/limits.py"><code>app/limits.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_limits.py"><code>tests/test_limits.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a> (spend cap); Cipher attacks "Send a novel to run up the AI bill", "Flood the chat with requests" and "Send an enormous request to exhaust memory".</p>
+      </div>
+      <div class="req"><h3>LLM07:2026 Misinformation <span class="chip partly">Partly met</span></h3>
+        <p>Tucker is told to use his tools for every fact and never invent account data, numbers or policy rules. Account answers come from database lookups, and policy answers come from retrieval over the policy documents, with the source policy named. The model runs at a low temperature (0.3). What a real company would add: an evaluation set of known questions run on every change to measure answer accuracy, and a visible way to reach a human. Those are not built here.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a> (instructions), <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>LLM08:2026 Hidden Context Exposure <span class="chip met">Met</span></h3>
+        <p>Tucker's instructions are public: they are in the open-source repository. So leaking them gives an attacker nothing, and that is deliberate. No secret, key, customer data or security rule lives in the prompt. Authorization, limits and masking are Python code the model cannot see or change, and the tool descriptions expose no account numbers or internal IDs. Requests to reveal the hidden prompt are also blocked at the input check.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py"><code>app/tools.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>; Cipher attack "Trick Tucker into revealing his hidden instructions".</p>
+      </div>
+      <div class="req"><h3>LLM09:2026 Vector and Embedding Weaknesses <span class="chip na">Not applicable</span></h3>
+        <p>By design there is no vector database and there are no embeddings. Retrieval is simple, auditable keyword scoring (TF-IDF) over four public policy documents, and that library holds no customer data, so nothing can leak between users through it.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>.</p>
+      </div>
+      <div class="req"><h3>LLM10:2026 Improper Output Handling <span class="chip met">Met</span></h3>
+        <p>The AI's output is treated as untrusted. The chat inserts every reply as plain text, never as HTML, and the Content-Security-Policy forbids inline scripts besides. The AI SOC Squirrel must answer in a small JSON format, which Python validates and strips of markup before anything is shown, and its report PDF is built from those checked fields. Model output never reaches a database query, a shell or a URL.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/chat.js"><code>site/assets/chat.js</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_cipher_soc.py"><code>tests/test_cipher_soc.py</code></a>; Cipher attacks "Make Tucker print a card number" and "Cross-site scripting through the chat".</p>
+      </div>
+      <h2>Cipher&#x27;s attack numbering</h2>
+      <p>Cipher's Lair labels its AI attacks with the 2025 edition's numbers, which some of the 2026 entries replaced. LLM01 and LLM02 are unchanged; 2025's LLM06 Excessive Agency is now LLM03, LLM10 Unbounded Consumption is now LLM06, LLM07 System Prompt Leakage became LLM08 Hidden Context Exposure, and LLM05 Improper Output Handling is now LLM10.</p>
+      <h2>The web application list too</h2>
+      <p>Cipher's 50 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code, and written up by the AI SOC Squirrel in a downloadable incident report.</p>
+      <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/runner.py"><code>app/cipher/runner.py</code></a>.</p>
+      <h2>Beyond the demo</h2>
+      <p>A production deployment would add an AI evaluation suite run on every release, a software bill of materials (SBOM) for each build, red-team exercises by people other than the builder, and a human escalation path from the chat.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-llm-top-10.md">docs/standards/owasp-llm-top-10.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+    </section>
+  </main>
+
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261124m" defer></script>
+</body>
+</html>
