@@ -220,7 +220,7 @@
       $("attack").textContent = "Attack again (testing mode)";
     } else {
       $("attack").disabled = true;
-      $("attack").textContent = "Cipher is blocked";
+      $("attack").textContent = "Cipher is blocked for 24 hours";
     }
     setStatus((typeof s.seconds === "number" ? "Run complete in " + s.seconds + "s: " : "Run complete: ") + held +
               ". Your SOC report is ready.");
@@ -314,7 +314,7 @@
       setStatus("Your last run: " + held + ". Your SOC report is ready.");
       return;
     }
-    $("attack").disabled = true; $("attack").textContent = "Cipher is blocked";
+    $("attack").disabled = true; $("attack").textContent = "Cipher is blocked for 24 hours";
     say("attack", "Dammit, I'm blocked!");
     say("soc", "You already had your run today: " + held + ". Come back in 24 hours.");
     setStatus("Your run today: " + held + ". Your SOC report is ready; this browser and network can attack again in 24 hours.");
@@ -323,7 +323,7 @@
   // This browser or network already had its run today: show the block instead of the button.
   function blockedState() {
     $("attack").disabled = true;
-    $("attack").textContent = "Cipher is blocked";
+    $("attack").textContent = "Cipher is blocked for 24 hours";
     say("attack", "Dammit, I'm blocked!");
     say("soc", "Nope. You already had your run today. Come back in 24 hours.");
     setStatus("The AI SOC Squirrel blocked this browser and network from attacking for 24 hours.");
