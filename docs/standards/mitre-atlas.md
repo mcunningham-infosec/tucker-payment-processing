@@ -48,7 +48,7 @@ Evidence: `app/session.py`, `app/chat.py`, `app/policies.py`.
 
 ### AML.T0034.001 Cost Harvesting: Resource-Intensive Queries
 **Status: Met**
-The attacker runs up the victim's AI bill with long or expensive requests. Messages are capped at 500 characters and requests at 16 KB, each network has a fair share of the day's AI budget, and hard caps of $0.75 a day and $8 a month stop all AI use, with Google's own $9 cap behind them.
+The attacker runs up the victim's AI bill with long or expensive requests. Messages are capped at 500 characters and requests at 16 KB, each network has a fair share of the day's AI budget, hard caps of $5 a day and $50 a month stop all AI use, with Google's own $60 spend cap behind them, and Cipher's real attacks run one at a time, at most 400 a day, with a fair line for everyone else.
 Evidence: `app/config.py`, `app/spend.py`, `app/limits.py`, `tests/test_limits.py`; Cipher attack "Send a novel to run up the AI bill".
 
 ### AML.T0029 Denial of AI Service

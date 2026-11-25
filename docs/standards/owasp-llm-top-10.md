@@ -33,7 +33,7 @@ Evidence: `policies/`, `app/policies.py`, `deploy/build_policy_pages.py`, `tests
 
 ### LLM06:2026 Unbounded Consumption
 **Status: Met**
-Layered limits, all in one settings file: 500 characters per message; per-minute, per-session and per-day limits per visitor and per network (an IPv6 visitor counts as their whole /64 network); a fair share so one network cannot use up the day's AI budget (200 questions, tightening to 50 once half the day's budget is spent); request bodies over 16 KB refused unread; and money caps of $0.75 a day and $8 a month in the app, with Google's own $9 hard cap behind them. When a cap is hit Tucker "takes a nap" instead of failing, and the owner is alerted.
+Layered limits, all in one settings file: 500 characters per message; per-minute, per-session and per-day limits per visitor and per network (an IPv6 visitor counts as their whole /64 network); a fair share so one network cannot use up the day's AI budget (200 questions, tightening to 50 once half the day's budget is spent); request bodies over 16 KB refused unread; and money caps of $5 a day and $50 a month in the app, with Google's own $60 hard cap behind them. When a cap is hit Tucker "takes a nap" instead of failing, and the owner is alerted.
 Evidence: `app/config.py`, `app/limits.py`, `app/spend.py`, `app/alerts.py`, `deploy/apache-hardening.conf`, `tests/test_limits.py`, `tests/test_guardrails.py` (spend cap); Cipher attacks "Send a novel to run up the AI bill", "Flood the chat with requests" and "Send an enormous request to exhaust memory".
 
 ### LLM07:2026 Misinformation
