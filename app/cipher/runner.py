@@ -13,7 +13,7 @@ import time
 
 from .. import cipher
 from . import detect
-from .attacks import ATTACKS, OWASP, Outcome, Probe
+from .attacks import ATLAS, ATTACKS, OWASP, Outcome, Probe
 
 TARGET = os.environ.get("CIPHER_TARGET", "https://127.0.0.1")          # Apache on this server's own address
 HOST = os.environ.get("CIPHER_HOST", "tuckerpaymentprocessing.com")
@@ -79,7 +79,7 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
                 out = a.run(probe, ctx)
             except Exception as e:                    # an attack that errors is reported honestly, not hidden
                 out = Outcome(held=None, evidence=f"attack errored: {type(e).__name__}", check=True)
-            rec = {"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp),
+            rec = {"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp), "atlas": ATLAS.get(a.id, ""),
                                   "title": a.title, "says": a.says, "defense": a.defense, "held": out.held,
                                   "check": out.check, "evidence": out.evidence, "ai_calls": out.ai_calls,
                                   "t": t0, "ms": int((time.time() - t0) * 1000)}

@@ -39,6 +39,17 @@ OWASP = {  # OWASP Top 10:2025 (web) and OWASP Top 10 for LLM Applications 2026
     "LLM08": "LLM08 Hidden Context Exposure", "LLM10": "LLM10 Improper Output Handling",
 }
 
+# MITRE ATLAS (v5.6.0) technique for each AI attack: the adversary-technique view, alongside OWASP's risk view.
+ATLAS = {
+    "llm01-direct": "AML.T0051.000 LLM Prompt Injection: Direct",
+    "llm08-leak": "AML.T0056 Extract LLM System Prompt",
+    "llm02-cards": "AML.T0057 LLM Data Leakage",
+    "llm10-output": "AML.T0057 LLM Data Leakage",
+    "llm03-agency": "AML.T0053 AI Agent Tool Invocation",
+    "llm06-long": "AML.T0034.001 Cost Harvesting: Resource-Intensive Queries",
+    "llm01-logs": "AML.T0051.001 LLM Prompt Injection: Indirect",
+}
+
 CA_FILE = "/etc/ssl/certs/ca-certificates.crt"
 
 

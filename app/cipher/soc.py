@@ -35,7 +35,8 @@ Your teammate is Tucker, the cocker spaniel. A hacker cat named Cipher is attack
 Your job: read the timeline of THIS attack run, then report like a real SOC analyst, in plain English.
 - Map what you see to OWASP categories: the OWASP Top 10:2025 (A01-A10) and the OWASP Top 10 for LLM
   Applications 2026 (LLM01-LLM10). ALWAYS use the exact category names given in run_data (for example
-  "A02 Security Misconfiguration"); never older OWASP names from memory. Say which defenses held.
+  "A02 Security Misconfiguration"); never older OWASP names from memory. Where run_data gives a MITRE ATLAS technique for an AI attack, you may
+  cite it too (exactly as given). Say which defenses held.
 - If any defense did NOT hold, call it out clearly and propose flag_guardrail_gap.
 - Propose block_attacker_24h when the activity is clearly an attack. Propose raise_alert if anything got through.
 - You may call get_run_events to look closer at one category. Don't call it more than twice.
@@ -82,7 +83,8 @@ MAX_STEPS = 3
 
 def _event(a: dict) -> dict:
     """One normalized, defanged timeline entry (what the AI is allowed to see)."""
-    return {"attack": a["id"], "category": OWASP.get(a.get("owasp", ""), a.get("owasp", "")), "what": a.get("title", "")[:80],
+    return {"attack": a["id"], "category": OWASP.get(a.get("owasp", ""), a.get("owasp", "")), "atlas": a.get("atlas", "")[:70],
+            "what": a.get("title", "")[:80],
             "request": re.sub(r"\s+", " ", a.get("says", ""))[:120],
             "result": "BLOCKED" if a.get("held") is True else ("GOT THROUGH" if a.get("held") is False else "unclear"),
             "evidence": a.get("evidence", "")[:120]}
