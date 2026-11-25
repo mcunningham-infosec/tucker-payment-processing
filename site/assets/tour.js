@@ -46,7 +46,7 @@
     { page: "cipher", spot: ".lair-real", who: "cipher",
       say: "Muhahaha! Cipher here. Tucker doesn't come in my Lair, so I'm your guide now. Everything here is real: I run 50 actual attacks against this live website, from inside its own server." },
     { page: "cipher", spot: "#attack", who: "cipher",
-      say: "When you're ready, press this and I'll start my attack (one per day). Watch all three boxes. It takes about 2½ minutes." },
+      say: "When you're ready, press this and I'll start my attack (one per day). If someone else is attacking, you'll get a place in line and I'll start the moment it's your turn. Watch all three boxes. It takes about 2½ minutes." },
     { page: "cipher", spot: ".lair-box.soc", who: "cipher",
       say: "That's the AI SOC Squirrel, a bounded Gemini security analyst. A detection rule wakes it, it writes your security report live, and code checks every fact it states. Annoying little rodent." },
     { page: "cipher", spot: null, who: "cipher", go: "about.html", label: "Show me how it's built",
