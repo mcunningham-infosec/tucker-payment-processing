@@ -48,6 +48,15 @@ _policy = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_policy)
 
 
+def _page(title: str, description: str, body: str) -> str:
+    """A site page in the standard frame, with the standards stylesheet and the Standards tab marked as current."""
+    out = _policy.page(title, description, body)
+    out = out.replace('<a href="policies.html" aria-current="page">AI Policies</a>', '<a href="policies.html">AI Policies</a>', 1)
+    out = out.replace('<a href="standards.html">Standards</a>', '<a href="standards.html" aria-current="page">Standards</a>', 1)
+    return out.replace('<link rel="stylesheet" href="assets/tour.css',
+                       f'<link rel="stylesheet" href="assets/standards.css?v={_policy.VERSION}">\n  <link rel="stylesheet" href="assets/tour.css', 1)
+
+
 def parse(md: str) -> dict:
     """Split a write-up into title, subtitle and sections; each section has intro paragraphs and items."""
     lines = [l.rstrip() for l in md.strip().splitlines()]
@@ -123,9 +132,8 @@ def standard_page(name: str, doc: dict) -> str:
             parts.append("      </div>")
     parts.append(f'      <p class="muted-line source">This page is generated from <a href="{REPO}/blob/main/docs/standards/{name}.md">'
                  f"docs/standards/{name}.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>\n    </section>")
-    return _policy.page(doc["title"], f"{doc['title']}: how Tucker Payment Processing (a fictional company) meets it, with evidence.",
-                        "\n".join(parts)).replace("<link rel=\"stylesheet\" href=\"assets/tour.css",
-                                                  f"<link rel=\"stylesheet\" href=\"assets/standards.css?v={_policy.VERSION}\">\n  <link rel=\"stylesheet\" href=\"assets/tour.css", 1)
+    return _page(doc["title"], f"{doc['title']}: how Tucker Payment Processing (a fictional company) meets it, with evidence.",
+                 "\n".join(parts))
 
 
 def index_page(docs: list) -> str:
@@ -148,9 +156,7 @@ def index_page(docs: list) -> str:
       </ul>
       <p class="muted-line">Each write-up is also in the code repository, in <a href="{REPO}/tree/main/docs/standards">docs/standards</a>.</p>
     </section>"""
-    return _policy.page("Standards", "How Tucker Payment Processing (a fictional company) maps to AI, security and payment standards.",
-                        body).replace("<link rel=\"stylesheet\" href=\"assets/tour.css",
-                                      f"<link rel=\"stylesheet\" href=\"assets/standards.css?v={_policy.VERSION}\">\n  <link rel=\"stylesheet\" href=\"assets/tour.css", 1)
+    return _page("Standards", "How Tucker Payment Processing (a fictional company) maps to AI, security and payment standards.", body)
 
 
 def load() -> list:
