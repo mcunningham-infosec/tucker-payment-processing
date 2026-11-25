@@ -35,3 +35,15 @@ def test_write_up_text_is_escaped():
     doc = build_standards.parse("# T <b>\nSub\n## H\n### I <script>\n**Status: Met**\nA <script>x</script> `app/chat.py`")
     out = build_standards.standard_page("x", doc)
     assert "<script>x" not in out and "&lt;script&gt;" in out and "/blob/main/app/chat.py" in out
+
+
+def test_about_page_standards_totals_are_current():
+    """The About page quotes the totals across all write-ups; they must match the write-ups themselves."""
+    import re
+    root = pathlib.Path(__file__).resolve().parents[1]
+    statuses = re.findall(r"\*\*Status: (Met|Partly met|Not applicable)\*\*",
+                          "".join(p.read_text() for p in (root / "docs" / "standards").glob("*.md")))
+    about = (root / "site" / "about.html").read_text()
+    want = (f"<strong>{len(statuses)} requirements</strong>, {statuses.count('Met')} met, "
+            f"{statuses.count('Partly met')} partly met and {statuses.count('Not applicable')} not applicable")
+    assert want in about, f"update the totals in site/about.html to: {want}"
