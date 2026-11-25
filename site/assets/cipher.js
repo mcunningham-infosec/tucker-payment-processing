@@ -332,7 +332,7 @@
     $("attack").textContent = "Cipher is blocked for 24 hours";
     say("attack", "Dammit, I'm blocked!");
     say("soc", "Nope. You already had your run today. Come back in 24 hours.");
-    setStatus("The AI SOC Squirrel blocked this browser and network from attacking for 24 hours.");
+    setStatus("You've used today's attack. Each browser and network gets one attack run every 24 hours.");
   }
 
   // Testing mode only: empty the three boxes before another run.
