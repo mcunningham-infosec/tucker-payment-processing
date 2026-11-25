@@ -20,7 +20,7 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 SITE = ROOT / "site"
-VERSION = "20261124l"          # same asset version as the other pages (see apache-hardening.conf)
+VERSION = "20261124m"          # same asset version as the other pages (see apache-hardening.conf)
 GITHUB = "https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/"
 
 # Display order, page name and a one-line summary for the policy list.
@@ -122,14 +122,16 @@ def index_page(items) -> str:
 
     <section class="card">
       <h2>Built to recognized standards</h2>
+      <p>For each standard, every requirement is mapped to what the site actually does, with links to the code that
+        proves it and honest notes where it falls short. <a href="standards.html">See all six standards</a>.</p>
       <ul>
-        <li><strong>PCI DSS v4.0:</strong> no card data ever entered or exposed, tokens and last 4 digits only, server-side pricing, least-privilege database roles, strong HTTPS and logging.</li>
-        <li><strong>NIST AI Risk Management Framework (AI RMF 1.0):</strong> how Tucker's risks are governed, mapped, measured and managed, including NIST's Generative AI Profile.</li>
-        <li><strong>ISO/IEC 42001:2023:</strong> the AI management system behind Tucker: policy, roles, risk assessment, controls and review.</li>
-        <li><strong>OWASP Top 10 for LLM Applications (2025):</strong> each LLM risk, such as prompt injection, sensitive data disclosure and excessive agency, and the guardrail that answers it.</li>
-        <li><strong>EU AI Act (transparency):</strong> Tucker always discloses that he is an AI.</li>
+        <li><a href="standard-owasp-llm-top-10.html"><strong>OWASP Top 10 for LLM Applications 2026</strong></a>: each AI risk, such as prompt injection, sensitive data disclosure and excessive agency, and the control that answers it.</li>
+        <li><a href="standard-nist-ai-rmf.html"><strong>NIST AI Risk Management Framework</strong></a>: how Tucker's risks are governed, mapped, measured and managed, including NIST's Generative AI Profile.</li>
+        <li><a href="standard-iso-42001.html"><strong>ISO/IEC 42001:2023</strong></a>: the AI management system behind Tucker: policy, roles, risk assessment, controls and review.</li>
+        <li><a href="standard-eu-ai-act.html"><strong>EU AI Act</strong></a>: where Tucker sits in the risk tiers, and the transparency duties that apply.</li>
+        <li><a href="standard-pci-dss.html"><strong>PCI DSS v4.0.1</strong></a>: no card data ever entered or exposed, tokens and last 4 digits only, server-side pricing, least-privilege database roles, strong HTTPS and logging.</li>
+        <li><a href="standard-soc-2.html"><strong>SOC 2 Trust Services Criteria</strong></a>: a readiness review against the criteria a SOC 2 auditor tests.</li>
       </ul>
-      <p class="muted-line">A write-up for each standard, requirement by requirement, is coming soon.</p>
     </section>"""
     return page("AI Policies", "The AI and company policies of Tucker Payment Processing (a fictional company).", body)
 
