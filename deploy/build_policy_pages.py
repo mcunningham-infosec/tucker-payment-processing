@@ -20,7 +20,7 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 SITE = ROOT / "site"
-VERSION = "20261124s"          # same asset version as the other pages (see apache-hardening.conf)
+VERSION = "20261125a"          # same asset version as the other pages (see apache-hardening.conf)
 GITHUB = "https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/"
 
 # Display order, page name and a one-line summary for the policy list.
