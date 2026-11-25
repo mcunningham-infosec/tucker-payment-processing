@@ -11,10 +11,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cipher's Lair - Tucker Payment Processing</title>
   <meta name="description" content="Cipher's Lair: press one button and watch a hacker cat launch 50 real attacks at this site, Tucker's defenses stop them, and an AI SOC analyst report on it live.">
-  <link rel="stylesheet" href="assets/site.css?v=20261124k">
-  <link rel="stylesheet" href="assets/chat.css?v=20261124k">
-  <link rel="stylesheet" href="assets/cipher.css?v=20261124k">
-  <link rel="stylesheet" href="assets/tour.css?v=20261124k">
+  <link rel="stylesheet" href="assets/site.css?v=20261124l">
+  <link rel="stylesheet" href="assets/chat.css?v=20261124l">
+  <link rel="stylesheet" href="assets/cipher.css?v=20261124l">
+  <link rel="stylesheet" href="assets/tour.css?v=20261124l">
 </head>
 <body class="lair">
   <header class="top lair-top">
@@ -34,7 +34,11 @@
   <main class="lair-main">
     <div class="lair-sign">
       <img src="assets/lair-sign.jpg" alt="Cipher's Lair: a hidden cave entrance in the rocks with a lantern" width="1000" height="482">
-      <button type="button" class="lair-song" disabled title="Cipher's theme song is still being recorded">&#9835; Cipher's Theme (coming soon)</button>
+      <div class="theme-player lair-song">
+        <button type="button" id="theme-btn" aria-pressed="false" data-label="Play Cipher's Theme"><span class="ico" aria-hidden="true">&#9835;</span> <span class="lbl">Play Cipher's Theme</span></button>
+        <span class="theme-time" id="theme-time" aria-live="off"></span>
+        <audio id="theme-audio" preload="none" src="assets/audio/cipher-theme.mp3"></audio>
+      </div>
     </div>
 
     <section class="lair-explain" aria-label="What happens here">
@@ -95,7 +99,8 @@
 
   </div>
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. Cipher only ever attacks this site, from inside its own&nbsp;server. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/cipher.js?v=20261124k" defer></script>
-  <script src="assets/tour.js?v=20261124k" defer></script>
+  <script src="assets/cipher.js?v=20261124l" defer></script>
+  <script src="assets/theme.js?v=20261124l" defer></script>
+  <script src="assets/tour.js?v=20261124l" defer></script>
 </body>
 </html>
