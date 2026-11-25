@@ -122,7 +122,7 @@
     var tag = a.held === true ? "HELD" : (a.held === false ? "GOT THROUGH" : "CHECK");
     var cls = a.held === false ? "bad" : (a.check ? "warn" : "");
     numbered("log-defense", num, "tucker.defend(\"" + a.defense + "\")  => " + tag, cls);
-    line("log-defense", "evidence: " + a.evidence + "  [" + a.owasp + "]", "sub");
+    line("log-defense", "evidence: " + a.evidence + "  [" + a.owasp + (a.atlas ? " \u00b7 ATLAS " + a.atlas.split(" ")[0] : "") + "]", "sub");
     if (n === 1) { intro(total); }
     if (n === 12) { say("attack", "Locked doors everywhere. How... tedious."); }
     if (n === 25) { say("defense", "Not today, cat. Every door's still shut!"); }

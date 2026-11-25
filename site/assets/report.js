@@ -138,7 +138,7 @@
     var rows = [];
     rows.push([st.started, "Requester", "Attack run requested from " + requester + "; 24-hour block recorded immediately", "", "Logged"]);
     attacks.forEach(function (a) {
-      rows.push([a.t, "Cipher", a.title + "  [" + a.says.replace(/\s*\/\/.*$/, "") + "]", a.owasp,
+      rows.push([a.t, "Cipher", a.title + "  [" + a.says.replace(/\s*\/\/.*$/, "") + "]", a.owasp + (a.atlas ? " / " + a.atlas.split(" ")[0] : ""),
                  a.held === true ? "Blocked: " + a.evidence : (a.held === false ? "GOT THROUGH: " + a.evidence : a.evidence)]);
     });
     (st.soc || []).forEach(function (c) {
