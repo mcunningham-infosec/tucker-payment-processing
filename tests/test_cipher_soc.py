@@ -259,3 +259,107 @@ def test_a_finished_run_records_the_24_hour_block(monkeypatch, admin):
     admin.execute("DELETE FROM ops.usage_events WHERE kind LIKE 'cipher_pending_%'")   # the short hold expires
     sid = c.cookies.get(main.COOKIE)
     assert api._blocked(sid, "") is True                  # still blocked: the 24-hour record is there
+
+
+def test_a_waiting_visitor_sees_an_honest_wait(monkeypatch):
+    """While someone else's run is in progress, another visitor is told Cipher is busy and roughly how long is
+    left (from how long recent runs took), so the page can count down and re-check on its own."""
+    import time as _t
+    from fastapi.testclient import TestClient
+    from app.cipher import api as cipher_api, line, runner
+    from app.main import app
+    monkeypatch.setattr(cipher_api, "_human", lambda token, ip: True)
+    monkeypatch.setattr(cipher_api, "_open", lambda: True)
+    monkeypatch.setattr(cipher_api, "_blocked", lambda cookie_id, ip: False)
+    monkeypatch.setattr(runner, "_RECENT", [150.0, 160.0, 170.0])
+    c = TestClient(app)
+    assert runner.busy_remaining() is None
+    assert c.get("/api/cipher/status").json()["busy"] is False
+    assert runner._ACTIVE.acquire(blocking=False)
+    try:
+        runner._CURRENT["started"] = _t.time() - 60          # someone else's run began a minute ago
+        st = c.get("/api/cipher/status").json()
+        assert st["busy"] is True and 95 <= st["busy_remaining"] <= 100
+        r = c.post("/api/cipher/start", json={"turnstile": "x"}).json()
+        assert r["status"] == "queued" and r["line"]["position"] == 1 and 95 <= r["line"]["wait"] <= 100
+        runner._CURRENT["started"] = _t.time() - 400         # running long: never a negative wait
+        assert c.get("/api/cipher/status").json()["busy_remaining"] == 0
+    finally:
+        runner._ACTIVE.release()
+        line.reset()
+
+
+def test_the_line_is_first_come_first_served():
+    """Busy Cipher: people join in order, only the front of the line may start when he frees up, and the
+    rest keep their places."""
+    from app.cipher import line
+    line.reset()
+    t0 = 1000.0
+    assert line.may_start("a", busy=False, now=t0)                 # nobody waiting: just go
+    assert line.join("a", busy=True, now=t0) == 1
+    assert line.join("b", busy=True, now=t0 + 1) == 2
+    assert line.join("a", busy=True, now=t0 + 2) == 1              # joining again keeps your place
+    assert not line.may_start("b", busy=False, now=t0 + 3)         # Cipher free: only the front may start
+    assert line.may_start("a", busy=False, now=t0 + 3)
+    assert line.check_in("a", busy=False, now=t0 + 3)["your_turn"] is True
+    line.started("a")
+    assert line.check_in("b", busy=True, now=t0 + 4) == {"position": 1, "your_turn": False, "turn_left": None}
+    line.reset()
+
+
+def test_a_closed_tab_or_a_missed_turn_drops_out_of_line():
+    """Places only last while the page keeps checking in, and an untaken turn passes to the next person."""
+    from app.cipher import line
+    line.reset()
+    t0 = 2000.0
+    line.join("gone", busy=True, now=t0)
+    line.join("here", busy=True, now=t0)
+    line.check_in("here", busy=True, now=t0 + 15)
+    assert line.check_in("here", busy=True, now=t0 + 25)["position"] == 1     # "gone" stopped checking in
+    assert line.check_in("gone", busy=True, now=t0 + 25) is None
+    line.join("next", busy=True, now=t0 + 25)
+    line.check_in("here", busy=False, now=t0 + 30)                           # Cipher frees up: "here"'s turn
+    for k in range(1, 8):                                                    # both pages keep checking in...
+        line.check_in("next", busy=False, now=t0 + 30 + 10 * k)
+        line.check_in("here", busy=False, now=t0 + 30 + 10 * k)
+    info = line.check_in("next", busy=False, now=t0 + 100)                   # ...but "here" never started
+    assert info["position"] == 1 and info["your_turn"] is True
+    line.reset()
+
+
+def test_the_line_has_a_size_limit():
+    from app.cipher import line
+    line.reset()
+    for k in range(line.MAX_LINE):
+        assert line.join(f"v{k}", busy=True, now=3000.0) == k + 1
+    assert line.join("one-too-many", busy=True, now=3000.0) is None
+    line.reset()
+
+
+def test_your_turn_starts_without_a_second_human_check(monkeypatch):
+    """You pass the human check to join the line; when your turn comes, the page starts the run for you."""
+    from fastapi.testclient import TestClient
+    from app.cipher import api as cipher_api, line, runner
+    from app.main import app
+    line.reset()
+    checks = []
+    monkeypatch.setattr(cipher_api, "_human", lambda token, ip: checks.append(token) or token == "ok")
+    monkeypatch.setattr(cipher_api, "_open", lambda: True)
+    monkeypatch.setattr(cipher_api, "_blocked", lambda cookie_id, ip: False)
+    started = []
+    monkeypatch.setattr(runner, "start", lambda **kw: started.append(1) or "run-x")
+    monkeypatch.setattr(runner, "state", lambda rid: {"total": 50} if rid == "run-x" else None)
+    c = TestClient(app, base_url="https://testserver")     # the session cookie is HTTPS-only
+    assert runner._ACTIVE.acquire(blocking=False)
+    try:
+        assert c.post("/api/cipher/start", json={"turnstile": "nope"}).json()["status"] == "bot_check"
+        assert c.post("/api/cipher/start", json={"turnstile": "ok"}).json()["status"] == "queued"
+    finally:
+        runner._ACTIVE.release()
+    st = c.get("/api/cipher/status").json()
+    assert st["line"]["your_turn"] is True
+    n = len(checks)
+    assert c.post("/api/cipher/start", json={"turnstile": ""}).json()["status"] == "started"
+    assert len(checks) == n and started == [1]                                # no second human check
+    assert line.length(busy=False) == 0                                       # they left the line
+    line.reset()
