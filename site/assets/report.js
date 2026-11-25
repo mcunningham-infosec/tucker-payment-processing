@@ -12,8 +12,8 @@
     A04: "A04 Cryptographic Failures", A05: "A05 Injection", A06: "A06 Insecure Design", A07: "A07 Authentication Failures",
     A08: "A08 Software or Data Integrity Failures", A09: "A09 Security Logging & Alerting Failures",
     A10: "A10 Mishandling of Exceptional Conditions", LLM01: "LLM01 Prompt Injection",
-    LLM02: "LLM02 Sensitive Information Disclosure", LLM05: "LLM05 Improper Output Handling",
-    LLM06: "LLM06 Excessive Agency", LLM07: "LLM07 System Prompt Leakage", LLM10: "LLM10 Unbounded Consumption"
+    LLM02: "LLM02 Sensitive Information Disclosure", LLM03: "LLM03 Excessive Agency",
+    LLM06: "LLM06 Unbounded Consumption", LLM08: "LLM08 Hidden Context Exposure", LLM10: "LLM10 Improper Output Handling"
   };
 
   // Create an element with an optional class and TEXT content (never HTML).
