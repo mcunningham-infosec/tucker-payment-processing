@@ -6,7 +6,8 @@ visitors exactly the same text. Run this after editing a policy:
 
     python deploy/build_policy_pages.py
 
-It writes site/policies.html (the list) and one site/policy-<name>.html per policy. A test
+It writes site/policies.html (the list), one site/policy-<name>.html per policy and a PDF of each
+(site/policies/<name>.pdf; skip with --no-pdf). A test
 (tests/test_policy_pages.py) fails if the pages are out of date, so the website can't drift from what Tucker reads.
 
 The policies use a small, fixed subset of Markdown: "# Title", a subtitle line, "## Section" headings and
@@ -16,6 +17,7 @@ Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assiste
 """
 import html
 import pathlib
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
@@ -99,6 +101,7 @@ def policy_page(src: str, p: dict) -> str:
              f"      <h1>{e(p['title'])}</h1>"]
     if p["subtitle"]:
         parts.append(f'      <p class="muted-line">{e(p["subtitle"])}</p>')
+    parts.append(f'      <p><a class="scan-all" href="policies/{src}.pdf">Download PDF</a></p>')
     for heading, paras in p["sections"]:
         parts.append(f"      <h2>{e(heading)}</h2>")
         parts.extend(f"      <p>{e(t)}</p>" for t in paras)
@@ -108,10 +111,11 @@ def policy_page(src: str, p: dict) -> str:
 
 
 def index_page(items) -> str:
-    """The AI Policies page: the list of policies and the standards the site is built to."""
+    """The AI Policies page: the list of policies, each with its PDF."""
     e = html.escape
-    rows = "\n".join(f'        <li><a href="{name}.html"><strong>{e(p["title"])}</strong></a><br>{e(summary)}</li>'
-                     for name, p, summary in items)
+    rows = "\n".join(f'        <li><a href="{name}.html"><strong>{e(p["title"])}</strong></a> &middot; '
+                     f'<a href="policies/{src}.pdf">PDF</a><br>{e(summary)}</li>'
+                     for src, name, p, summary in items)
     body = f"""    <section class="card intro">
       <h1>AI Policies</h1>
       <p>Michael wrote the company's policies first, then built the AI to follow them. Tucker answers policy questions
@@ -119,26 +123,52 @@ def index_page(items) -> str:
       <ul class="links policy-list">
 {rows}
       </ul>
-    </section>
-
-    <section class="card">
-      <h2>Built to recognized standards</h2>
-      <p>For each standard, every requirement is mapped to what the site actually does, with links to the code that
-        proves it and honest notes where it falls short. <a href="standards.html">See all ten standards</a>.</p>
-      <ul>
-        <li><a href="standard-owasp-llm-top-10.html"><strong>OWASP Top 10 for LLM Applications 2026</strong></a>: each AI risk, such as prompt injection, sensitive data disclosure and excessive agency, and the control that answers it.</li>
-        <li><a href="standard-owasp-agentic-top-10.html"><strong>OWASP Top 10 for Agentic Applications 2026</strong></a>: the risks of AI that uses tools and takes actions, and why both of the site's AI agents can choose what to look at but never change anything.</li>
-        <li><a href="standard-mitre-atlas.html"><strong>MITRE ATLAS</strong></a>: the attacker techniques that apply to the site's AI, and the defense against each.</li>
-        <li><a href="standard-nist-ai-rmf.html"><strong>NIST AI Risk Management Framework</strong></a>: how Tucker's risks are governed, mapped, measured and managed, including NIST's Generative AI Profile.</li>
-        <li><a href="standard-iso-42001.html"><strong>ISO/IEC 42001:2023</strong></a>: the AI management system behind Tucker: policy, roles, risk assessment, controls and review.</li>
-        <li><a href="standard-iso-23894.html"><strong>ISO/IEC 23894:2023</strong></a>: AI risk management, the method behind ISO 42001's risk requirements.</li>
-        <li><a href="standard-iso-42005.html"><strong>ISO/IEC 42005:2025</strong></a>: an AI impact assessment of Tucker and the AI SOC Squirrel, in the standard's structure.</li>
-        <li><a href="standard-eu-ai-act.html"><strong>EU AI Act</strong></a>: where Tucker sits in the risk tiers, and the transparency duties that apply.</li>
-        <li><a href="standard-pci-dss.html"><strong>PCI DSS v4.0.1</strong></a>: no card data ever entered or exposed, tokens and last 4 digits only, server-side pricing, least-privilege database roles, strong HTTPS and logging.</li>
-        <li><a href="standard-soc-2.html"><strong>SOC 2 Trust Services Criteria</strong></a>: a readiness review against the criteria a SOC 2 auditor tests.</li>
-      </ul>
     </section>"""
     return page("AI Policies", "The AI and company policies of Tucker Payment Processing (a fictional company).", body)
+
+
+def pdf(src: str, p: dict, path: pathlib.Path):
+    """One policy as a PDF, in the same style as the standards write-ups and scan reports."""
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
+    BLUE, INK, MUTED = (colors.HexColor(c) for c in ("#1f5fbf", "#1b1f24", "#5b6470"))
+    S = {k: ParagraphStyle(k, **v) for k, v in {
+        "org": dict(fontName="Helvetica-Bold", fontSize=9, textColor=BLUE),
+        "title": dict(fontName="Helvetica-Bold", fontSize=19, leading=23, textColor=INK, spaceBefore=2),
+        "sub": dict(fontName="Helvetica", fontSize=9.5, leading=13, textColor=MUTED, spaceAfter=4),
+        "h2": dict(fontName="Helvetica-Bold", fontSize=12, textColor=BLUE, spaceBefore=12, spaceAfter=4),
+        "body": dict(fontName="Helvetica", fontSize=9.3, leading=13.2, textColor=INK, spaceAfter=4),
+        "small": dict(fontName="Helvetica", fontSize=8, leading=11, textColor=MUTED),
+    }.items()}
+    esc = html.escape
+    story = [Paragraph("Tucker Payment Processing &middot; Company policy", S["org"]),
+             Paragraph(esc(p["title"]), S["title"])]
+    if p["subtitle"]:
+        story.append(Paragraph(esc(p["subtitle"]), S["sub"]))
+    for heading, paras in p["sections"]:
+        story.append(Paragraph(esc(heading), S["h2"]))
+        story += [Paragraph(esc(t), S["body"]) for t in paras]
+    story += [Spacer(1, 10), Paragraph(f"Source: {GITHUB}{src}.md (the same document Tucker answers from) &middot; "
+                                       "Live site: https://tuckerpaymentprocessing.com", S["small"]),
+              Paragraph("Tucker Payment Processing is a fictional company created as a technology demonstration and "
+                        "processes no real payments.", S["small"])]
+
+    def footer(canvas, d):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(MUTED)
+        canvas.drawString(0.75 * inch, 0.5 * inch, f"Tucker Payment Processing (fictional company) - {p['title']}")
+        canvas.drawRightString(7.75 * inch, 0.5 * inch, f"Page {d.page}")
+        canvas.restoreState()
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    SimpleDocTemplate(str(path), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch, topMargin=0.7 * inch,
+                      bottomMargin=0.8 * inch, title=p["title"], author="Michael Cunningham", invariant=1,
+                      subject="Tucker Payment Processing company policy").build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 def build() -> dict:
@@ -147,7 +177,7 @@ def build() -> dict:
     for src, name, summary in ORDER:
         p = parse((POLICIES / f"{src}.md").read_text(encoding="utf-8"))
         out[SITE / f"{name}.html"] = policy_page(src, p)
-        items.append((name, p, summary))
+        items.append((src, name, p, summary))
     out[SITE / "policies.html"] = index_page(items)
     return out
 
@@ -156,3 +186,7 @@ if __name__ == "__main__":
     for path, text in build().items():
         path.write_text(text, encoding="utf-8")
         print("wrote", path.relative_to(ROOT))
+    if "--no-pdf" not in sys.argv:
+        for src, _name, _summary in ORDER:
+            pdf(src, parse((POLICIES / f"{src}.md").read_text(encoding="utf-8")), SITE / "policies" / f"{src}.pdf")
+            print("wrote", f"site/policies/{src}.pdf")
