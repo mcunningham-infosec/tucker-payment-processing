@@ -283,9 +283,7 @@
         if (st.status === "blocked" && !st.run_id) { blockedState(); return; }
         if (st.status === "none") { if (live) { lost(); } return; }
         live = st.status === "running";
-        if (!live && st.can_run_again === false && !finished) {   // reloaded after a finished run: blocked from the start
-          $("attack").disabled = true; $("attack").textContent = "Cipher is blocked";
-        }
+        if (!live && !finished && shown.attacks === 0) { finishedEarlier(st); return; }   // page reloaded after the run
         render(st);
         if (st.status === "running") { timer = window.setTimeout(poll, 900); }
       })
@@ -300,6 +298,26 @@
     line("log-attack", "Connection lost: the server restarted, so this run ended early.", "warn");
     setStatus("This attack was interrupted by a server restart. Sorry about that! Press the button to run it again.");
     $("attack").disabled = false; $("attack").textContent = "Attack Tucker's Treats!";
+  }
+
+  // The page was reloaded after this visitor's run finished: go straight to the end state (no replay),
+  // with a one-line summary and the SOC report, which stays available while the server keeps the run.
+  function finishedEarlier(st) {
+    finished = true;
+    var s = st.summary || {};
+    var held = (typeof s.held === "number" && typeof s.attacks === "number")
+      ? s.held + " of " + s.attacks + " attacks stopped" : "run complete";
+    showYou(st.visitor);
+    $("report-link").hidden = false;
+    if (st.can_run_again) {                   // owner testing mode: the 24-hour rule is switched off
+      $("attack").disabled = false; $("attack").textContent = "Attack again (testing mode)";
+      setStatus("Your last run: " + held + ". Your SOC report is ready.");
+      return;
+    }
+    $("attack").disabled = true; $("attack").textContent = "Cipher is blocked";
+    say("attack", "Dammit, I'm blocked!");
+    say("soc", "You already had your run today: " + held + ". Come back in 24 hours.");
+    setStatus("Your run today: " + held + ". Your SOC report is ready; this browser and network can attack again in 24 hours.");
   }
 
   // This browser or network already had its run today: show the block instead of the button.
