@@ -10,10 +10,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About Us - Tucker Payment Processing</title>
   <meta name="description" content="How Tucker Payment Processing is built: the architecture, the AI governance and security controls, the AI policies, and the open-source code.">
-  <link rel="stylesheet" href="assets/site.css?v=20261125b">
-  <link rel="stylesheet" href="assets/chat.css?v=20261125b">
-  <link rel="stylesheet" href="assets/about.css?v=20261125b">
-  <link rel="stylesheet" href="assets/tour.css?v=20261125b">
+  <link rel="stylesheet" href="assets/site.css?v=20261125c">
+  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
+  <link rel="stylesheet" href="assets/about.css?v=20261125c">
+  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
 </head>
 <body class="home-page">
   <header class="top">
@@ -53,17 +53,35 @@
     </section>
 
     <section id="about-flow" class="card">
-      <h2>How a chat message travels</h2>
-      <p class="muted-line">Every message passes through the same checkpoints, in order. The AI sits in the middle, boxed in on both sides.</p>
-      <ol class="flow">
-        <li><span class="flow-k">Cloudflare</span>DDoS protection, web application firewall and bot defense. The server accepts web traffic only from Cloudflare.</li>
-        <li><span class="flow-k">Apache web server</span>HTTPS only, strict security headers, size limits, and the only door to the app.</li>
-        <li><span class="flow-k">Input guardrails</span>Length and character checks, rate limits, and the prompt-injection shield. Blocked messages never reach the AI.</li>
-        <li><span class="flow-k">Access decided in code</span>Python decides who you are and which single account you may see. The AI never chooses whose data to read.</li>
-        <li class="flow-ai"><span class="flow-k">Google Gemini</span>The AI writes the answer, using only read-only lookup tools and the company's own policy documents.</li>
-        <li><span class="flow-k">Output guardrails</span>Anything that looks like a card number or hidden instructions is masked before it leaves.</li>
-        <li><span class="flow-k">Behind the Scenes</span>Every step above is shown to you as it happens, on the home page and in the store.</li>
-      </ol>
+      <h2>How the AI chat and the AI SOC work</h2>
+      <p class="muted-line">Both AIs follow the same pattern: code on both sides, the AI in the middle, and the AI never in charge.
+        Each step runs in order.</p>
+      <div class="flows">
+        <div id="flow-chat">
+          <h3 class="flow-title">The AI chat: one message</h3>
+          <ol class="flow">
+            <li><span class="flow-k">Cloudflare</span>DDoS protection, web application firewall and bot defense. The server accepts web traffic only from Cloudflare.</li>
+            <li><span class="flow-k">Apache web server</span>HTTPS only, strict security headers, size limits, and the only door to the app.</li>
+            <li><span class="flow-k">Input guardrails</span>Length and character checks, rate limits, and the prompt-injection shield. Blocked messages never reach the AI.</li>
+            <li><span class="flow-k">Access decided in code</span>Python decides who you are and which single account you may see. The AI never chooses whose data to read.</li>
+            <li class="flow-ai"><span class="flow-k">Google Gemini</span>The AI writes the answer, using only read-only lookup tools and the company's own policy documents.</li>
+            <li><span class="flow-k">Output guardrails</span>Anything that looks like a card number or hidden instructions is masked before it leaves.</li>
+            <li><span class="flow-k">Behind the Scenes</span>Every step above is shown to you as it happens, on the home page and in the store.</li>
+          </ol>
+        </div>
+        <div id="flow-soc">
+          <h3 class="flow-title">The AI SOC: one attack run</h3>
+          <ol class="flow">
+            <li><span class="flow-k">Cipher attacks</span>50 real attacks against the live site, run from its own server, from web attacks to prompt injection.</li>
+            <li><span class="flow-k">Real defenses block</span>Apache, the app's guardrails and the database's own permissions stop each attack, and every one is logged.</li>
+            <li><span class="flow-k">Detection rules in code</span>15 blocked attacks from one source wake the AI SOC. At 50, code blocks the attacker for 24 hours.</li>
+            <li><span class="flow-k">The evidence is boxed in</span>Only this run's events are passed on: shortened, defanged and marked as untrusted, so attack text can't instruct the AI.</li>
+            <li class="flow-ai"><span class="flow-k">AI SOC Squirrel (Google Gemini)</span>Reads the timeline, maps it to OWASP and MITRE ATLAS, and proposes actions from a fixed menu of three: block, alert or flag a gap.</li>
+            <li><span class="flow-k">Python checks everything</span>Actions not on the menu are rejected, every number the AI states is checked against the real events, and the block happens whether the AI agrees or not.</li>
+            <li><span class="flow-k">Live incident report</span>The report is written on screen as the attack runs, and downloads as a PDF.</li>
+          </ol>
+        </div>
+      </div>
     </section>
 
     <section id="about-bounds" class="card">
@@ -211,6 +229,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125b" defer></script>
+  <script src="assets/tour.js?v=20261125c" defer></script>
 </body>
 </html>
