@@ -22,6 +22,9 @@ cp deploy/logrotate-apache2 /etc/logrotate.d/apache2                # web logs k
 cp deploy/tucker-reset.service deploy/tucker-reset.timer deploy/tucker-report.service deploy/tucker-report.timer /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now tucker-reset.timer tucker-report.timer >/dev/null
+if [ -e /etc/tucker/STAGING ]; then                                 # staging server: no owner report emails
+  systemctl disable --now tucker-report.timer >/dev/null 2>&1 || true
+fi
 
 # Restart the app only when its code changed. Cipher's attack runs live in the app's memory, so a restart
 # in the middle of one cuts it off: if a run is in progress, wait for it to finish first (a run is capped

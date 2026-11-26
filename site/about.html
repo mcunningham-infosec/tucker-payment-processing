@@ -75,9 +75,9 @@
         <div id="flow-soc">
           <h3 class="flow-title">The AI SOC: one attack run</h3>
           <ol class="flow">
-            <li><span class="flow-k">Cipher attacks</span>50 real attacks against the live site, run from its own server, from web attacks to prompt injection.</li>
+            <li><span class="flow-k">Cipher attacks</span>100 real attacks against the live site, run from its own server, from web attacks to prompt injection: 50 by hand, then 50 at scanner speed.</li>
             <li><span class="flow-k">Real defenses block</span>Apache, the app's guardrails and the database's own permissions stop each attack, and every one is logged.</li>
-            <li><span class="flow-k">Detection rules in code</span>15 blocked attacks from one source wake the AI SOC. At 50, code blocks the attacker for 24 hours.</li>
+            <li><span class="flow-k">Detection rules in code</span>15 blocked attacks from one source wake the AI SOC, a sudden burst is flagged as automated tooling and at 100 code blocks the attacker for 24 hours.</li>
             <li><span class="flow-k">The evidence is boxed in</span>Only this run's events are passed on: shortened, defanged and marked as untrusted, so attack text can't instruct the AI.</li>
             <li class="flow-ai"><span class="flow-k">AI SOC (Google Gemini)</span>Reads the timeline, maps it to OWASP and MITRE ATLAS and proposes actions from a fixed menu of three: block, alert or flag a gap.</li>
             <li><span class="flow-k">Python checks everything</span>Actions not on the menu are rejected, every number the AI states is checked against the real events and the block happens whether the AI agrees or not.</li>
@@ -148,7 +148,7 @@
           (SR 26-2, formerly SR 11-7)</a>, <a href="standard-pci-dss.html">PCI DSS v4.0.1</a>, <a href="standard-soc-2.html">SOC 2</a>
           and <a href="standard-iso-27001.html">ISO/IEC 27001</a></li>
       </ul>
-      <p id="standards-totals">Across all fourteen: <strong>174 requirements</strong>, 121 met, 42 partly met and 11 not applicable. These are
+      <p id="standards-totals">Across all fourteen: <strong>175 requirements</strong>, 122 met, 42 partly met and 11 not applicable. These are
         self-assessments, not audits or certifications. <a class="scan-all" href="standards.html">See every standard, with PDFs</a></p>
     </section>
 
@@ -163,7 +163,8 @@
         <li><strong>Zero-trust admin access:</strong> no admin port open to the internet, only Google's identity-checked tunnel with two-factor authentication.</li>
         <li><strong>Least privilege:</strong> read-only database access for the chat, one narrow function for placing orders, no database password to steal.</li>
         <li><strong>Monitoring:</strong> alerts when a defense fails, a spending threshold is crossed or a lockout happens, plus a daily security summary for the owner.</li>
-        <li><strong>Tested:</strong> automated tests prove the guardrails hold, and Cipher's 50 live attacks test them again every run.</li>
+        <li><strong>Tested:</strong> automated tests prove the guardrails hold, and Cipher's 100 live attacks test them again every run.</li>
+        <li><strong>Separate staging environment:</strong> every change is built, tested and attacked on its own server, database, secrets and AI budget, behind a Google login, before it reaches this site. Only code moves to production, never test data.</li>
         <li><strong>Supply-chain and code scanning:</strong> every change on GitHub is checked by CodeQL (security flaws in the code), secret scanning (no keys or passwords ever committed) and Dependabot (vulnerable or malicious libraries, with fixes proposed automatically).</li>
       </ul>
     </section>
@@ -224,7 +225,7 @@
         <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py">chat.py</a>: one chat message through every guardrail, in order</li>
         <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py">guardrails.py</a>: the prompt-injection shield and output masking</li>
         <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py">tools.py</a>: the only things Tucker can do, each authorized in code</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py">attacks.py</a>: Cipher's 50 attacks</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py">attacks.py</a>: Cipher's 100 attacks</li>
         <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py">soc.py</a>: the AI SOC and the code that checks its claims</li>
         <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests">tests</a>: the automated tests</li>
       </ul>
@@ -241,6 +242,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125f" defer></script>
+  <script src="assets/tour.js?v=20261127a" defer></script>
 </body>
 </html>

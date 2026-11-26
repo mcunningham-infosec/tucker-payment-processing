@@ -31,3 +31,6 @@ Apache only if its config test passes, refreshes the nightly timers and restarts
 | `status.sh` | One-screen health check of every service, updates, disk, certificate and the site | any time |
 | `build_policy_pages.py` | Builds the AI Policies pages from `policies/*.md` (a test keeps them in sync) | after editing a policy |
 | `build_scan_reports.py` | Builds the security scan PDFs from `docs/scans/<date>/results.json` | after a new scan |
+| `staging.md` | The staging environment: what's separate, the Google login in front, how to build and update it | reference |
+| `staging-setup.sh` | Builds the staging server from this repository on a fresh VM | once, on staging |
+| `apache-staging.conf` / `staging-robots.txt` | Staging-only Apache site: STAGING banner, search engines kept out | staging only |

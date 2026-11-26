@@ -1,0 +1,37 @@
+# Runs the full test suite on every push and pull request, against a throwaway PostgreSQL database
+# loaded with the same schema, least-privilege roles and fictional seed data as the live site.
+# No secrets are used: the AI is replaced by a scripted stand-in in every test.
+# Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
+name: tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust     # throwaway database inside the test job only
+          POSTGRES_DB: tucker
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://tucker_app@localhost:5432/tucker
+      STORE_DATABASE_URL: postgresql://tucker_store@localhost:5432/tucker
+      ADMIN_DATABASE_URL: postgresql://postgres@localhost:5432/tucker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Load the database
+        run: |
+          for f in schema roles seed; do psql -v ON_ERROR_STOP=1 -q -h localhost -U postgres -d tucker -f db/$f.sql; done
+      - name: Run the tests
+        run: python -m pytest -q

@@ -60,7 +60,7 @@ Evidence: `site/assets/chat.js`, `app/cipher/soc.py`, `deploy/apache-hardening.c
 The attack simulator and the AI SOC's incident reports label every AI attack with the 2026 numbers above. They were updated from the 2025 edition on November 24, 2026, less than four months after the new list was released. Each AI attack is also tagged with its MITRE ATLAS technique (for example AML.T0051.000, direct prompt injection), the adversary-technique catalog security operations teams use.
 
 ## The web application list too
-The attack simulator's 50 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code and written up by the AI SOC in a downloadable incident report.
+The attack simulator's 100 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code and written up by the AI SOC in a downloadable incident report.
 Evidence: `app/cipher/attacks.py`, `app/cipher/detect.py`, `app/cipher/runner.py`.
 
 ## Beyond the demo

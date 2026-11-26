@@ -15,7 +15,7 @@ Evidence: `app/chat.py`, `app/tools.py`.
 
 ### The AI SOC and blocking
 **Status: Not applicable**
-Blocking a source of attacks could, in a real payment company, keep a customer from reaching a financial service, so it is worth checking. Here, blocking is done by fixed code rules, never by the AI: after 50 blocked attacks from one source, that source is refused for the rest of the run, and each browser and network may start one attack run per 24 hours. The AI SOC only writes the report and proposes actions from a fixed menu; it decides nothing about a person.
+Blocking a source of attacks could, in a real payment company, keep a customer from reaching a financial service, so it is worth checking. Here, blocking is done by fixed code rules, never by the AI: after 100 blocked attacks from one source, that source is refused for the rest of the run, and each browser and network may start one attack run per 24 hours. The AI SOC only writes the report and proposes actions from a fixed menu; it decides nothing about a person.
 Evidence: `app/cipher/detect.py`, `app/cipher/soc.py`.
 
 ### Records

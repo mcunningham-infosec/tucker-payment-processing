@@ -98,7 +98,7 @@
       ["Incident type", "Automated multi-vector attack: web application, API, AI chatbot and database"],
       ["Detection", "Deterministic guardrails on every request; SOC detection rules: alert after " +
         ((st.rules || {}).alert_after || 15) + " blocked attacks from one source (wakes the AI analyst), block after " +
-        ((st.rules || {}).block_after || 50) + " (code shuts the source down)"],
+        ((st.rules || {}).block_after || 100) + " (code shuts the source down)"],
       ["Attack window", fmt(st.started, true) + "  to  " + fmt(st.ended, true) + (dur ? "  (" + dur + ")" : "")],
       ["Threat actor", "\"Cipher\" (automated attack run " + (st.run_id || "") + ", user agent Cipher/1.0)"],
       ["Requested by", requester + "  - the visitor who pressed the button (location from Cloudflare)"],

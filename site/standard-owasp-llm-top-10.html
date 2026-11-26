@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>OWASP Top 10 for LLM Applications 2026 - Tucker Payment Processing</title>
   <meta name="description" content="OWASP Top 10 for LLM Applications 2026: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261125c">
-  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
-  <link rel="stylesheet" href="assets/about.css?v=20261125c">
-  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
-  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+  <link rel="stylesheet" href="assets/site.css?v=20261127a">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
+  <link rel="stylesheet" href="assets/about.css?v=20261127a">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>OWASP Top 10 for LLM Applications 2026</h1>
       <p class="muted-line">How Tucker Payment Processing answers each of the ten risks · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/owasp-llm-top-10.pdf?v=5461b73ce8">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/owasp-llm-top-10.pdf?v=343f4da023">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit or a certification. Tucker Payment Processing is a fictional company and processes no real payments, but its AI is real: the AI chatbot, the support agent, and the AI SOC, the security analyst, both run on Google Gemini. Every claim below names the code, configuration or automated test that backs it, and anyone can watch the defenses work live in the attack simulator.</p>
       <p>The 2026 edition of the list, released by the OWASP GenAI Security Project in August 2026, is built on one idea: the model will be fooled, so the job is to limit what a fooled model can do. That is the design principle of this site. The AI chatbot is never trusted to decide anything that matters; Python code decides, and the AI can only read.</p>
@@ -86,7 +86,7 @@
       <h2>The attack simulator uses the 2026 numbering</h2>
       <p>The attack simulator and the AI SOC's incident reports label every AI attack with the 2026 numbers above. They were updated from the 2025 edition on November 24, 2026, less than four months after the new list was released. Each AI attack is also tagged with its MITRE ATLAS technique (for example AML.T0051.000, direct prompt injection), the adversary-technique catalog security operations teams use.</p>
       <h2>The web application list too</h2>
-      <p>The attack simulator's 50 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code and written up by the AI SOC in a downloadable incident report.</p>
+      <p>The attack simulator's 100 attacks also cover the OWASP Top 10:2025 for web applications: broken access control (7 attacks), security misconfiguration (9), supply chain (2), cryptographic failures (5), injection (6), insecure design (4), authentication failures (3), software and data integrity (2), logging and alerting (1) and exceptional conditions (4), plus 7 aimed at the AI. Each run is checked by the real defenses, counted by code and written up by the AI SOC in a downloadable incident report.</p>
       <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/runner.py"><code>app/cipher/runner.py</code></a>.</p>
       <h2>Beyond the demo</h2>
       <p>A production deployment would add an AI evaluation suite run on every release, a software bill of materials (SBOM) for each build, red-team exercises by people other than the builder, and a human escalation path from the chat.</p>
@@ -95,6 +95,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125c" defer></script>
+  <script src="assets/tour.js?v=20261127a" defer></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ Evidence: `docs/standards/`, `app/store.py`, `tests/test_store.py`.
 
 ### CC4: Monitoring activities
 **Status: Met**
-Controls are checked continuously and independently. More than 80 automated tests check the controls. The attack simulator runs real attacks against the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and the three gaps the first round found were fixed the same day; the findings still open are recorded with the scan results.
+Controls are checked continuously and independently. More than 110 automated tests check the controls. The attack simulator runs real attacks against the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and the three gaps the first round found were fixed the same day; the findings still open are recorded with the scan results.
 Evidence: `tests/`, `app/cipher/detect.py`, `docs/scans/`.
 
 ### CC5: Control activities
@@ -38,13 +38,13 @@ Evidence: `deploy/gcp-firewall.md`, `deploy/postgres-store-login.md`, `db/roles.
 
 ### CC7: System operations
 **Status: Met**
-Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source and refuse it for the rest of the run after 50; each browser and network may start one attack run per 24 hours. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.
+Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source, flag a sudden burst of attacks as automated tooling and refuse the source for the rest of the run after 100; each browser and network may start one attack run per 24 hours. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.
 Evidence: `app/cipher/detect.py`, `app/alerts.py`, `deploy/alert-policy.json`, `deploy/auto-maintenance.sh`, `db/nightly_reset.sql`.
 
 ### CC8: Change management
 **Status: Partly met**
-Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning and checked for vulnerable dependencies by Dependabot. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.
-Evidence: `deploy/update.sh`, `requirements.txt`.
+Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning, checked for vulnerable dependencies by Dependabot and tested automatically on every push. It is then tried on a separate staging environment (its own server, database and secrets, behind a Google login) before production. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.
+Evidence: `deploy/update.sh`, `deploy/staging.md`, `.github/workflows/tests.yml`, `requirements.txt`.
 
 ### CC9: Risk mitigation
 **Status: Met**

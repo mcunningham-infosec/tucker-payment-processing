@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>PCI DSS v4.0.1 - Tucker Payment Processing</title>
   <meta name="description" content="PCI DSS v4.0.1: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261125c">
-  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
-  <link rel="stylesheet" href="assets/about.css?v=20261125c">
-  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
-  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+  <link rel="stylesheet" href="assets/site.css?v=20261127a">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
+  <link rel="stylesheet" href="assets/about.css?v=20261127a">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>PCI DSS v4.0.1</h1>
       <p class="muted-line">How the store and support chat are built to the payment card industry&#x27;s security standard · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/pci-dss.pdf?v=1908e0ddb1">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/pci-dss.pdf?v=f99bab4671">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who has run PCI DSS programs in payments companies for about twenty years. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.</p>
       <p>The most important PCI decision is made before any control: keep card data out. A full card number is never typed into this site, never sent by a browser, never stored and never shown to the AI. Cards exist only as the last four digits and a random token standing in for a vaulted card, the way a merchant using a payment processor's tokenization works. That design shrinks the cardholder data environment to almost nothing, which is the cheapest and strongest PCI control there is.</p>
@@ -64,8 +64,8 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 6: Develop and maintain secure systems and software <span class="chip met">Met</span></h3>
-        <p>Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, runtime dependencies are pinned (one held to a major version), and more than 80 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only.</p>
-        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/store.py"><code>app/store.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_store.py"><code>tests/test_store.py</code></a>.</p>
+        <p>Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, runtime dependencies are pinned (one held to a major version), and more than 110 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only. Pre-production (requirements 6.5.3 to 6.5.6): changes are tested on a separate staging environment with its own server, database and secrets, behind a login only the owner can pass. It holds only fictional demo data and never real card numbers (there are none anywhere), and only code moves from staging to production, never test data.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/store.py"><code>app/store.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_store.py"><code>tests/test_store.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/staging.md"><code>deploy/staging.md</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 7: Restrict access by business need to know <span class="chip met">Met</span></h3>
         <p>Least privilege at every layer. The chat's database login can only read company data and write to its own logs. The store's login can call exactly one database function, which re-prices every order itself. The AI's tools only ever return the verified customer's own records, and each chat page gets only the tools it needs.</p>
@@ -83,7 +83,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/ops-agent-config.yaml"><code>deploy/ops-agent-config.yaml</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/logrotate-apache2"><code>deploy/logrotate-apache2</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 11: Test security of systems and networks regularly <span class="chip partly">Partly met</span></h3>
-        <p>Testing is frequent: the attack simulator runs 50 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.</p>
+        <p>Testing is frequent: the attack simulator runs 100 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 12: Support information security with policies and programs <span class="chip partly">Partly met</span></h3>
@@ -97,6 +97,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125c" defer></script>
+  <script src="assets/tour.js?v=20261127a" defer></script>
 </body>
 </html>

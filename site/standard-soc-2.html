@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>SOC 2 Trust Services Criteria - Tucker Payment Processing</title>
   <meta name="description" content="SOC 2 Trust Services Criteria: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261125c">
-  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
-  <link rel="stylesheet" href="assets/about.css?v=20261125c">
-  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
-  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+  <link rel="stylesheet" href="assets/site.css?v=20261127a">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
+  <link rel="stylesheet" href="assets/about.css?v=20261127a">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>SOC 2 Trust Services Criteria</h1>
       <p class="muted-line">How the site&#x27;s controls line up with the AICPA criteria a SOC 2 auditor tests · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">10 met</span> <span class="chip partly">3 partly met</span> <a class="scan-all" href="standards/soc-2.pdf?v=f72670243c">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">10 met</span> <span class="chip partly">3 partly met</span> <a class="scan-all" href="standards/soc-2.pdf?v=a37ac63065">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who has led a SOC 2 Type II audit. It is not a SOC 2 report: only an independent CPA firm can issue one. It works like a readiness review, describing the design of each control and the evidence an auditor would ask for. A Type II report would also test that the controls operated over a period of months, which a new demonstration site cannot show.</p>
       <p>The criteria are the AICPA's 2017 Trust Services Criteria (with the 2022 revised points of focus), the version auditors use today. In late 2026 the AICPA proposed updated criteria, including new attention to AI, for examinations starting on or after December 31, 2027. The common criteria (CC1 to CC9) make up the Security category every SOC 2 report covers; the other four categories are optional and are covered briefly at the end.</p>
@@ -56,7 +56,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/standards"><code>docs/standards/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/store.py"><code>app/store.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_store.py"><code>tests/test_store.py</code></a>.</p>
       </div>
       <div class="req"><h3>CC4: Monitoring activities <span class="chip met">Met</span></h3>
-        <p>Controls are checked continuously and independently. More than 80 automated tests check the controls. The attack simulator runs real attacks against the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and the three gaps the first round found were fixed the same day; the findings still open are recorded with the scan results.</p>
+        <p>Controls are checked continuously and independently. More than 110 automated tests check the controls. The attack simulator runs real attacks against the live site on demand and counts what the real defenses blocked. Five independent public scanners graded the site, and the three gaps the first round found were fixed the same day; the findings still open are recorded with the scan results.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/docs/scans"><code>docs/scans/</code></a>.</p>
       </div>
       <div class="req"><h3>CC5: Control activities <span class="chip met">Met</span></h3>
@@ -68,12 +68,12 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/gcp-firewall.md"><code>deploy/gcp-firewall.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/postgres-store-login.md"><code>deploy/postgres-store-login.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/roles.sql"><code>db/roles.sql</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>.</p>
       </div>
       <div class="req"><h3>CC7: System operations <span class="chip met">Met</span></h3>
-        <p>Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source and refuse it for the rest of the run after 50; each browser and network may start one attack run per 24 hours. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.</p>
+        <p>Detection: code rules watch attack traffic, alert after 15 blocked attacks from one source, flag a sudden burst of attacks as automated tooling and refuse the source for the rest of the run after 100; each browser and network may start one attack run per 24 hours. Real-time alerts reach the owner by email through Google Cloud Monitoring, at most once per day per kind so they stay meaningful. Response: the AI SOC writes an incident report for each attack run, and every real issue found is fixed and tested. Recovery: the server updates and restarts itself, and the demo data resets to a known state every night.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/alert-policy.json"><code>deploy/alert-policy.json</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/db/nightly_reset.sql"><code>db/nightly_reset.sql</code></a>.</p>
       </div>
       <div class="req"><h3>CC8: Change management <span class="chip partly">Partly met</span></h3>
-        <p>Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning and checked for vulnerable dependencies by Dependabot. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.</p>
-        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>.</p>
+        <p>Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning, checked for vulnerable dependencies by Dependabot and tested automatically on every push. It is then tried on a separate staging environment (its own server, database and secrets, behind a Google login) before production. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/staging.md"><code>deploy/staging.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/.github/workflows/tests.yml"><code>.github/workflows/tests.yml</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/requirements.txt"><code>requirements.txt</code></a>.</p>
       </div>
       <div class="req"><h3>CC9: Risk mitigation <span class="chip met">Met</span></h3>
         <p>Business disruption is limited: hard spend caps stop runaway AI cost, the site degrades gracefully when the AI is down or over budget, and Cloudflare absorbs attacks. Vendors are known and bounded: Google (model and hosting), Cloudflare (DNS, TLS and protection) and Resend (alert email). Each receives only what it needs.</p>
@@ -103,6 +103,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125c" defer></script>
+  <script src="assets/tour.js?v=20261127a" defer></script>
 </body>
 </html>

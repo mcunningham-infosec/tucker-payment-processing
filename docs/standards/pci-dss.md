@@ -33,8 +33,8 @@ Evidence: `deploy/auto-maintenance.sh`.
 
 ### Requirement 6: Develop and maintain secure systems and software
 **Status: Met**
-Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, runtime dependencies are pinned (one held to a major version), and more than 80 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only.
-Evidence: `requirements.txt`, `tests/`, `deploy/apache-hardening.conf`, `app/store.py`, `tests/test_store.py`.
+Secure development: every change on GitHub is scanned by CodeQL, secret scanning and Dependabot, runtime dependencies are pinned (one held to a major version), and more than 110 automated tests check the security behavior. Public-facing protection: Cloudflare's managed web application firewall sits in front of the site. Payment page scripts (requirement 6.4.3): the store and checkout pages run only the site's own scripts, enforced by a strict Content-Security-Policy, with no third-party code at all. Prices and totals are computed on the server only. Pre-production (requirements 6.5.3 to 6.5.6): changes are tested on a separate staging environment with its own server, database and secrets, behind a login only the owner can pass. It holds only fictional demo data and never real card numbers (there are none anywhere), and only code moves from staging to production, never test data.
+Evidence: `requirements.txt`, `tests/`, `deploy/apache-hardening.conf`, `app/store.py`, `tests/test_store.py`, `deploy/staging.md`.
 
 ### Requirement 7: Restrict access by business need to know
 **Status: Met**
@@ -57,7 +57,7 @@ Evidence: `app/report.py`, `app/alerts.py`, `deploy/ops-agent-config.yaml`, `dep
 
 ### Requirement 11: Test security of systems and networks regularly
 **Status: Partly met**
-Testing is frequent: the attack simulator runs 50 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.
+Testing is frequent: the attack simulator runs 100 real attacks against the live site, and five independent public scanners checked it on November 24, 2026. PCI requires more formal testing: quarterly external scans by an Approved Scanning Vendor (ASV), internal vulnerability scans, an annual penetration test by a qualified independent tester, and detection of unauthorized changes to payment pages (requirement 11.6.1). A real company would contract for those.
 Evidence: `app/cipher/attacks.py`, `docs/scans/`.
 
 ### Requirement 12: Support information security with policies and programs
