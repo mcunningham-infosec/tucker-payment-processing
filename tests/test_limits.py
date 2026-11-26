@@ -11,7 +11,8 @@ from app.config import SETTINGS
 from app.llm import FakeLLM, ModelTurn
 from app.session import Session
 
-DB = ["psql", "-q", "-v", "ON_ERROR_STOP=1", "host=/var/lib/postgresql port=5433 dbname=tucker user=postgres"]
+from conftest import ADMIN_URL  # noqa: E402
+DB = ["psql", "-q", "-v", "ON_ERROR_STOP=1", ADMIN_URL]
 
 
 def test_cart_is_capped_at_25_items():

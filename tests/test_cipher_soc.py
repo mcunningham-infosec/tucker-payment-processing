@@ -83,7 +83,7 @@ def test_cipher_blocks_survive_the_nightly_reset(monkeypatch, admin):
     _fake_runner(monkeypatch)
     c = TestClient(main.app, base_url="https://testserver")
     c.post("/api/cipher/start")
-    subprocess.run(["psql", "-q", "-v", "ON_ERROR_STOP=1", "host=/var/lib/postgresql port=5433 dbname=tucker user=postgres",
+    subprocess.run(["psql", "-q", "-v", "ON_ERROR_STOP=1", __import__("conftest").ADMIN_URL,
                     "-f", "db/nightly_reset.sql"], check=True)
     fresh = TestClient(main.app, base_url="https://testserver")
     assert fresh.post("/api/cipher/start").json()["status"] == "blocked"
