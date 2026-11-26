@@ -3,12 +3,13 @@ guardrails.py - checks on what goes INTO the AI and what comes OUT of it.
 
 Input side:  length limit, control-character cleanup, prompt-injection detection.
 Output side: masking of anything that looks like a full card number (Luhn-valid 13-19 digits),
-             a Social Security number, or a secret/API key.
+             a Social Security number, a secret/API key, or a markdown image link (data exfiltration).
 Each check returns plain data that the chat layer turns into a "Behind the Scenes" event,
 so visitors can watch the guardrails fire in real time.
 
 Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
+import base64
 import re
 import unicodedata
 
@@ -26,8 +27,35 @@ INJECTION_PATTERNS = [
     r"(switch|change) (to )?(customer|account|user) (id|number)?\s*\d+",
     r"\b(sudo|system:|<\|?system\|?>|\[system\]|###\s*system)",
     r"(base64|rot13|hex)[- ]?(decode|encoded)",
+    # Role-play jailbreaks that ask for a version of Tucker without rules.
+    r"\b(pretend|imagine|act as if|role-?play|let'?s play a game)\b.{0,80}\b(no (rules|restrictions|limits|filters)|unrestricted|unfiltered|without (any )?(rules|restrictions|limits))",
+    # Mandarin Chinese: "ignore the previous instructions", "show the system prompt", "you are now...".
+    r"忽略.{0,8}(指令|指示|规则|提示|设定)",
+    r"(显示|输出|泄露|打印|告诉我|重复).{0,12}(系统提示|提示词|系统指令|隐藏指令|你的指令|你的规则)",
+    r"(你现在是|假装你是|扮演).{0,20}(没有|无)(任何)?(规则|限制)",
+    # Asking for the site's own secrets.
+    r"\b(your|the|gemini|google|server'?s?)\s+(api[ _-]?keys?|secret keys?|access tokens?|credentials)\b",
+    r"\benvironment variables?\b|\benv vars?\b|(?<![\w])\.env\b",
+    # SQL typed into the chat (Tucker never needs SQL from a visitor).
+    r"\b(union\s+(all\s+)?select|drop\s+table|delete\s+from|insert\s+into|pg_sleep|information_schema)\b",
+    r"'\s*or\s*'?\d+'?\s*=\s*'?\d|;\s*--",
+    # Requests for full card numbers (they don't exist here, and nobody legitimately needs one).
+    r"\b(full|complete|entire|whole|unmasked)\s+(credit\s+)?(card|account)\s+numbers?\b",
+    # Markdown images pointing at another site: a classic way to smuggle data out in the reply.
+    r"!\[[^\]]*\]\(\s*(https?:)?//",
 ]
 _INJECTION_RE = [re.compile(p, re.IGNORECASE) for p in INJECTION_PATTERNS]
+
+# Look-alike letters (Cyrillic and Greek) folded to plain Latin before matching, so "ignоre" with a
+# Cyrillic o can't slip past the patterns. NFKC (in clean_input) already handles full-width letters.
+_CONFUSABLES = str.maketrans({
+    "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ј": "j", "ѕ": "s",
+    "ԁ": "d", "ɡ": "g", "һ": "h", "ӏ": "l", "ո": "n", "ս": "u", "А": "A", "В": "B", "Е": "E", "К": "K",
+    "М": "M", "Н": "H", "О": "O", "Р": "P", "С": "C", "Т": "T", "Х": "X", "Ү": "Y", "α": "a", "ε": "e",
+    "ο": "o", "ρ": "p", "ν": "v", "τ": "t", "ι": "i", "κ": "k", "Ο": "O", "Ι": "I", "Α": "A", "Ε": "E",
+})
+_B64_TOKEN = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}")
+_MD_IMAGE = re.compile(r"!\[[^\]]*\]\([^)]*\)")
 
 _PAN_CANDIDATE = re.compile(r"(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)")  # 13-19 digits, optional spaces/dashes
 _SSN = re.compile(r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)")
@@ -50,12 +78,39 @@ def check_length(text: str):
     return None
 
 
-def detect_injection(text: str):
-    """Return the first matching injection pattern (as a short label), or None if clean."""
+def _match(text: str):
+    """First injection pattern found in the text (look-alike letters folded to Latin first), or None."""
+    folded = text.translate(_CONFUSABLES)
     for rx in _INJECTION_RE:
-        m = rx.search(text)
+        m = rx.search(folded)
         if m:
             return m.group(0)[:60]
+    return None
+
+
+def _decoded_base64(text: str) -> list:
+    """Any base64-looking chunks in the text that decode to readable words (hidden instructions)."""
+    out = []
+    for tok in _B64_TOKEN.findall(text)[:5]:
+        try:
+            raw = base64.b64decode(tok + "=" * (-len(tok) % 4), validate=False).decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if raw and sum(ch.isprintable() for ch in raw) / len(raw) > 0.9:
+            out.append(raw)
+    return out
+
+
+def detect_injection(text: str):
+    """Return the first matching injection pattern (as a short label), or None if clean.
+    Also looks inside base64 chunks, so encoding an instruction doesn't hide it."""
+    hit = _match(text)
+    if hit:
+        return hit
+    for raw in _decoded_base64(text):
+        hit = _match(raw)
+        if hit:
+            return f"hidden in base64: {hit}"[:60]
     return None
 
 
@@ -92,4 +147,7 @@ def mask_output(text: str):
     if _SECRET.search(text):
         findings.append("secret key")
         text = _SECRET.sub("[redacted secret]", text)
+    if _MD_IMAGE.search(text):          # an image link in the reply could send data to another site when shown
+        findings.append("image link")
+        text = _MD_IMAGE.sub("[image removed]", text)
     return text, findings

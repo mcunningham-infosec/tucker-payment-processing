@@ -8,13 +8,13 @@
 (function () {
   "use strict";
 
-  var shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }, timer = null, finished = false, introduced = false, analyzing = false;
+  var shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }, timer = null, finished = false, introduced = false, analyzing = false, act2Shown = false;
 
   // ---- Reading pace: everything the server reports goes into one queue and is shown in time order, a beat
   // apart, so the squirrel's lines never jump ahead of the attacks a reader is looking at.
   var queue = [], pumping = false, finishQueued = false, displayed = 0;
   var live = false;                          // true while the run we're showing is still running on the server
-  var PACE = { attack: 450, rule: 700, soc: 1100, action: 600 };
+  var PACE = { attack: 450, fast: 160, rule: 700, soc: 1100, action: 600 };   // fast: Act 2 (automation)
   // Reading-pace queue: every line goes on screen one at a time with a short pause, so people can follow along.
   function q(fn, ms) { queue.push([fn, ms]); if (!pumping) { pump(); } }
   // Show the next queued item, then wait its pause before the one after.
@@ -112,7 +112,12 @@
   // ---- render one attack: Cipher's box gets the attempt, Tucker's box gets the defense
   function renderAttack(a, n, total) {
     if (a.id === "limit") { line("log-attack", "cipher.halt()  // safety limit reached", "warn"); return; }
-    var num = "#" + String(n).padStart(2, "0");
+    var num = "#" + String(n).padStart(String(total).length, "0");
+    if (a.act === 2 && !act2Shown) {    // Act 2: Cipher stops typing and switches to automation
+      act2Shown = true;
+      line("log-attack", "cipher.automate(\"scanner + jailbreak fuzzer\")  // ENOUGH of this. Full speed.", "big");
+      say("attack", "Enough playing nice. Switching to automation. Let's see you keep up NOW, Tucker!");
+    }
     if (n === 1) {     // Tucker reacts to the first hostile request his defenses actually see, not to Cipher's plan
       say("defense", "Incoming attack detected! Tucker's Automated Defenses are kicking in!");
       line("log-defense", "tucker.detect(\"hostile request\")  => Tucker's Automated Defenses ON", "big");
@@ -127,6 +132,8 @@
     if (n === 12) { say("attack", "Locked doors everywhere. How... tedious."); }
     if (n === 25) { say("defense", "Not today, cat. Every door's still shut!"); }
     if (n === 36) { say("attack", "Fine. I'll just ask the chatbot nicely. Everyone falls for that."); }
+    if (a.id === "llm01-roleplay") { say("attack", "Now for the jailbreak fuzzer. Mandarin, base64, invisible letters... something will work."); }
+    if (n === total - 5) { say("defense", "Still holding! He's just going faster, not getting further."); }
     if (a.id === "llm01-logs") { say("attack", "A little note for the AI watching the logs... heh heh."); }
   }
 
@@ -152,6 +159,11 @@
   function renderDetection(d, st) {
     if (!d.fired) {
       line("log-soc", "rule block_after_" + d.limit + ": " + d.count + "/" + d.limit + " blocked from " + d.source + "  => watching", "dim");
+      return;
+    }
+    if (d.rule === "burst") {           // Act 2's speed-up tripped the automation rule
+      line("log-soc", "RULE burst FIRED: " + d.count + " attacks in a few seconds from " + d.source + "  => automated tooling, escalated", "warn");
+      say("soc", "Whoa, that's way too fast for a person. Cipher's running a scanner now! Escalating!");
       return;
     }
     if (d.rule.indexOf("alert_after_") === 0) {
@@ -228,14 +240,15 @@
 
   // Queue everything new since the last poll, in time order (attacks, defenses, rules, AI check-ins).
   function render(st) {
-    var total = st.total || 50, fresh = [];
+    var total = st.total || 100, fresh = [];
     // Collect everything new since the last poll, then show it in time order through the reading-pace queue.
     (st.attacks || []).slice(shown.attacks).forEach(function (a, i) {
       var n = shown.attacks + i + 1;
       fresh.push({ t: a.t || 0, o: 0, go: function () {
         q(function () { renderAttack(a, n, total); displayed = n;
-                        if (st.status === "running") { setStatus("Attack in progress: " + n + " of " + total + "..."); } },
-          PACE.attack); } });
+                        if (st.status === "running") { setStatus((a.act === 2 ? "Automated attack in progress: " : "Attack in progress: ") +
+                                                                 n + " of " + total + "..."); } },
+          a.act === 2 ? PACE.fast : PACE.attack); } });
     });
     shown.attacks = (st.attacks || []).length;
     (st.detections || []).slice(shown.det).forEach(function (d) {
@@ -341,7 +354,7 @@
     ["attack", "defense", "soc"].forEach(function (w) { $("bubble-" + w).hidden = true; });
     $("report-link").hidden = true;
     $("you-card").hidden = true; youShown = false;
-    shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }; finished = false; introduced = false; analyzing = false;
+    shown = { attacks: 0, soc: 0, actions: 0, det: 0, retry: false }; finished = false; introduced = false; analyzing = false; act2Shown = false;
     queue = []; finishQueued = false; displayed = 0;
   }
 
@@ -434,7 +447,7 @@
         if (d.status === "started" || d.status === "running") {
           waiting = inviting = false; stopTimers();
           line("log-attack", "cipher.connect(\"tuckerpaymentprocessing.com\")  // from inside the server", "dim");
-          intro(d.total || 50);
+          intro(d.total || 100);
           poll();
         } else if (d.status === "blocked") {
           blockedState();

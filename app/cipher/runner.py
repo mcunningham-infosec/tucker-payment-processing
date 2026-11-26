@@ -13,21 +13,22 @@ import time
 
 from .. import cipher
 from . import detect
-from .attacks import ATLAS, ATTACKS, OWASP, Outcome, Probe
+from .attacks import ACT2_START, ATLAS, ATTACKS, OWASP, Outcome, Probe
 
 TARGET = os.environ.get("CIPHER_TARGET", "https://127.0.0.1")          # Apache on this server's own address
 HOST = os.environ.get("CIPHER_HOST", "tuckerpaymentprocessing.com")
 REPO = os.environ.get("CIPHER_REPO", "/opt/tucker")
-PACE_SECONDS = float(os.environ.get("CIPHER_PACE", "1.8"))             # a beat between attacks so people can read along
+PACE_SECONDS = float(os.environ.get("CIPHER_PACE", "1.4"))             # Act 1: a beat between attacks so people can read along
+FAST_PACE_SECONDS = float(os.environ.get("CIPHER_FAST_PACE", "0.3"))   # Act 2: Cipher switches to automation
 MAX_SECONDS = 300
-MAX_REQUESTS = 200
+MAX_REQUESTS = 350
 KEEP_SECONDS = 3600
 
 _RUNS: dict = {}                    # run id -> live state the Lair page polls (memory only, kept one hour)
 _ACTIVE = threading.Lock()          # held while a run is in progress: only one attack run at a time, site-wide
 _CURRENT = {"started": 0.0}         # when the run in progress began (for the wait estimate other visitors see)
 _RECENT: list = []                  # how long the last few runs took, in seconds
-TYPICAL_SECONDS = 160               # a full run's usual length before any have been timed
+TYPICAL_SECONDS = 200               # a full run's usual length before any have been timed
 
 
 def _tidy():
@@ -86,7 +87,10 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
     try:
         probe = Probe(TARGET, HOST, token, cipher.HEADER)
         investigation = None
-        for a in ATTACKS:
+        for i, a in enumerate(ATTACKS):
+            if i == ACT2_START:                          # Act 2: Cipher switches to automation and speeds up
+                st["act"] = 2
+                st["act2_at"] = time.time()
             if time.time() - st["started"] > MAX_SECONDS or probe.requests > MAX_REQUESTS:
                 st["attacks"].append({"id": "limit", "owasp": "", "title": "Run stopped at its safety limit",
                                       "says": "", "defense": "", "held": True, "check": True, "evidence": ""})
@@ -99,7 +103,7 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
             rec = {"id": a.id, "owasp": a.owasp, "category": OWASP.get(a.owasp, a.owasp), "atlas": ATLAS.get(a.id, ""),
                                   "title": a.title, "says": a.says, "defense": a.defense, "held": out.held,
                                   "check": out.check, "evidence": out.evidence, "ai_calls": out.ai_calls,
-                                  "t": t0, "ms": int((time.time() - t0) * 1000)}
+                                  "act": a.act, "t": t0, "ms": int((time.time() - t0) * 1000)}
             st["attacks"].append(rec)
             fired = detect.observe(st, rec)              # detection rules count what the defenses really did
             if "alert" in fired and on_alert:          # the AI investigates in parallel; Cipher keeps attacking
@@ -118,7 +122,7 @@ def _run(run_id, token, on_alert, on_block, on_done, pace):
                 except Exception as e:
                     st["retry"] = {"t": time.time(), "status": 0, "held": None, "evidence": type(e).__name__}
                 break
-            time.sleep(pace)
+            time.sleep(pace if a.act == 1 else min(pace, FAST_PACE_SECONDS))
         if investigation:                              # final report comes after the alert investigation
             investigation.join(timeout=60)
         done = [x for x in st["attacks"] if x["id"] != "limit"]

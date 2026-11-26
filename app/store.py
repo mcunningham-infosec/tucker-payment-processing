@@ -58,7 +58,7 @@ def _clean_items(raw_items, events):
         sku = str(item.get("sku", ""))[:20]
         try:
             qty = int(item.get("qty", 0))
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):   # OverflowError: qty = 1e309 (infinity). Found by Cipher.
             qty = 0
         if qty < 1:
             continue
