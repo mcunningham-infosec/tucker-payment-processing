@@ -254,7 +254,8 @@ def setup(get_llm, client_ip, cookie_name, set_cookie):
                                        "visitor", "blocked_for_24h", "started", "ended",
                                        "detections", "blocked_count", "blocked_source", "retry")}
         out["turnstile_sitekey"] = _turnstile_keys()[0]
-        out["rules"] = {"alert_after": detect.ALERT_AFTER, "block_after": detect.BLOCK_AFTER}
+        out["rules"] = {"alert_after": detect.ALERT_AFTER, "block_after": detect.BLOCK_AFTER,
+                        "burst_count": detect.BURST_COUNT, "burst_seconds": detect.BURST_SECONDS}
         out["attacks"] = [_safe_attack(a) for a in out.get("attacks") or []]
         out["soc"] = [_safe_soc(c) for c in out.get("soc") or []]
         out["actions"] = [{**x, "detail": defang(x.get("detail", ""))} for x in out.get("actions") or []]
