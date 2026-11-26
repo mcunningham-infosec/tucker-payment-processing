@@ -84,7 +84,7 @@ Google Cloud (Compute Engine, Identity-Aware Proxy, Cloud Monitoring) · Ubuntu 
 PostgreSQL · Google Gemini · Cloudflare · Let's Encrypt · Resend (email) · pdfmake · ReportLab.
 
 ## Who built it
-**Michael Cunningham**, information security leader (25+ years in payments, PCI and cloud security), designed and built
+**Michael Cunningham**, information security leader (20+ years in payments, PCI and cloud security), designed and built
 this site with AI-assisted development. LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
 
 All names, customers, cards and data on the site are fictional. Tucker is Michael's real cocker spaniel and Cipher is his real cat.
