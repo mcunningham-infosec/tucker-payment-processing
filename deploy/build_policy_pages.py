@@ -31,7 +31,7 @@ ORDER = [
     ("ai-assistant-policy", "policy-ai-assistant", "What Tucker, our AI assistant, may and may not do, and the guardrails around him."),
     ("card-security-and-privacy", "policy-card-security", "How card data is protected, and what support will never ask you for."),
     ("refunds-and-disputes", "policy-refunds-disputes", "Refunds, disputes and declined transactions."),
-    ("data-retention", "policy-data-retention", "What the site keeps, for how long, and the cookies it uses."),
+    ("data-retention", "policy-data-retention", "What the site keeps, for how long and the cookies it uses."),
 ]
 
 

@@ -8,12 +8,12 @@ The criteria are the AICPA's 2017 Trust Services Criteria (with the 2022 revised
 ## Security: the common criteria
 ### CC1: Control environment
 **Status: Partly met**
-Integrity and accountability are set from the top: one named owner is responsible for the site, the policies are published, and the code is open for anyone to inspect. What one person cannot show: board oversight, separation of duties, background checks and an org chart, which an auditor would test in a real company.
+Integrity and accountability are set from the top: one named owner is responsible for the site, the policies are published and the code is open for anyone to inspect. What one person cannot show: board oversight, separation of duties, background checks and an org chart, which an auditor would test in a real company.
 Evidence: `README.md`, `policies/`.
 
 ### CC2: Communication and information
 **Status: Met**
-Information about the system is documented and shared. Inside: deployment and configuration guides, design notes in the code, and a nightly security report to the owner. Outside: the AI Policies, the About page, the security scorecard, the privacy notes and a published way to report vulnerabilities (SECURITY.md and security.txt).
+Information about the system is documented and shared. Inside: deployment and configuration guides, design notes in the code and a nightly security report to the owner. Outside: the AI Policies, the About page, the security scorecard, the privacy notes and a published way to report vulnerabilities (SECURITY.md and security.txt).
 Evidence: `deploy/README.md`, `app/report.py`, `site/about.html`, `SECURITY.md`.
 
 ### CC3: Risk assessment
@@ -43,7 +43,7 @@ Evidence: `app/cipher/detect.py`, `app/alerts.py`, `deploy/alert-policy.json`, `
 
 ### CC8: Change management
 **Status: Partly met**
-Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning, and checked for vulnerable dependencies by Dependabot. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.
+Every change goes through GitHub, where it is recorded, scanned by CodeQL and secret scanning and checked for vulnerable dependencies by Dependabot. Deployment is one scripted command that pulls the reviewed code and restarts the app only when the app itself changed, waiting for any attack run in progress to finish first. The gap is independence: the builder also approves and deploys. An auditor would expect a second reviewer to approve changes before release.
 Evidence: `deploy/update.sh`, `requirements.txt`.
 
 ### CC9: Risk mitigation
@@ -54,7 +54,7 @@ Evidence: `app/spend.py`, `app/chat.py`, `site/about.html`.
 ## The optional categories
 ### Availability
 **Status: Partly met**
-Services start on boot and come back on their own after updates, Cloudflare absorbs traffic floods, and limits stop any one visitor from exhausting the AI budget. There is one server and no failover or backup site, which is acceptable for a demo but would not meet a commitment to customers.
+Services start on boot and come back on their own after updates, Cloudflare absorbs traffic floods and limits stop any one visitor from exhausting the AI budget. There is one server and no failover or backup site, which is acceptable for a demo but would not meet a commitment to customers.
 Evidence: `deploy/auto-maintenance.sh`, `app/limits.py`.
 
 ### Processing integrity

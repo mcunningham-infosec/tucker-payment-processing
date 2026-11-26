@@ -10,7 +10,7 @@ Please report privately through GitHub: **Security → Report a vulnerability**
 (https://github.com/mcunningham-infosec/tucker-payment-processing/security/advisories/new).
 Please don't open a public issue for a security problem.
 
-Helpful details: what you found, where (page, API path or file), how to reproduce it, and what an attacker
+Helpful details: what you found, where (page, API path or file), how to reproduce it and what an attacker
 could do with it. You'll get an acknowledgement, and fixes are credited in the commit history if you'd like.
 
 ## Scope
@@ -18,7 +18,7 @@ could do with it. You'll get an acknowledgement, and fixes are credited in the c
 In scope: the website and its API, the AI guardrails around Tucker and the AI SOC Squirrel (including prompt
 injection that gets around them), and the code and server configuration in this repository.
 
-Out of scope: denial of service and volume testing, social engineering, and third-party services
+Out of scope: denial of service and volume testing, social engineering and third-party services
 (Cloudflare, Google Cloud, Google Gemini) themselves.
 
 ## Testing

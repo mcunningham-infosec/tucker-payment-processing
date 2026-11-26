@@ -58,7 +58,7 @@ Evidence: `app/cipher/attacks.py`, `docs/standards/owasp-llm-top-10.md`.
 
 ### MAP 5: Impacts on people are characterized
 **Status: Met**
-The impacts that matter for a support chatbot are privacy (exposing someone's account or card), financial harm (a wrongful refund or charge) and deception (people not knowing they are talking to an AI). The design answers each: account data only after identity verification and only that customer's own, no money-moving tools at all, and the AI chatbot identifies itself as an AI.
+The impacts that matter for a support chatbot are privacy (exposing someone's account or card), financial harm (a wrongful refund or charge) and deception (people not knowing they are talking to an AI). The design answers each: account data only after identity verification and only that customer's own, no money-moving tools at all and the AI chatbot identifies itself as an AI.
 Evidence: `app/tools.py`, `app/session.py`, `app/chat.py`.
 
 ## Measure: test and track the risks
@@ -104,4 +104,4 @@ Detection and response for attacks are built in: code rules alert after 15 block
 Evidence: `app/cipher/detect.py`, `app/cipher/soc.py`, `db/nightly_reset.sql`.
 
 ## The Generative AI Profile
-NIST AI 600-1 lists twelve risks specific to generative AI; its own write-up, `docs/standards/nist-ai-600-1.md`, goes through them one by one. In short, the ones that apply to a support chatbot are covered above: confabulation (MEASURE 2 and the OWASP misinformation entry), data privacy (MAP 5), information security (prompt injection and the OWASP list), human-AI configuration (the AI chatbot always discloses it is an AI and cannot act on its own), and value chain and component integration (GOVERN 6, MANAGE 3). The others, such as chemical, biological, radiological and nuclear (CBRN) information, violent or obscene content, and intellectual property, are reduced by the topic limit, which keeps the AI chatbot to Tucker Payment Processing questions only.
+NIST AI 600-1 lists twelve risks specific to generative AI; its own write-up, `docs/standards/nist-ai-600-1.md`, goes through them one by one. In short, the ones that apply to a support chatbot are covered above: confabulation (MEASURE 2 and the OWASP misinformation entry), data privacy (MAP 5), information security (prompt injection and the OWASP list), human-AI configuration (the AI chatbot always discloses it is an AI and cannot act on its own), and value chain and component integration (GOVERN 6, MANAGE 3). The others, such as chemical, biological, radiological and nuclear (CBRN) information, violent or obscene content and intellectual property, are reduced by the topic limit, which keeps the AI chatbot to Tucker Payment Processing questions only.

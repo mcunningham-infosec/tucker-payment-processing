@@ -38,17 +38,17 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>ISO/IEC 23894:2023 AI Risk Management</h1>
       <p class="muted-line">How AI risk is identified, analyzed, treated and monitored for the AI chatbot and the AI SOC · Self-assessment · November 25, 2026</p>
-      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/iso-23894.pdf?v=b9fc4f020c">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/iso-23894.pdf?v=34a4df2dbb">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. ISO/IEC 23894:2023 is guidance, not a certifiable standard: it adapts ISO 31000, the general risk management standard, to artificial intelligence. Within the ISO AI family it is the "how" of risk: ISO/IEC 42001 requires an organization to assess and treat AI risks, ISO/IEC 23894 describes how to do that well, and ISO/IEC 42005 covers the impact assessment. All three are written up on this site.</p>
-      <p>Below, the site is mapped to the standard's risk management framework, its risk process, and the AI-specific risk sources it lists.</p>
+      <p>Below, the site is mapped to the standard's risk management framework, its risk process and the AI-specific risk sources it lists.</p>
       <h2>The framework</h2>
       <div class="req"><h3>Leadership, commitment and integration <span class="chip met">Met</span></h3>
         <p>AI risk is owned at the top: the owner wrote the AI policy before the AI was built, approved every risk decision and receives every alert and nightly report. Risk management is built into how the site is made rather than bolted on: every AI feature ships with its controls, its tests and its write-up together.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>.</p>
       </div>
       <div class="req"><h3>Roles, resources and design <span class="chip partly">Partly met</span></h3>
-        <p>For a one-person company the roles are simple, and the resources are explicit and capped: one server, a fixed AI budget, and limits on every visitor and network. A larger organization would separate the risk owner from the builder, name a second line of defense to challenge decisions, and fund the program in its own right.</p>
+        <p>For a one-person company the roles are simple, and the resources are explicit and capped: one server, a fixed AI budget and limits on every visitor and network. A larger organization would separate the risk owner from the builder, name a second line of defense to challenge decisions, and fund the program in its own right.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>.</p>
       </div>
       <div class="req"><h3>Evaluation and continual improvement <span class="chip met">Met</span></h3>

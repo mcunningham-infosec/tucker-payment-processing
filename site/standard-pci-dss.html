@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>PCI DSS v4.0.1</h1>
       <p class="muted-line">How the store and support chat are built to the payment card industry&#x27;s security standard · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/pci-dss.pdf?v=bca94fea08">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/pci-dss.pdf?v=1908e0ddb1">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who has run PCI DSS programs in payments companies for about twenty years. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.</p>
       <p>The most important PCI decision is made before any control: keep card data out. A full card number is never typed into this site, never sent by a browser, never stored and never shown to the AI. Cards exist only as the last four digits and a random token standing in for a vaulted card, the way a merchant using a payment processor's tokenization works. That design shrinks the cardholder data environment to almost nothing, which is the cheapest and strongest PCI control there is.</p>
@@ -48,7 +48,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/gcp-firewall.md"><code>deploy/gcp-firewall.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 2: Apply secure configurations to all system components <span class="chip met">Met</span></h3>
-        <p>The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files, and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and the attack simulator checks these settings on every run.</p>
+        <p>The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and the attack simulator checks these settings on every run.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/main.py"><code>app/main.py</code></a>; the attack simulator's nine security misconfiguration attacks.</p>
       </div>
       <div class="req"><h3>Requirement 3: Protect stored account data <span class="chip met">Met</span></h3>
@@ -60,7 +60,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/apache-hardening.conf"><code>deploy/apache-hardening.conf</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/dns.md"><code>deploy/dns.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/scans/2026-11-24/results.json"><code>docs/scans/2026-11-24/results.json</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 5: Protect all systems and networks from malicious software <span class="chip partly">Partly met</span></h3>
-        <p>The server installs operating system security updates automatically every day, fail2ban blocks repeated attacks, and nothing on the site accepts file uploads. No anti-malware software runs on the Linux server. PCI allows that for systems not commonly affected by malware, but only with a documented, periodic evaluation (requirement 5.2.3), which a real company would keep on file.</p>
+        <p>The server installs operating system security updates automatically every day, fail2ban blocks repeated attacks and nothing on the site accepts file uploads. No anti-malware software runs on the Linux server. PCI allows that for systems not commonly affected by malware, but only with a documented, periodic evaluation (requirement 5.2.3), which a real company would keep on file.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/auto-maintenance.sh"><code>deploy/auto-maintenance.sh</code></a>.</p>
       </div>
       <div class="req"><h3>Requirement 6: Develop and maintain secure systems and software <span class="chip met">Met</span></h3>

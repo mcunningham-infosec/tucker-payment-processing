@@ -36,7 +36,7 @@ Evidence: `app/chat.py`, `app/guardrails.py`.
 
 ### Not implying professional services
 **Status: Met**
-Operators may not imply that the chatbot's output is equivalent to advice from a licensed professional. The AI chatbot discusses only the company's own accounts, orders and policies, declines opinions and other topics, and sends account changes and disputes to the right team.
+Operators may not imply that the chatbot's output is equivalent to advice from a licensed professional. The AI chatbot discusses only the company's own accounts, orders and policies, declines opinions and other topics and sends account changes and disputes to the right team.
 Evidence: `app/chat.py`, `policies/ai-assistant-policy.md`.
 
 ### Protections for minors

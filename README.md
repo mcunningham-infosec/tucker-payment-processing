@@ -3,11 +3,11 @@
 **Live site:** https://tuckerpaymentprocessing.com · **Site scorecard:** [third-party security scans](https://tuckerpaymentprocessing.com/about.html#scans)
 
 Tucker Payment Processing is a **fictional** payment company with **real** AI. It shows how a customer-facing AI should
-be governed and secured: what it is allowed to do, what it is never allowed to do, and how every guardrail can be
+be governed and secured: what it is allowed to do, what it is never allowed to do and how every guardrail can be
 watched in real time. Nothing on the site is faked: the chats, the store orders, the attacks and the security
 monitoring all run live against the real server.
 
-Designed and built by **Michael Cunningham** with AI-assisted development, from concept to production in under a week.
+Designed and built by **Michael Cunningham** with AI-assisted development, from concept to production in under a month.
 
 ## What you can do on the site
 | Page | What happens |
@@ -91,7 +91,7 @@ All names, customers, cards and data on the site are fictional. Tucker is Michae
 
 ## License and ownership
 © 2026 Michael Cunningham. **All rights reserved.** The code is public so it can be read, reviewed and learned from:
-you're welcome to study it and to run it privately to understand how it works. Copying it, hosting it, or presenting
+you're welcome to study it and to run it privately to understand how it works. Copying it, hosting it or presenting
 it (or something substantially based on it) as your own work requires written permission. The names Tucker Payment
 Processing, Tucker, Cipher and the AI SOC Squirrel, and all artwork and images, are part of the work and are not
 licensed for reuse. See [LICENSE](LICENSE).

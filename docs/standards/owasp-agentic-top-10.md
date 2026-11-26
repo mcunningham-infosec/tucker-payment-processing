@@ -23,7 +23,7 @@ Evidence: `app/session.py`, `app/tools.py`, `db/roles.sql`, `deploy/postgres-sto
 
 ### ASI04 Agentic Supply Chain Vulnerabilities
 **Status: Met**
-No third-party plugins, tool servers or downloaded agents are used. Every tool is a short Python function in this repository, reviewed and tested like the rest of the code. The model comes from Google through its official SDK, the instructions are in version control, and Python dependencies are pinned (one held to a major version) and watched by Dependabot, with CodeQL and secret scanning on every change.
+No third-party plugins, tool servers or downloaded agents are used. Every tool is a short Python function in this repository, reviewed and tested like the rest of the code. The model comes from Google through its official SDK, the instructions are in version control and Python dependencies are pinned (one held to a major version) and watched by Dependabot, with CodeQL and secret scanning on every change.
 Evidence: `app/tools.py`, `app/llm.py`, `requirements.txt`.
 
 ### ASI05 Unexpected Code Execution
@@ -53,7 +53,7 @@ Evidence: `app/chat.py`, `app/guardrails.py`, `site/index.html`.
 
 ### ASI10 Rogue Agents
 **Status: Met**
-A compromised or misbehaving agent has no way to act on its own: it runs only when a visitor asks something or an attack run wakes it, it cannot schedule itself, and every action is code's decision. Its activity is counted in the owner's nightly report and real-time alerts. And there are kill switches: the attack simulator turns off with one setting, the spend caps stop all AI use, and the model can be swapped or disabled in one place.
+A compromised or misbehaving agent has no way to act on its own: it runs only when a visitor asks something or an attack run wakes it, it cannot schedule itself and every action is code's decision. Its activity is counted in the owner's nightly report and real-time alerts. And there are kill switches: the attack simulator turns off with one setting, the spend caps stop all AI use, and the model can be swapped or disabled in one place.
 Evidence: `app/cipher/api.py`, `app/spend.py`, `app/config.py`, `app/report.py`, `app/alerts.py`.
 
 ## The same attacks in MITRE ATLAS

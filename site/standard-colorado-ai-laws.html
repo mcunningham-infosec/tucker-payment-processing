@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>Colorado AI laws: SB 26-189 and HB 26-1263</h1>
       <p class="muted-line">Colorado&#x27;s automated decision law, which replaced the Colorado AI Act, and its new chatbot law · Self-assessment · November 25, 2026</p>
-      <p class="std-summary"><span class="chip met">2 met</span> <span class="chip partly">3 partly met</span> <span class="chip na">3 not applicable</span> <a class="scan-all" href="standards/colorado-ai-laws.pdf?v=70e453ad94">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">2 met</span> <span class="chip partly">3 partly met</span> <span class="chip na">3 not applicable</span> <a class="scan-all" href="standards/colorado-ai-laws.pdf?v=a8124aa9c6">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not legal advice. Tucker Payment Processing is fictional and has no Colorado customers; as with the EU AI Act write-up, the useful question is what these laws would require of a real payment company running this same chatbot for people in Colorado, and whether the design already meets it.</p>
       <p>Colorado passed the first broad US state AI law in 2024, the Colorado AI Act (SB 24-205). It never took effect. On May 14, 2026, Colorado repealed and replaced it with SB 26-189, a narrower law about automated decision-making technology used in consequential decisions, including access to financial and lending services. Its duties begin on January 1, 2027, and the attorney general is writing the rules. The old law's broad duty of care against algorithmic discrimination, and its safe harbor for following the NIST AI RMF or ISO/IEC 42001, are gone.</p>
@@ -67,7 +67,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py"><code>app/guardrails.py</code></a>.</p>
       </div>
       <div class="req"><h3>Not implying professional services <span class="chip met">Met</span></h3>
-        <p>Operators may not imply that the chatbot's output is equivalent to advice from a licensed professional. The AI chatbot discusses only the company's own accounts, orders and policies, declines opinions and other topics, and sends account changes and disputes to the right team.</p>
+        <p>Operators may not imply that the chatbot's output is equivalent to advice from a licensed professional. The AI chatbot discusses only the company's own accounts, orders and policies, declines opinions and other topics and sends account changes and disputes to the right team.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>.</p>
       </div>
       <div class="req"><h3>Protections for minors <span class="chip partly">Partly met</span></h3>

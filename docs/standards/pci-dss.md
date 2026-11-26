@@ -13,7 +13,7 @@ Evidence: `deploy/gcp-firewall.md`, `deploy/auto-maintenance.sh`.
 
 ### Requirement 2: Apply secure configurations to all system components
 **Status: Met**
-The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files, and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and the attack simulator checks these settings on every run.
+The web server hides its version, refuses TRACE, PUT and DELETE, lists no directories, serves no backup or configuration files and limits request sizes. The API's built-in documentation pages are switched off. The configuration lives in version control, and the attack simulator checks these settings on every run.
 Evidence: `deploy/apache-hardening.conf`, `app/main.py`; the attack simulator's nine security misconfiguration attacks.
 
 ### Requirement 3: Protect stored account data
@@ -28,7 +28,7 @@ Evidence: `deploy/apache-hardening.conf`, `deploy/dns.md`, `docs/scans/2026-11-2
 
 ### Requirement 5: Protect all systems and networks from malicious software
 **Status: Partly met**
-The server installs operating system security updates automatically every day, fail2ban blocks repeated attacks, and nothing on the site accepts file uploads. No anti-malware software runs on the Linux server. PCI allows that for systems not commonly affected by malware, but only with a documented, periodic evaluation (requirement 5.2.3), which a real company would keep on file.
+The server installs operating system security updates automatically every day, fail2ban blocks repeated attacks and nothing on the site accepts file uploads. No anti-malware software runs on the Linux server. PCI allows that for systems not commonly affected by malware, but only with a documented, periodic evaluation (requirement 5.2.3), which a real company would keep on file.
 Evidence: `deploy/auto-maintenance.sh`.
 
 ### Requirement 6: Develop and maintain secure systems and software

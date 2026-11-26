@@ -3,7 +3,7 @@ The US banking agencies' model risk guidance, applied to the site's AI the way a
 
 ## About this document
 This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit or a regulatory opinion. For fifteen years, US banks governed their models under SR 11-7 (the Federal Reserve's 2011 guidance, issued by the OCC as Bulletin 2011-12). On April 17, 2026, the Federal Reserve, the OCC and the FDIC rescinded it and issued revised interagency guidance: Federal Reserve SR 26-2, OCC Bulletin 2026-13 and FDIC FIL-15-2026. Many policies still say "SR 11-7".
-The revised guidance is principles-based and risk-based. It covers model development and use, validation and monitoring, governance and controls, and vendor and third-party models, scaled to a bank's size and how much it relies on each model. It matters most for banks with more than $30 billion in assets.
+The revised guidance is principles-based and risk-based. It covers model development and use, validation and monitoring, governance and controls and vendor and third-party models, scaled to a bank's size and how much it relies on each model. It matters most for banks with more than $30 billion in assets.
 One detail shapes everything below: the agencies say generative AI and agentic AI are "novel and rapidly evolving" and so are not within the scope of the guidance. The agencies plan a request for information on model risk management that will consider AI, including generative and agentic AI. Until then, banks are expected to manage these tools with their broader risk management, and the NIST AI Risk Management Framework is the usual reference. So this write-up does what a careful bank's model risk team would do today: it applies the guidance's principles to the AI chatbot and the AI SOC voluntarily, as a sound practice, not as a legal requirement.
 Evidence: `docs/standards/nist-ai-rmf.md`.
 
@@ -30,12 +30,12 @@ Evidence: `tests/`, `app/llm.py`, `tests/test_guardrails.py`.
 
 ### Conceptual soundness
 **Status: Partly met**
-The design choices are documented and reasoned: facts come from tools rather than the model's memory, identity is checked in code, and the numbers the AI SOC states are checked and corrected by code against the real data. What cannot be assessed is the inside of the model itself, because Gemini is a vendor model; the site relies on Google's published documentation for that.
+The design choices are documented and reasoned: facts come from tools rather than the model's memory, identity is checked in code and the numbers the AI SOC states are checked and corrected by code against the real data. What cannot be assessed is the inside of the model itself, because Gemini is a vendor model; the site relies on Google's published documentation for that.
 Evidence: `app/chat.py`, `app/cipher/soc.py`.
 
 ### Ongoing monitoring and outcomes analysis
 **Status: Partly met**
-Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps, and the attack simulator re-tests the defenses on demand with 50 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.
+Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps and the attack simulator re-tests the defenses on demand with 50 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.
 Evidence: `app/report.py`, `app/spend.py`, `app/cipher/detect.py`.
 
 ### Independent validation
@@ -46,7 +46,7 @@ Evidence: `docs/scans/`, `SECURITY.md`.
 ## Governance and vendors
 ### Governance, policies and controls
 **Status: Partly met**
-Written AI policies came before the build, one owner is accountable, and every control is documented next to the code that enforces it. What one person cannot show is the structure a bank's examiners would look for: board reporting, a separate model risk function and internal audit.
+Written AI policies came before the build, one owner is accountable and every control is documented next to the code that enforces it. What one person cannot show is the structure a bank's examiners would look for: board reporting, a separate model risk function and internal audit.
 Evidence: `policies/ai-assistant-policy.md`, `README.md`.
 
 ### Change control for models

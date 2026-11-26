@@ -11,7 +11,7 @@ The text of chats with Tucker is not stored with visitor IP addresses. Guardrail
 The site uses one strictly necessary session cookie to keep a chat and the Treat Shop cart together while you browse. It expires when you close your browser. Cloudflare, which protects the site from attacks, may add a short-lived security cookie to tell people from bots. There are no advertising or analytics cookies.
 
 ## Tucker's Treats orders
-Orders placed in the Treats store are saved, as any real store must keep them: who the order was for (a demo customer), the items, the prices charged, and the ship-to address on file. Orders cannot be edited or deleted. Tucker, our AI assistant, can read a verified customer's orders but can never change them. No card number is ever collected; every order is paid with Tucker's card on file.
+Orders placed in the Treats store are saved, as any real store must keep them: who the order was for (a demo customer), the items, the prices charged and the ship-to address on file. Orders cannot be edited or deleted. Tucker, our AI assistant, can read a verified customer's orders but can never change them. No card number is ever collected; every order is paid with Tucker's card on file.
 
 ## Customer data
-All customer, card, and transaction data on this site is fictional and exists only to demonstrate the technology.
+All customer, card and transaction data on this site is fictional and exists only to demonstrate the technology.
