@@ -53,7 +53,7 @@ A requirement-by-requirement write-up, with links to the code and tests that pro
 - The web firewall accepts traffic from Cloudflare only.
 - Least privilege everywhere: each database login can do one job (the store's login can call one function and nothing else).
 - Strict Content-Security-Policy, no inline scripts, no third-party scripts, fonts or trackers, one strictly necessary cookie.
-- TLS 1.2+, HSTS, DNSSEC and CAA. Scored A+ by SSL Labs, Mozilla Observatory and SecurityHeaders ([scorecard](https://tuckerpaymentprocessing.com/about.html#scans)).
+- TLS 1.2+, HSTS, DNSSEC and CAA. Scored A+ by SSL Labs, Mozilla Observatory and SecurityHeaders, and the server's network scans (Qualys and OpenVAS, run on the identical staging copy) found no actionable vulnerabilities ([scorecard](https://tuckerpaymentprocessing.com/about.html#scans), raw results in `docs/scans/`).
 - Secrets live only on the server, never in this repository. CodeQL, secret scanning and Dependabot (vulnerability and malware alerts, automatic security fix pull requests) check every change. See [SECURITY.md](SECURITY.md) to report an issue.
 
 ## Repository map
@@ -61,7 +61,7 @@ A requirement-by-requirement write-up, with links to the code and tests that pro
 |---|---|
 | `app/` | The Python (FastAPI) application: `chat.py` (one chat turn through every guardrail), `guardrails.py`, `tools.py`, `session.py`, `limits.py`, `spend.py`, `policies.py` (RAG), `llm.py` (Gemini adapter plus a fake model for tests), `store.py`, `db.py` (parameterized queries only), `report.py` (owner's nightly report), `alerts.py` |
 | `app/cipher/` | Cipher's attacks (`attacks.py`), the run engine (`runner.py`), attack detection (`detect.py`), the AI SOC Squirrel (`soc.py`) and its API |
-| `site/` | The public pages, styles and scripts (no build step, no frameworks) |
+| `site/` | The public pages, styles and scripts (no build step, no frameworks); links to other sites and all PDFs open in a new tab |
 | `db/` | Schema, least-privilege roles, fictional seed data and the nightly reset |
 | `policies/` | The AI and company policies Tucker answers from |
 | `deploy/` | Server setup and hardening; see [deploy/README.md](deploy/README.md) |
@@ -86,7 +86,7 @@ PostgreSQL · Google Gemini · Cloudflare · Let's Encrypt · Resend (email) · 
 ## Who built it
 **Michael Cunningham**, information security leader (20+ years in payments, PCI and cloud security), designed and built
 this site with AI-assisted development through his practice, [Root Cause Associates](https://rootcauseassociates.com)
-(security advisory, consulting, AI governance and secure AI). LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
+(security advisory and consulting services, AI governance and secure AI assistants built with the same enterprise guardrails). LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
 
 All names, customers, cards and data on the site are fictional. Tucker is Michael's real cocker spaniel and Cipher is his real cat.
 
