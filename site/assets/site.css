@@ -64,4 +64,4 @@ body { zoom:var(--z); }
 /* "Visit Root Cause Associates" button in Root Cause's own colors */
 .cta.cta-rca { background:#030405; color:#fff; box-shadow:0 5px 0 rgba(0,0,0,.25); }
 .cta.cta-rca:hover, .cta.cta-rca:focus-visible { background:#1a1d20; }
-.cta.cta-rca .rca-r { color:#3ef0a0; font-weight:800; opacity:1; font-size:inherit; }
+.cta.cta-rca .rca-r { color:#3ef0a0; font-weight:inherit; opacity:1; font-size:inherit; }
