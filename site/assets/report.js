@@ -160,7 +160,14 @@
     rows.sort(function (a, b) { return (a[0] || 0) - (b[0] || 0); });
     table(root, ["Time", "Source", "Event", "OWASP", "Result"],
       rows.map(function (r) { return [fmt(r[0]), r[1], r[2], r[3], r[4]]; }),
-      function (r, j) { return j === 4 ? (/GOT THROUGH|rejected/.test(r[4]) ? "bad" : "") : (j === 0 ? "mono" : ""); });
+      // Red only for a failure: an attack that got through, a retry that wasn't refused, or an AI action policy rejected.
+      // (An attack row starting "Blocked" is a success even when its evidence says "rejected", e.g. forged passes.)
+      function (r, j) {
+        if (j === 0) { return "mono"; }
+        if (j !== 4) { return ""; }
+        var res = String(r[4] || "");
+        return /^GOT THROUGH|^NOT refused/.test(res) || (/rejected/.test(res) && !/^Blocked/.test(res)) ? "bad" : "";
+      });
 
     // ---- 5. actions taken
     add(root, el("h2", "", "5. Response actions"));
