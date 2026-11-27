@@ -2,7 +2,7 @@
 How the AI chatbot and the AI SOC answer the risks of AI that uses tools and takes actions · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. The OWASP GenAI Security Project published this list in December 2025 for agentic AI: systems that plan, call tools and act, rather than only answer. Both AIs on the site are agents in that sense. The AI chatbot, the support agent, decides which of its lookup tools to call. The AI SOC, the security analyst, reads attack events and proposes responses.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit. The OWASP GenAI Security Project published this list in December 2025 for agentic AI: systems that plan, call tools and act, rather than only answer. Both AIs on the site are agents in that sense. The AI chatbot, the support agent, decides which of its lookup tools to call. The AI SOC, the security analyst, reads attack events and proposes responses.
 The design answer to almost every risk on this list is the same: agency without authority. Each agent can choose what to look at, but nothing it chooses can change anything. Every action that matters is taken, or refused, by Python code that the agent cannot see or influence.
 
 ## The ten risks

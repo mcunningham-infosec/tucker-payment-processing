@@ -144,7 +144,7 @@ def standard_page(name: str, doc: dict) -> str:
                 parts.append(f'        <p class="evidence"><strong>Evidence:</strong> {inline(it["evidence"])}</p>')
             parts.append("      </div>")
     parts.append(f'      <p class="muted-line source">This page is generated from <a href="{REPO}/blob/main/docs/standards/{name}.md">'
-                 f"docs/standards/{name}.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>\n    </section>")
+                 f"docs/standards/{name}.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>\n    </section>")
     return _page(doc["title"], f"{doc['title']}: how Tucker Payment Processing (a fictional company) meets it, with evidence.",
                  "\n".join(parts))
 
@@ -213,7 +213,7 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
 
     c = counts(doc)
     summary = " &nbsp; ".join(f'<font color="{COLOR[s]}"><b>{c[s]} {s.lower()}</b></font>' for s in STATUSES if c[s])
-    story = [Paragraph("Tucker Payment Processing &middot; Standards self-assessment by Michael Cunningham", S["org"]),
+    story = [Paragraph("Tucker Payment Processing &middot; Standards self-assessment by Michael Cunningham, Root Cause Associates", S["org"]),
              Paragraph(rl(doc["title"]), S["title"]), Paragraph(re.sub(r"(\w+) (\d{1,2}), (\d{4})", r"\1&nbsp;\2,&nbsp;\3", rl(doc["subtitle"])), S["sub"]),
              Paragraph(summary, S["body"])]
     for sec in doc["sections"]:
@@ -245,7 +245,7 @@ def pdf(name: str, doc: dict, path: pathlib.Path):
                 lone_heading = False
             story.append(KeepTogether(block))
     story += [Spacer(1, 10), Paragraph(f"Source: {REPO}/blob/main/docs/standards/{name}.md &middot; Live site: https://tuckerpaymentprocessing.com", S["small"]),
-              Paragraph("Written by Michael Cunningham. A self-assessment, not an audit, certification "
+              Paragraph("Written by Michael Cunningham of Root Cause Associates. A self-assessment, not an audit, certification "
                         "or legal opinion. Tucker Payment Processing is a fictional company and processes no real payments.", S["small"])]
 
     def footer(canvas, d):

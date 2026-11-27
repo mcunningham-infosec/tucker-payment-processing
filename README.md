@@ -7,7 +7,7 @@ be governed and secured: what it is allowed to do, what it is never allowed to d
 watched in real time. Nothing on the site is faked: the chats, the store orders, the attacks and the security
 monitoring all run live against the real server.
 
-Designed and built by **Michael Cunningham** with AI-assisted development, from concept to production in under a month.
+Designed and built by **Michael Cunningham** of [Root Cause Associates](https://rootcauseassociates.com) with AI-assisted development, from concept to production in under a month.
 
 ## What you can do on the site
 | Page | What happens |
@@ -84,8 +84,9 @@ Google Cloud (Compute Engine, Identity-Aware Proxy, Cloud Monitoring) · Ubuntu 
 PostgreSQL · Google Gemini · Cloudflare · Let's Encrypt · Resend (email) · pdfmake · ReportLab.
 
 ## Who built it
-**Michael Cunningham**, information security leader (20+ years in payments, PCI and cloud security), designed and built
-this site with AI-assisted development. LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
+**Michael Cunningham**, information security leader (25+ years in payments, PCI and cloud security), designed and built
+this site with AI-assisted development through his practice, [Root Cause Associates](https://rootcauseassociates.com)
+(security advisory, consulting, AI governance and secure AI). LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
 
 All names, customers, cards and data on the site are fictional. Tucker is Michael's real cocker spaniel and Cipher is his real cat.
 

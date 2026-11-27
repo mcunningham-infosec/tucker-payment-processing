@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>OWASP Top 10 for Agentic Applications 2026 - Tucker Payment Processing</title>
   <meta name="description" content="OWASP Top 10 for Agentic Applications 2026: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261127a">
-  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
-  <link rel="stylesheet" href="assets/about.css?v=20261127a">
-  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
-  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
+  <link rel="stylesheet" href="assets/site.css?v=20261127b">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127b">
+  <link rel="stylesheet" href="assets/about.css?v=20261127b">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127b">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127b">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,9 +38,9 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>OWASP Top 10 for Agentic Applications 2026</h1>
       <p class="muted-line">How the AI chatbot and the AI SOC answer the risks of AI that uses tools and takes actions · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/owasp-agentic-top-10.pdf?v=989a79aa6c">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">8 met</span> <span class="chip partly">1 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/owasp-agentic-top-10.pdf?v=0c610b53fc">Download PDF</a></p>
       <h2>About this document</h2>
-      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. The OWASP GenAI Security Project published this list in December 2025 for agentic AI: systems that plan, call tools and act, rather than only answer. Both AIs on the site are agents in that sense. The AI chatbot, the support agent, decides which of its lookup tools to call. The AI SOC, the security analyst, reads attack events and proposes responses.</p>
+      <p>This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit. The OWASP GenAI Security Project published this list in December 2025 for agentic AI: systems that plan, call tools and act, rather than only answer. Both AIs on the site are agents in that sense. The AI chatbot, the support agent, decides which of its lookup tools to call. The AI SOC, the security analyst, reads attack events and proposes responses.</p>
       <p>The design answer to almost every risk on this list is the same: agency without authority. Each agent can choose what to look at, but nothing it chooses can change anything. Every action that matters is taken, or refused, by Python code that the agent cannot see or influence.</p>
       <h2>The ten risks</h2>
       <div class="req"><h3>ASI01 Agent Goal Hijack <span class="chip met">Met</span></h3>
@@ -88,11 +88,11 @@
       <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>.</p>
       <h2>Beyond the demo</h2>
       <p>Agents with real authority, such as one that could issue refunds, would need human approval for each consequential action, per-action limits, an audit trail of every tool call, and regular red-team exercises against the agent itself. This site avoids those risks by not granting the authority at all, which is the strongest control when the business can live without it.</p>
-      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-agentic-top-10.md">docs/standards/owasp-agentic-top-10.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/owasp-agentic-top-10.md">docs/standards/owasp-agentic-top-10.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>
     </section>
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261127a" defer></script>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261127b" defer></script>
 </body>
 </html>

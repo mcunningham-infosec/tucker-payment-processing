@@ -2,7 +2,7 @@
 How the store and support chat are built to the payment card industry's security standard · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who has run PCI DSS programs in payments companies for about twenty years. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who has run PCI DSS programs in payments companies for about twenty years. It is not a Report on Compliance or a Self-Assessment Questionnaire, and no Qualified Security Assessor has reviewed it. Tucker Payment Processing is fictional and handles no real cards; every card on the site is invented. This document shows how the site would stand against the PCI Data Security Standard (version 4.0.1, the current version) if those cards were real.
 The most important PCI decision is made before any control: keep card data out. A full card number is never typed into this site, never sent by a browser, never stored and never shown to the AI. Cards exist only as the last four digits and a random token standing in for a vaulted card, the way a merchant using a payment processor's tokenization works. That design shrinks the cardholder data environment to almost nothing, which is the cheapest and strongest PCI control there is.
 
 ## The twelve requirements

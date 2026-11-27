@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>NIST AI Risk Management Framework (AI RMF 1.0) - Tucker Payment Processing</title>
   <meta name="description" content="NIST AI Risk Management Framework (AI RMF 1.0): how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261127a">
-  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
-  <link rel="stylesheet" href="assets/about.css?v=20261127a">
-  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
-  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
+  <link rel="stylesheet" href="assets/site.css?v=20261127b">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127b">
+  <link rel="stylesheet" href="assets/about.css?v=20261127b">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127b">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127b">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,9 +38,9 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>NIST AI Risk Management Framework (AI RMF 1.0)</h1>
       <p class="muted-line">How the AI chatbot&#x27;s risks are governed, mapped, measured and managed · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">5 partly met</span> <a class="scan-all" href="standards/nist-ai-rmf.pdf?v=69413c786c">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">5 partly met</span> <a class="scan-all" href="standards/nist-ai-rmf.pdf?v=7d803154af">Download PDF</a></p>
       <h2>About this document</h2>
-      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. Tucker Payment Processing is a fictional company with a real AI: the AI chatbot, a customer-support agent, and the AI SOC, a bounded security analyst, both running on Google Gemini. The NIST AI RMF (NIST AI 100-1, January 2023) is voluntary and organizes AI risk work into four functions: Govern, Map, Measure and Manage. Below, each of its 19 categories is mapped to what the site actually does, with the evidence. It also draws on NIST's Generative AI Profile (NIST AI 600-1, July 2024). NIST has said the AI RMF is being revised under the White House AI Action Plan; this write-up follows version 1.0, which is current until the revision is published.</p>
+      <p>This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit. Tucker Payment Processing is a fictional company with a real AI: the AI chatbot, a customer-support agent, and the AI SOC, a bounded security analyst, both running on Google Gemini. The NIST AI RMF (NIST AI 100-1, January 2023) is voluntary and organizes AI risk work into four functions: Govern, Map, Measure and Manage. Below, each of its 19 categories is mapped to what the site actually does, with the evidence. It also draws on NIST's Generative AI Profile (NIST AI 600-1, July 2024). NIST has said the AI RMF is being revised under the White House AI Action Plan; this write-up follows version 1.0, which is current until the revision is published.</p>
       <p>A one-person demonstration cannot show everything a large organization needs, such as committees, workforce programs and formal sign-offs. Where a category depends on that, it is marked Partly met, with what a real company would add.</p>
       <h2>Govern: a culture of risk management</h2>
       <div class="req"><h3>GOVERN 1: Policies, processes and procedures are in place and followed <span class="chip met">Met</span></h3>
@@ -48,7 +48,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/policies"><code>policies/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/policies.py"><code>app/policies.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_policy_pages.py"><code>tests/test_policy_pages.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>.</p>
       </div>
       <div class="req"><h3>GOVERN 2: Accountability is clear, and people are trained <span class="chip partly">Partly met</span></h3>
-        <p>One accountable owner, named on every page and in every source file: Michael Cunningham, who designed, built and runs the site and receives every alert and the nightly security report. In a real company this would be a RACI across the product owner, security, legal, compliance and an AI risk committee, with AI-specific training for each role.</p>
+        <p>One accountable owner, named on every page and in every source file: Michael Cunningham of Root Cause Associates, who designed, built and runs the site and receives every alert and the nightly security report. In a real company this would be a RACI across the product owner, security, legal, compliance and an AI risk committee, with AI-specific training for each role.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/alerts.py"><code>app/alerts.py</code></a>.</p>
       </div>
       <div class="req"><h3>GOVERN 3: Diverse perspectives and accessibility inform risk decisions <span class="chip partly">Partly met</span></h3>
@@ -123,11 +123,11 @@
       </div>
       <h2>The Generative AI Profile</h2>
       <p>NIST AI 600-1 lists twelve risks specific to generative AI; its own write-up, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/nist-ai-600-1.md"><code>docs/standards/nist-ai-600-1.md</code></a>, goes through them one by one. In short, the ones that apply to a support chatbot are covered above: confabulation (MEASURE 2 and the OWASP misinformation entry), data privacy (MAP 5), information security (prompt injection and the OWASP list), human-AI configuration (the AI chatbot always discloses it is an AI and cannot act on its own), and value chain and component integration (GOVERN 6, MANAGE 3). The others, such as chemical, biological, radiological and nuclear (CBRN) information, violent or obscene content and intellectual property, are reduced by the topic limit, which keeps the AI chatbot to Tucker Payment Processing questions only.</p>
-      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/nist-ai-rmf.md">docs/standards/nist-ai-rmf.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/nist-ai-rmf.md">docs/standards/nist-ai-rmf.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>
     </section>
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261127a" defer></script>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261127b" defer></script>
 </body>
 </html>

@@ -73,7 +73,7 @@
     { page: "about", spot: "#about-code",
       say: "Want to dig deeper? Every line of code is open on GitHub. These are good places to start." },
     { page: "about", spot: "#about-who", last: true,
-      say: "That's the tour, thanks for visiting! If you'd like to learn more about Michael, connect with him on LinkedIn." }
+      say: "That's the tour, thanks for visiting! Michael built me through his practice, Root Cause Associates. To learn more, visit rootcauseassociates.com or connect with him on LinkedIn." }
   ];
 
   // Who is talking in the bubble. Tucker guides, except in Cipher's Lair, where Cipher takes over.

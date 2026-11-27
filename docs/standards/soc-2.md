@@ -2,7 +2,7 @@
 How the site's controls line up with the AICPA criteria a SOC 2 auditor tests · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who has led a SOC 2 Type II audit. It is not a SOC 2 report: only an independent CPA firm can issue one. It works like a readiness review, describing the design of each control and the evidence an auditor would ask for. A Type II report would also test that the controls operated over a period of months, which a new demonstration site cannot show.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who has led a SOC 2 Type II audit. It is not a SOC 2 report: only an independent CPA firm can issue one. It works like a readiness review, describing the design of each control and the evidence an auditor would ask for. A Type II report would also test that the controls operated over a period of months, which a new demonstration site cannot show.
 The criteria are the AICPA's 2017 Trust Services Criteria (with the 2022 revised points of focus), the version auditors use today. In late 2026 the AICPA proposed updated criteria, including new attention to AI, for examinations starting on or after December 31, 2027. The common criteria (CC1 to CC9) make up the Security category every SOC 2 report covers; the other four categories are optional and are covered briefly at the end.
 
 ## Security: the common criteria

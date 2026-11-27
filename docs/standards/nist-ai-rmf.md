@@ -2,7 +2,7 @@
 How the AI chatbot's risks are governed, mapped, measured and managed · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. Tucker Payment Processing is a fictional company with a real AI: the AI chatbot, a customer-support agent, and the AI SOC, a bounded security analyst, both running on Google Gemini. The NIST AI RMF (NIST AI 100-1, January 2023) is voluntary and organizes AI risk work into four functions: Govern, Map, Measure and Manage. Below, each of its 19 categories is mapped to what the site actually does, with the evidence. It also draws on NIST's Generative AI Profile (NIST AI 600-1, July 2024). NIST has said the AI RMF is being revised under the White House AI Action Plan; this write-up follows version 1.0, which is current until the revision is published.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit. Tucker Payment Processing is a fictional company with a real AI: the AI chatbot, a customer-support agent, and the AI SOC, a bounded security analyst, both running on Google Gemini. The NIST AI RMF (NIST AI 100-1, January 2023) is voluntary and organizes AI risk work into four functions: Govern, Map, Measure and Manage. Below, each of its 19 categories is mapped to what the site actually does, with the evidence. It also draws on NIST's Generative AI Profile (NIST AI 600-1, July 2024). NIST has said the AI RMF is being revised under the White House AI Action Plan; this write-up follows version 1.0, which is current until the revision is published.
 A one-person demonstration cannot show everything a large organization needs, such as committees, workforce programs and formal sign-offs. Where a category depends on that, it is marked Partly met, with what a real company would add.
 
 ## Govern: a culture of risk management
@@ -13,7 +13,7 @@ Evidence: `policies/`, `app/policies.py`, `tests/test_policy_pages.py`, `tests/t
 
 ### GOVERN 2: Accountability is clear, and people are trained
 **Status: Partly met**
-One accountable owner, named on every page and in every source file: Michael Cunningham, who designed, built and runs the site and receives every alert and the nightly security report. In a real company this would be a RACI across the product owner, security, legal, compliance and an AI risk committee, with AI-specific training for each role.
+One accountable owner, named on every page and in every source file: Michael Cunningham of Root Cause Associates, who designed, built and runs the site and receives every alert and the nightly security report. In a real company this would be a RACI across the product owner, security, legal, compliance and an AI risk committee, with AI-specific training for each role.
 Evidence: `README.md`, `app/report.py`, `app/alerts.py`.
 
 ### GOVERN 3: Diverse perspectives and accessibility inform risk decisions

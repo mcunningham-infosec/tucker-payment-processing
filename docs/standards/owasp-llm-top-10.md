@@ -2,7 +2,7 @@
 How Tucker Payment Processing answers each of the ten risks · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit or a certification. Tucker Payment Processing is a fictional company and processes no real payments, but its AI is real: the AI chatbot, the support agent, and the AI SOC, the security analyst, both run on Google Gemini. Every claim below names the code, configuration or automated test that backs it, and anyone can watch the defenses work live in the attack simulator.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit or a certification. Tucker Payment Processing is a fictional company and processes no real payments, but its AI is real: the AI chatbot, the support agent, and the AI SOC, the security analyst, both run on Google Gemini. Every claim below names the code, configuration or automated test that backs it, and anyone can watch the defenses work live in the attack simulator.
 The 2026 edition of the list, released by the OWASP GenAI Security Project in August 2026, is built on one idea: the model will be fooled, so the job is to limit what a fooled model can do. That is the design principle of this site. The AI chatbot is never trusted to decide anything that matters; Python code decides, and the AI can only read.
 
 ## The ten risks

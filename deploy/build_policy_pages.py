@@ -22,8 +22,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 SITE = ROOT / "site"
-VERSION = "20261127a"          # same asset version as the other pages (see apache-hardening.conf)
-COPYRIGHT = "\u00a9 2026 Michael Cunningham. All rights reserved."   # on every page of every PDF, and in its metadata
+VERSION = "20261127b"          # same asset version as the other pages (see apache-hardening.conf)
+COPYRIGHT = "\u00a9 2026 Michael Cunningham, Root Cause Associates. All rights reserved."   # on every page of every PDF, and in its metadata
 GITHUB = "https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/"
 
 # Display order, page name and a one-line summary for the policy list.
@@ -91,7 +91,7 @@ def page(title: str, description: str, body: str) -> str:
 {body}
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
   <script src="assets/tour.js?v={VERSION}" defer></script>
 </body>
 </html>

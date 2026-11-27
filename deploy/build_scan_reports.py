@@ -41,7 +41,7 @@ LABEL = {"recommendation": "ADVISED"}       # short labels so the status columns
 STATUS_COLOR = {"pass": OK, "fixed": OK, "fail": BAD, "info": MUTED, "recommendation": WARN, "limit": WARN}
 
 
-COPYRIGHT = "\u00a9 2026 Michael Cunningham. All rights reserved."   # on every page of every PDF, and in its metadata
+COPYRIGHT = "\u00a9 2026 Michael Cunningham, Root Cause Associates. All rights reserved."   # on every page of every PDF, and in its metadata
 
 def hx(c):
     """A ReportLab color as a #rrggbb string (for inline <font> tags)."""

@@ -2,7 +2,7 @@
 The twelve risks NIST names for generative AI, and how each is handled here · Self-assessment · November 25, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit. NIST AI 600-1, the Generative Artificial Intelligence Profile (July 2024), is a companion to the NIST AI Risk Management Framework. It names twelve risks that are unique to generative AI, or made worse by it, and suggests actions for each. It is voluntary, and it is still NIST's current profile for generative AI; NIST has said the AI RMF itself is being revised under the White House AI Action Plan.
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not an audit. NIST AI 600-1, the Generative Artificial Intelligence Profile (July 2024), is a companion to the NIST AI Risk Management Framework. It names twelve risks that are unique to generative AI, or made worse by it, and suggests actions for each. It is voluntary, and it is still NIST's current profile for generative AI; NIST has said the AI RMF itself is being revised under the White House AI Action Plan.
 Both of the site's AI systems are generative: the AI chatbot, the customer-support agent, and the AI SOC, which writes incident reports, both run on Google Gemini. The framework-level view is in the NIST AI RMF write-up; this one goes risk by risk.
 Evidence: `docs/standards/nist-ai-rmf.md`.
 

@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>MITRE ATLAS - Tucker Payment Processing</title>
   <meta name="description" content="MITRE ATLAS: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261127a">
-  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
-  <link rel="stylesheet" href="assets/about.css?v=20261127a">
-  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
-  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
+  <link rel="stylesheet" href="assets/site.css?v=20261127b">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127b">
+  <link rel="stylesheet" href="assets/about.css?v=20261127b">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127b">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127b">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,9 +38,9 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>MITRE ATLAS</h1>
       <p class="muted-line">The attacker techniques that apply to the site&#x27;s AI, and the defense against each · Self-assessment · November 24, 2026</p>
-      <p class="std-summary"><span class="chip met">11 met</span> <a class="scan-all" href="standards/mitre-atlas.pdf?v=d6686133b9">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">11 met</span> <a class="scan-all" href="standards/mitre-atlas.pdf?v=c22e4768e8">Download PDF</a></p>
       <h2>About this document</h2>
-      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems) is the AI counterpart of MITRE ATT&amp;CK: a catalog of the techniques real attackers use against AI systems, organized by tactic, which security operations and threat-hunting teams use to plan detections and red-team tests. Where the OWASP lists describe risks, ATLAS describes what the attacker actually does.</p>
+      <p>This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems) is the AI counterpart of MITRE ATT&amp;CK: a catalog of the techniques real attackers use against AI systems, organized by tactic, which security operations and threat-hunting teams use to plan detections and red-team tests. Where the OWASP lists describe risks, ATLAS describes what the attacker actually does.</p>
       <p>This write-up uses ATLAS release v2026.10 (October 28, 2026: 16 tactics, 129 techniques and 92 sub-techniques), taken from MITRE's official data. That release moved two techniques this site relies on into new sub-techniques, and the IDs below use the new numbers. It covers the eleven techniques that fit a public chatbot and an AI security analyst. Techniques that need access the site never offers, such as stealing model weights or poisoning training data, don't apply: the model is Google's hosted Gemini and nothing is trained here. The attack simulator tags each of its AI attacks with the technique it uses, in the live log and in the incident report.</p>
       <h2>Techniques</h2>
       <div class="req"><h3>AML.T0051.000 LLM Prompt Injection: Direct <span class="chip met">Met</span></h3>
@@ -90,11 +90,11 @@
       <h2>Detection, not just prevention</h2>
       <p>ATLAS is also a detection map. On the site, code rules count what the real defenses blocked from each source: after 15 blocked attacks the AI SOC is woken to investigate, and after 100 the source is refused for the rest of the run. The AI SOC's incident report lists the techniques it saw, so a reader can tie every event back to this catalog.</p>
       <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py"><code>app/cipher/attacks.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/site/assets/report.js"><code>site/assets/report.js</code></a>.</p>
-      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/mitre-atlas.md">docs/standards/mitre-atlas.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/mitre-atlas.md">docs/standards/mitre-atlas.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>
     </section>
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261127a" defer></script>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261127b" defer></script>
 </body>
 </html>

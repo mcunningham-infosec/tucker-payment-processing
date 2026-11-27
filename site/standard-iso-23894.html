@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>ISO/IEC 23894:2023 AI Risk Management - Tucker Payment Processing</title>
   <meta name="description" content="ISO/IEC 23894:2023 AI Risk Management: how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261127a">
-  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
-  <link rel="stylesheet" href="assets/about.css?v=20261127a">
-  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
-  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
+  <link rel="stylesheet" href="assets/site.css?v=20261127b">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127b">
+  <link rel="stylesheet" href="assets/about.css?v=20261127b">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127b">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127b">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,9 +38,9 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>ISO/IEC 23894:2023 AI Risk Management</h1>
       <p class="muted-line">How AI risk is identified, analyzed, treated and monitored for the AI chatbot and the AI SOC · Self-assessment · November 25, 2026</p>
-      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/iso-23894.pdf?v=a6dcb95646">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">14 met</span> <span class="chip partly">4 partly met</span> <a class="scan-all" href="standards/iso-23894.pdf?v=5faec7d4a6">Download PDF</a></p>
       <h2>About this document</h2>
-      <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. ISO/IEC 23894:2023 is guidance, not a certifiable standard: it adapts ISO 31000, the general risk management standard, to artificial intelligence. Within the ISO AI family it is the "how" of risk: ISO/IEC 42001 requires an organization to assess and treat AI risks, ISO/IEC 23894 describes how to do that well, and ISO/IEC 42005 covers the impact assessment. All three are written up on this site.</p>
+      <p>This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. ISO/IEC 23894:2023 is guidance, not a certifiable standard: it adapts ISO 31000, the general risk management standard, to artificial intelligence. Within the ISO AI family it is the "how" of risk: ISO/IEC 42001 requires an organization to assess and treat AI risks, ISO/IEC 23894 describes how to do that well, and ISO/IEC 42005 covers the impact assessment. All three are written up on this site.</p>
       <p>Below, the site is mapped to the standard's risk management framework, its risk process and the AI-specific risk sources it lists.</p>
       <h2>The framework</h2>
       <div class="req"><h3>Leadership, commitment and integration <span class="chip met">Met</span></h3>
@@ -117,11 +117,11 @@
         <p>Large language models are new and can behave unpredictably, so the design treats the model as the least trusted part of the system. It runs at a low temperature, it is bounded by code on every side and every AI failure has a safe fallback: the AI chatbot shows a fixed message saying it is unavailable or a fixed error message, and the security report is built from plain facts.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
       </div>
-      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-23894.md">docs/standards/iso-23894.md</a>. Written by Michael Cunningham; a self-assessment, not an audit or certification.</p>
+      <p class="muted-line source">This page is generated from <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/docs/standards/iso-23894.md">docs/standards/iso-23894.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>
     </section>
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261127a" defer></script>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <script src="assets/tour.js?v=20261127b" defer></script>
 </body>
 </html>

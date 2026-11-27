@@ -2,7 +2,7 @@
 Where the AI chatbot sits in the EU's risk tiers, and the duties that apply · Self-assessment · November 24, 2026
 
 ## About this document
-This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not legal advice. Tucker Payment Processing is a fictional US company with no EU customers, so the AI Act would not apply to it in practice. This document asks a more useful question: if a real payment company deployed this same chatbot to customers in the EU, what would the Act require, and does the design already meet it?
+This is a self-assessment written by Michael Cunningham of Root Cause Associates, who designed and built the site. It is not legal advice. Tucker Payment Processing is a fictional US company with no EU customers, so the AI Act would not apply to it in practice. This document asks a more useful question: if a real payment company deployed this same chatbot to customers in the EU, what would the Act require, and does the design already meet it?
 The Act sorts AI by risk. Some practices are banned outright. "High-risk" systems face the heaviest duties. Systems that talk to people, or generate content, have transparency duties. The rest have few or none. The dates reflect the Digital Omnibus on AI (Regulation (EU) 2026/1744), in force since July 27, 2026, which pushed back some deadlines.
 
 ## Classification
