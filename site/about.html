@@ -35,7 +35,7 @@
       <a href="about.html" aria-current="page">About Us</a>
       <a href="policies.html">AI Policies</a>
       <a href="standards.html">Standards</a>
-      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing">GitHub</a>
+      <a href="https://github.com/mcunningham-infosec/tucker-payment-processing" target="_blank" rel="noopener noreferrer">GitHub</a>
     </nav>
   </header>
 
@@ -225,7 +225,7 @@
         place. Instead, the check removes Cloudflare's additions only when they match Cloudflare's exact code, down to this
         site's own analytics ID. Anything that merely looks like Cloudflare's code is treated as tampering. Five kinds of
         simulated tampering were tested, including a fake script dressed up as Cloudflare's, and all five were caught.
-        <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/ops/live_watch.py">Read the code</a>.</p>
+        <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/ops/live_watch.py" target="_blank" rel="noopener noreferrer">Read the code</a>.</p>
       <p><strong>Coming next:</strong> a second check on the server itself. If it finds a confirmed difference, it takes the
         site offline behind a maintenance page until the files are restored. It's built to wait out deploys in progress and to
         never trigger just because GitHub is unreachable. It will run in alert-only mode first, because a security control
@@ -236,27 +236,27 @@
       <h2>Dig into the code</h2>
       <p>Everything is open to read on GitHub. Security that only works while the code is secret isn't security. Good places to start:</p>
       <ul class="links">
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py">chat.py</a>: one chat message through every guardrail, in order</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py">guardrails.py</a>: the prompt-injection shield and output masking</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py">tools.py</a>: the only things Tucker can do, each authorized in code</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py">attacks.py</a>: Cipher's 100 attacks</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py">soc.py</a>: the AI SOC and the code that checks its claims</li>
-        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests">tests</a>: the automated tests</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py" target="_blank" rel="noopener noreferrer">chat.py</a>: one chat message through every guardrail, in order</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/guardrails.py" target="_blank" rel="noopener noreferrer">guardrails.py</a>: the prompt-injection shield and output masking</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/tools.py" target="_blank" rel="noopener noreferrer">tools.py</a>: the only things Tucker can do, each authorized in code</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/attacks.py" target="_blank" rel="noopener noreferrer">attacks.py</a>: Cipher's 100 attacks</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py" target="_blank" rel="noopener noreferrer">soc.py</a>: the AI SOC and the code that checks its claims</li>
+        <li><a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests" target="_blank" rel="noopener noreferrer">tests</a>: the automated tests</li>
       </ul>
     </section>
 
     <section id="about-who" class="card who">
       <h2>Who built it</h2>
-      <p><strong>Michael Cunningham</strong> of <a href="https://rootcauseassociates.com">Root Cause Associates</a> is an information security leader with 20+ years in payments, PCI and cloud security.
+      <p><strong>Michael Cunningham</strong> of <a href="https://rootcauseassociates.com" target="_blank" rel="noopener noreferrer">Root Cause Associates</a> is an information security leader with 20+ years in payments, PCI and cloud security.
         He has tooled up for the AI governance future and built this site with AI-assisted development, from concept to
         production in under a month, to show how AI can be put to work safely. Tucker is his real cocker spaniel, and Cipher is his real cat. He doesn't have a squirrel :)</p>
       <p>Through Root Cause Associates he offers security advisory, consulting and AI governance, and builds secure AI assistants with the same guardrails you see here.</p>
       <p class="seeking"><strong>Michael is seeking his next employment adventure.</strong></p>
-      <p><a class="cta" href="https://rootcauseassociates.com">Visit Root Cause Associates</a> <a class="cta" href="https://www.linkedin.com/in/mcunningham-infosec/">Connect on LinkedIn</a></p>
+      <p><a class="cta" href="https://rootcauseassociates.com" target="_blank" rel="noopener noreferrer">Visit Root Cause Associates</a> <a class="cta" href="https://www.linkedin.com/in/mcunningham-infosec/" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a></p>
     </section>
   </main>
 
-  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
+  <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham, <a href="https://rootcauseassociates.com" target="_blank" rel="noopener noreferrer">Root Cause Associates</a>. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a></span></footer>
   <script src="assets/tour.js?v=20261127c" defer></script>
 </body>
 </html>

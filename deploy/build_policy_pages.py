@@ -17,6 +17,7 @@ Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assiste
 """
 import html
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -60,7 +61,25 @@ def _seo(path: str, title: str, description: str) -> str:
             f'  <meta property="og:description" content="{d}">\n  <meta property="og:url" content="{url}">\n')
 
 
+_EXT_LINK = re.compile(r'<a\b([^>]*?)\bhref="(https?://[^"]+)"([^>]*)>')
+
+
+def external_links(text: str) -> str:
+    """Links to other sites (GitHub, Root Cause Associates, LinkedIn...) open in a new tab."""
+    def fix(m):
+        pre, url, post = m.groups()
+        if "tuckerpaymentprocessing.com" in url or "target=" in pre + post:
+            return m.group(0)
+        return f'<a{pre}href="{url}"{post} target="_blank" rel="noopener noreferrer">'
+    return _EXT_LINK.sub(fix, text)
+
+
 def page(title: str, description: str, body: str, path: str = "") -> str:
+    """A full site page with links to other sites opening in a new tab."""
+    return external_links(_page_frame(title, description, body, path))
+
+
+def _page_frame(title: str, description: str, body: str, path: str = "") -> str:
     """A full site page: the standard header and tabs (AI Policies highlighted), the body, footer and tour."""
     e = html.escape
     return f"""<!doctype html>
