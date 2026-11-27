@@ -84,7 +84,7 @@ Google Cloud (Compute Engine, Identity-Aware Proxy, Cloud Monitoring) · Ubuntu 
 PostgreSQL · Google Gemini · Cloudflare · Let's Encrypt · Resend (email) · pdfmake · ReportLab.
 
 ## Who built it
-**Michael Cunningham**, information security leader (25+ years in payments, PCI and cloud security), designed and built
+**Michael Cunningham**, information security leader (20+ years in payments, PCI and cloud security), designed and built
 this site with AI-assisted development through his practice, [Root Cause Associates](https://rootcauseassociates.com)
 (security advisory, consulting, AI governance and secure AI). LinkedIn: https://www.linkedin.com/in/mcunningham-infosec/
 
