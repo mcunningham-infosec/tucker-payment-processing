@@ -1,0 +1,122 @@
+{
+ "site": "staging.tuckerpaymentprocessing.com (35.185.112.25)",
+ "date": "2026-11-27",
+ "intro": "On November 27, 2026 the server behind Tucker Payment Processing was scanned by two independent network vulnerability scanners: Qualys and OpenVAS (run through HostedScan), with an Nmap port scan. Scans ran against staging, an identical copy of production, so live visitors were never affected. A temporary firewall rule let each scanner reach the server directly, bypassing Cloudflare, so the server itself was tested rather than Cloudflare's protection; the rules were deleted afterward. The first round opened every port, including admin SSH, which production never exposes to the internet. Both scanners flagged the same weak SSH setting. It was fixed the same morning, Qualys confirmed the fix on a rescan, and a final scan of the real internet-facing surface (web ports 80 and 443) found no actionable vulnerabilities.",
+ "method": "Method: scans launched by Michael Cunningham from each vendor's cloud console against the staging server's public IP on 2026-11-27 (US Eastern). Findings, severities and times are recorded as reported by each scanner. Staging runs the same code and server configuration as production.",
+ "fixes_made": [
+  "SSH hardened: removed SHA-1 and 64-bit message authentication (hmac-sha1, umac-64) and the 2048-bit Diffie-Hellman fallback; key-only logins enforced. Applied by deploy/update.sh after sshd's own config test passes, so a bad file can never lock anyone out (Qualys QID 38909; OpenVAS 'Weak MAC Algorithm(s) Supported').",
+  "Verified on the server: Ubuntu's OpenSSH package (9.6p1-3ubuntu13.20) already carries the fixes for the OpenSSH CVEs that Qualys flagged as 'potential' from the version banner alone (including CVE-2024-6387, CVE-2025-32728 and CVE-2025-61984)."
+ ],
+ "known_limits": [
+  "Qualys QID 38170 (certificate name does not match): expected when a scanner connects by IP address. The certificate is issued for the site's name, which is how every real visitor connects.",
+  "Qualys QID 82054 (TCP sequence number approximation): a generic, 'potential' check raised on most internet hosts. The Linux kernel implements the RFC 5961 protections it refers to.",
+  "HostedScan's free plan serves a cached OpenVAS result for a repeat scan of the same target, so the OpenVAS fix is confirmed by the Qualys rescan and the server configuration rather than a second OpenVAS run.",
+  "These are automated network scans, not a penetration test or certification."
+ ],
+ "scans": [
+  {
+   "id": "qualys",
+   "name": "Qualys Vulnerability Scan",
+   "scanner": "Qualys VMDR (US Platform 3, external scanners)",
+   "checks_what": "Network vulnerability scan: open services, known CVEs, TLS and SSH configuration",
+   "before": {
+    "grade": "10",
+    "time": "2026-11-27 14:09-14:45 UTC",
+    "bad": true
+   },
+   "after": {
+    "grade": "0",
+    "time": "2026-11-27 17:16-17:52 UTC"
+   },
+   "summary": "Round 1 (all ports open to the scanner) reported 10 detections: 1 confirmed weak SSH setting, 7 OpenSSH 'potential' findings read from the version banner, and 2 low-risk items. After SSH hardening the confirmed finding cleared. The final scan of the internet-facing web ports reported 0 actionable vulnerabilities: only the 2 expected low-risk items explained below.",
+   "fixes": [
+    "QID 38909 'SHA1 deprecated setting for SSH': fixed at 14:50 UTC (SHA-1 and 64-bit MACs removed). Cleared on the Qualys rescan that followed (about 15:00-15:25 UTC)."
+   ],
+   "checks": [
+    {
+     "check": "QID 38909 SHA1 deprecated setting for SSH",
+     "before": "fail",
+     "after": "pass",
+     "detail": "Fixed: sshd now offers SHA-2 and 128-bit MACs only"
+    },
+    {
+     "check": "OpenSSH CVE findings (7 QIDs, incl. 38919, 38979, 38999)",
+     "before": "info",
+     "after": "pass",
+     "detail": "Banner-based 'potential'; Ubuntu package already patched. SSH is reachable only through Google IAP, never the internet"
+    },
+    {
+     "check": "QID 38170 certificate name vs scanned IP",
+     "before": "low",
+     "after": "low",
+     "detail": "Expected when scanning by IP; visitors connect by name"
+    },
+    {
+     "check": "QID 82054 TCP sequence approximation",
+     "before": "info",
+     "after": "info",
+     "detail": "Generic check; Linux implements RFC 5961"
+    },
+    {
+     "check": "Open ports (final scope)",
+     "before": "-",
+     "after": "pass",
+     "detail": "Only 80 and 443 reachable; SSH closed to the internet"
+    }
+   ],
+   "notes": [
+    "Scans ran against staging; production runs the same configuration behind Cloudflare, which also blocks direct access to the server."
+   ],
+   "retest": "https://www.qualys.com/community-edition/"
+  },
+  {
+   "id": "openvas",
+   "name": "OpenVAS Network Scan (HostedScan)",
+   "scanner": "OpenVAS via HostedScan, plus Nmap TCP port scan and OWASP ZAP passive",
+   "checks_what": "Network vulnerability scan (50,000+ checks), full TCP port scan, passive web checks",
+   "before": {
+    "grade": "1 low",
+    "time": "2026-11-27 14:38-15:27 UTC",
+    "bad": true
+   },
+   "after": {
+    "grade": "Fixed",
+    "time": "2026-11-27 14:50 UTC (SSH fix)"
+   },
+   "summary": "OpenVAS found 0 critical, 0 high, 0 medium and 1 low finding: the same weak SSH MAC setting Qualys reported (CVSS 2.6). It was fixed the same morning and the fix confirmed by the Qualys rescan. The Nmap full port scan and the ZAP passive scan found 0 risks.",
+   "fixes": [
+    "'Weak MAC Algorithm(s) Supported (SSH)' (CVSS 2.6): fixed by the same SSH hardening."
+   ],
+   "checks": [
+    {
+     "check": "Critical / High / Medium",
+     "before": "pass",
+     "after": "pass",
+     "detail": "None found"
+    },
+    {
+     "check": "Weak MAC Algorithm(s) Supported (SSH)",
+     "before": "fail",
+     "after": "pass",
+     "detail": "Fixed; confirmed by Qualys rescan and server configuration"
+    },
+    {
+     "check": "Nmap TCP port scan (0-65535)",
+     "before": "pass",
+     "after": "pass",
+     "detail": "0 risks"
+    },
+    {
+     "check": "OWASP ZAP passive scan",
+     "before": "pass",
+     "after": "pass",
+     "detail": "0 risks"
+    }
+   ],
+   "notes": [
+    "HostedScan's free plan returns a cached result for a repeat scan of the same target within its window."
+   ],
+   "retest": "https://hostedscan.com/"
+  }
+ ]
+}

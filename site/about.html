@@ -186,6 +186,10 @@
               <td><a href="scans/2026-11-24/mozilla-observatory.pdf">PDF</a> &middot; <a href="https://developer.mozilla.org/en-US/observatory/analyze?host=tuckerpaymentprocessing.com">Re-test</a></td></tr>
             <tr><td><strong>SecurityHeaders.com</strong></td><td>Browser security headers</td><td>A+</td><td class="now">A+</td>
               <td><a href="scans/2026-11-24/securityheaders.pdf">PDF</a> &middot; <a href="https://securityheaders.com/?q=https%3A%2F%2Ftuckerpaymentprocessing.com%2F&amp;hide=on&amp;followRedirects=on">Re-test</a></td></tr>
+            <tr><td><strong>Qualys</strong></td><td>Network vulnerability scan of the server (on staging)</td><td class="was">10</td><td class="now">0 actionable</td>
+              <td><a href="scans/2026-11-27/qualys.pdf">PDF</a></td></tr>
+            <tr><td><strong>OpenVAS (HostedScan)</strong></td><td>Network vulnerability and full port scan (on staging)</td><td class="was">1 low</td><td class="now">Fixed</td>
+              <td><a href="scans/2026-11-27/openvas.pdf">PDF</a></td></tr>
             <tr><td><strong>Sucuri SiteCheck</strong></td><td>Malware and blocklists</td><td>Clean</td><td class="now">Clean</td>
               <td><a href="scans/2026-11-24/sucuri-sitecheck.pdf">PDF</a> &middot; <a href="https://sitecheck.sucuri.net/results/https/tuckerpaymentprocessing.com">Re-test</a></td></tr>
           </tbody>
@@ -195,6 +199,10 @@
         <a href="/.well-known/security.txt">security.txt</a> published for researchers. That evening: email spoofing
         locked down (SPF, DMARC reject, null MX), HSTS preload submitted, cross-origin isolation headers added and ping disabled.
         <a class="scan-all" href="scans/2026-11-24/summary.pdf">Download the summary (PDF)</a></p>
+      <p><strong>November 27, server scans:</strong> Qualys and OpenVAS scanned the server itself on staging, an identical copy
+        of production, so live visitors were never affected. Both flagged one weak SSH setting; it was fixed that morning and
+        a Qualys rescan confirmed it. The final scan of the internet-facing ports found no actionable vulnerabilities.
+        <a class="scan-all" href="scans/2026-11-27/summary.pdf">Download the server scan summary (PDF)</a></p>
     </section>
 
     <section id="about-tamper" class="card">
