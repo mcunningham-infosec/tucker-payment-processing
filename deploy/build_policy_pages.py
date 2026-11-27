@@ -61,14 +61,15 @@ def _seo(path: str, title: str, description: str) -> str:
             f'  <meta property="og:description" content="{d}">\n  <meta property="og:url" content="{url}">\n')
 
 
-_EXT_LINK = re.compile(r'<a\b([^>]*?)\bhref="(https?://[^"]+)"([^>]*)>')
+_EXT_LINK = re.compile(r'<a\b([^>]*?)\bhref="(https?://[^"]+|[^"]+\.pdf(?:\?[^"]*)?)"([^>]*)>')
 
 
 def external_links(text: str) -> str:
-    """Links to other sites (GitHub, Root Cause Associates, LinkedIn...) open in a new tab."""
+    """Links to other sites (GitHub, Root Cause Associates, LinkedIn...) and PDFs open in a new tab."""
     def fix(m):
         pre, url, post = m.groups()
-        if "tuckerpaymentprocessing.com" in url or "target=" in pre + post:
+        own = "tuckerpaymentprocessing.com" in url and not url.split("?")[0].endswith(".pdf")
+        if own or "target=" in pre + post:
             return m.group(0)
         return f'<a{pre}href="{url}"{post} target="_blank" rel="noopener noreferrer">'
     return _EXT_LINK.sub(fix, text)
