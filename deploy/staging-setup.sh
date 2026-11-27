@@ -37,8 +37,9 @@ echo "== Settings (staging values; the Gemini key is left blank for the owner to
 mkdir -p /etc/tucker
 touch /etc/tucker/STAGING
 if [ ! -f /etc/tucker/tucker.env ]; then
-  umask 077
-  cat > /etc/tucker/tucker.env <<CONF
+  # Root-only from the moment it exists. (umask is set only for this file: setting it for the whole script made
+  # every file created afterwards root-only too, including the web pages Apache must read.)
+  ( umask 077; cat > /etc/tucker/tucker.env <<CONF
 # STAGING settings. Secrets live only here (root-only). Paste the STAGING Gemini key below.
 GEMINI_API_KEY=
 HASH_SALT=$(openssl rand -hex 32)
@@ -48,6 +49,7 @@ CIPHER_ONE_PER_DAY=0
 MONTHLY_CAP_USD=10.00
 DAILY_CAP_USD=2.00
 CONF
+  )
   chmod 600 /etc/tucker/tucker.env
 fi
 
