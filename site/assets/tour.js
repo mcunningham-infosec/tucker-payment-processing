@@ -216,9 +216,12 @@
     bubble.style.left = bubble.style.top = "";
     if (!target) { bubble.classList.add("tour-center"); return; }
 
-    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    // Large screens zoom the body (site.css): screen pixels divide by z to get page pixels.
+    var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
+    var vw = document.documentElement.clientWidth / z, vh = window.innerHeight / z;
     var w = bubble.offsetWidth, h = bubble.offsetHeight;
-    var r = target.getBoundingClientRect();
+    var br = target.getBoundingClientRect();
+    var r = { left: br.left / z, right: br.right / z, top: br.top / z, bottom: br.bottom / z, width: br.width / z, height: br.height / z };
     var clampX = function (v) { return Math.max(EDGE, Math.min(v, vw - w - EDGE)); };
     var side = vw - r.right >= w + GAP + EDGE ? "right" : r.left >= w + GAP + EDGE ? "left" : "";
     var besideStep = current >= 0 && STEPS[current] && STEPS[current].beside;   // e.g. one column of a two-column layout
@@ -235,7 +238,7 @@
       return;
     }
 
-    var x0 = r.left + window.pageXOffset, y0 = r.top + window.pageYOffset;   // item's position on the page
+    var x0 = r.left + window.pageXOffset / z, y0 = r.top + window.pageYOffset / z;   // item's position on the page
     var scrollTo;
     if (besideStep && side) {                                      // asked for: bubble beside the item, its top in view
       x = side === "right" ? x0 + r.width + GAP : x0 - w - GAP;
@@ -260,7 +263,7 @@
     }
     bubble.style.left = x + "px";
     bubble.style.top = y + "px";
-    window.scrollTo({ top: Math.max(0, scrollTo), behavior: "smooth" });
+    window.scrollTo({ top: Math.max(0, scrollTo * z), behavior: "smooth" });
   }
 
   // A one-off tip outside the numbered tour, e.g. after Cipher's attack finishes. Button goes to href.

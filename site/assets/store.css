@@ -109,9 +109,9 @@
 /* Desktop: the whole left column (Behind the Scenes + Ask Tucker) stays pinned while the page scrolls.
    The chat keeps its full size; Behind the Scenes takes the remaining height and scrolls inside itself. */
 @media (min-width:900px) {
-  .shop-grid .side, .checkout-grid .side { position:sticky; top:12px; max-height:calc(100vh - 24px); align-self:start; }
+  .shop-grid .side, .checkout-grid .side { position:sticky; top:12px; max-height:calc(100vh / var(--z) - 24px); align-self:start; }
   .shop-grid .side .bts, .checkout-grid .side .bts { flex:1 1 auto; min-height:120px; max-height:none; overflow-y:auto; }
   .shop-grid .side .chat-card, .checkout-grid .side .chat-card { flex:0 0 auto; }
-  .shop-grid .chat-card.mini .log { height:min(345px, 38vh); }
-  .checkout-grid .chat-card.mini .log { height:min(260px, 30vh); }
+  .shop-grid .chat-card.mini .log { height:min(345px, calc(38vh / var(--z))); }
+  .checkout-grid .chat-card.mini .log { height:min(260px, calc(30vh / var(--z))); }
 }

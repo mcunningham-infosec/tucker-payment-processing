@@ -22,7 +22,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICIES = ROOT / "policies"
 SITE = ROOT / "site"
-VERSION = "20261127b"          # same asset version as the other pages (see apache-hardening.conf)
+VERSION = "20261127c"          # same asset version as the other pages (see apache-hardening.conf)
 COPYRIGHT = "\u00a9 2026 Michael Cunningham, Root Cause Associates. All rights reserved."   # on every page of every PDF, and in its metadata
 GITHUB = "https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/"
 
