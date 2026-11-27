@@ -50,7 +50,17 @@ def parse(md: str) -> dict:
     return {"title": title, "subtitle": subtitle, "sections": sections}
 
 
-def page(title: str, description: str, body: str) -> str:
+def _seo(path: str, title: str, description: str) -> str:
+    """Canonical URL and link-preview tags, so search engines index the production address only."""
+    if not path:
+        return ""
+    url, t, d = f"https://tuckerpaymentprocessing.com/{path}", html.escape(f"{title} - Tucker Payment Processing"), html.escape(description)
+    return (f'  <link rel="canonical" href="{url}">\n  <meta property="og:type" content="website">\n'
+            f'  <meta property="og:site_name" content="Tucker Payment Processing">\n  <meta property="og:title" content="{t}">\n'
+            f'  <meta property="og:description" content="{d}">\n  <meta property="og:url" content="{url}">\n')
+
+
+def page(title: str, description: str, body: str, path: str = "") -> str:
     """A full site page: the standard header and tabs (AI Policies highlighted), the body, footer and tour."""
     e = html.escape
     return f"""<!doctype html>
@@ -67,7 +77,7 @@ def page(title: str, description: str, body: str) -> str:
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>{e(title)} - Tucker Payment Processing</title>
   <meta name="description" content="{e(description)}">
-  <link rel="stylesheet" href="assets/site.css?v={VERSION}">
+{_seo(path, title, description)}  <link rel="stylesheet" href="assets/site.css?v={VERSION}">
   <link rel="stylesheet" href="assets/chat.css?v={VERSION}">
   <link rel="stylesheet" href="assets/about.css?v={VERSION}">
   <link rel="stylesheet" href="assets/tour.css?v={VERSION}">
@@ -98,7 +108,7 @@ def page(title: str, description: str, body: str) -> str:
 """
 
 
-def policy_page(src: str, p: dict) -> str:
+def policy_page(src: str, p: dict, path: str = "") -> str:
     """One policy as a site page: title, policy id, each section, and a note that it's generated from the .md."""
     e = html.escape
     parts = ['    <section class="card policy">\n      <p class="crumb"><a href="policies.html">&larr; All policies</a></p>',
@@ -111,7 +121,7 @@ def policy_page(src: str, p: dict) -> str:
         parts.extend(f"      <p>{e(t)}</p>" for t in paras)
     parts.append(f'      <p class="muted-line source">This page is generated from <a href="{GITHUB}{src}.md">{src}.md</a>, '
                  "the same document Tucker answers from.</p>\n    </section>")
-    return page(p["title"], f"{p['title']} of Tucker Payment Processing (a fictional company).", "\n".join(parts))
+    return page(p["title"], f"{p['title']} of Tucker Payment Processing (a fictional company).", "\n".join(parts), path)
 
 
 def index_page(items) -> str:
@@ -128,7 +138,7 @@ def index_page(items) -> str:
 {rows}
       </ul>
     </section>"""
-    return page("AI Policies", "The AI and company policies of Tucker Payment Processing (a fictional company).", body)
+    return page("AI Policies", "The AI and company policies of Tucker Payment Processing (a fictional company).", body, "policies.html")
 
 
 def pdf(src: str, p: dict, path: pathlib.Path):
@@ -181,7 +191,7 @@ def build() -> dict:
     out, items = {}, []
     for src, name, summary in ORDER:
         p = parse((POLICIES / f"{src}.md").read_text(encoding="utf-8"))
-        out[SITE / f"{name}.html"] = policy_page(src, p)
+        out[SITE / f"{name}.html"] = policy_page(src, p, f"{name}.html")
         items.append((src, name, p, summary))
     out[SITE / "policies.html"] = index_page(items)
     return out

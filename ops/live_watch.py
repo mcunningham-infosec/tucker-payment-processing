@@ -79,6 +79,13 @@ def check(path):
         return path, "http", e.code
     except Exception as e:
         return path, "error", type(e).__name__
+    if path == "site/robots.txt":
+        # Cloudflare's managed robots.txt puts a block of "#" comment lines (its content-signal notice) above ours.
+        # Comments change nothing for crawlers, so only that leading comment block is removed before comparing.
+        lines = body.split(b"\n")
+        while lines and (lines[0].startswith(b"#") or not lines[0].strip()):
+            lines.pop(0)
+        body = b"\n".join(lines)
     if path.endswith(".html"):
         body, genuine = strip_cloudflare(body)
         if not genuine:

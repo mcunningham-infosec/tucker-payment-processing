@@ -61,9 +61,9 @@ def pdf_href(name: str) -> str:
         return f"standards/{name}.pdf"
     return f"standards/{name}.pdf?v={hashlib.sha256(src.read_bytes()).hexdigest()[:10]}"
 
-def _page(title: str, description: str, body: str) -> str:
+def _page(title: str, description: str, body: str, path: str = "") -> str:
     """A site page in the standard frame, with the standards stylesheet and the Standards tab marked as current."""
-    out = _policy.page(title, description, body)
+    out = _policy.page(title, description, body, path)
     out = out.replace('<a href="policies.html" aria-current="page">AI Policies</a>', '<a href="policies.html">AI Policies</a>', 1)
     out = out.replace('<a href="standards.html">Standards</a>', '<a href="standards.html" aria-current="page">Standards</a>', 1)
     return out.replace('<link rel="stylesheet" href="assets/tour.css',
@@ -146,7 +146,7 @@ def standard_page(name: str, doc: dict) -> str:
     parts.append(f'      <p class="muted-line source">This page is generated from <a href="{REPO}/blob/main/docs/standards/{name}.md">'
                  f"docs/standards/{name}.md</a>. Written by Michael Cunningham of Root Cause Associates; a self-assessment, not an audit or certification.</p>\n    </section>")
     return _page(doc["title"], f"{doc['title']}: how Tucker Payment Processing (a fictional company) meets it, with evidence.",
-                 "\n".join(parts))
+                 "\n".join(parts), f"standard-{name}.html")
 
 
 def index_page(docs: list) -> str:
@@ -168,7 +168,7 @@ def index_page(docs: list) -> str:
       </ul>
       <p class="muted-line">Each write-up is also in the code repository, in <a href="{REPO}/tree/main/docs/standards">docs/standards</a>.</p>
     </section>"""
-    return _page("Standards", "How Tucker Payment Processing (a fictional company) maps to AI, security and payment standards.", body)
+    return _page("Standards", "How Tucker Payment Processing (a fictional company) maps to AI, security and payment standards.", body, "standards.html")
 
 
 def load() -> list:
