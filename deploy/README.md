@@ -22,6 +22,7 @@ Apache only if its config test passes, refreshes the nightly timers and restarts
 | `tucker-reset.service` / `.timer` | Nightly reset of the demo store at midnight Eastern (`db/nightly_reset.sql`) | by `update.sh` |
 | `tucker-report.service` / `.timer` | The owner's daily security and activity email at 11:50 PM Eastern (`app/report.py`) | by `update.sh` |
 | `logrotate-apache2` | Web server logs kept at most two days | by `update.sh` |
+| `sshd-hardening.conf` | SSH offers only modern cryptography (no SHA-1 or 64-bit MACs, no 2048-bit DH fallback); keys only. Reloaded only if `sshd -t` passes | by `update.sh` |
 | `ops-agent-config.yaml` | Google Cloud Ops Agent: ships ONLY the app's owner-alert lines to Cloud Logging | once, at setup |
 | `alert-policy.json` | Cloud Monitoring policy that emails the owner when an alert line arrives | once, at setup |
 | `postgres-store-login.md` | How the app's two database logins work with no passwords (peer authentication) | once, at setup |

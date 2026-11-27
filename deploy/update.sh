@@ -19,6 +19,11 @@ a2enconf -q tucker-hardening tucker-cloudflare >/dev/null
 apache2ctl configtest && systemctl reload apache2
 
 cp deploy/logrotate-apache2 /etc/logrotate.d/apache2                # web logs kept at most two days
+
+# SSH hardening (modern MACs and key exchange only). sshd's own config test must pass before it is reloaded,
+# so a bad file can never lock anyone out; on a failed test the new file is removed again.
+cp deploy/sshd-hardening.conf /etc/ssh/sshd_config.d/50-tucker-hardening.conf
+if sshd -t; then systemctl reload ssh; else rm -f /etc/ssh/sshd_config.d/50-tucker-hardening.conf; echo "sshd config test FAILED: hardening not applied"; fi
 cp deploy/tucker-reset.service deploy/tucker-reset.timer deploy/tucker-report.service deploy/tucker-report.timer /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now tucker-reset.timer tucker-report.timer >/dev/null
