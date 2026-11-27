@@ -53,7 +53,7 @@ Evidence: `site/about.html`, `app/spend.py`, `app/cipher/soc.py`, `tests/test_ci
 
 ### MAP 4: Risks are mapped for every component, including third parties
 **Status: Met**
-Each component's risks are mapped to a control: the model (prompt injection, disclosure, misinformation), the tools (excessive agency), the retrieval library (poisoning), the web layer (the OWASP web Top 10), the database (least privilege) and the suppliers (Gemini, Cloudflare, Python packages). The mapping is published as the OWASP write-up beside this one, and the attack simulator tests 50 of those risks live.
+Each component's risks are mapped to a control: the model (prompt injection, disclosure, misinformation), the tools (excessive agency), the retrieval library (poisoning), the web layer (the OWASP web Top 10), the database (least privilege) and the suppliers (Gemini, Cloudflare, Python packages). The mapping is published as the OWASP write-up beside this one, and the attack simulator tests 100 of those risks live.
 Evidence: `app/cipher/attacks.py`, `docs/standards/owasp-llm-top-10.md`.
 
 ### MAP 5: Impacts on people are characterized
@@ -64,12 +64,12 @@ Evidence: `app/tools.py`, `app/session.py`, `app/chat.py`.
 ## Measure: test and track the risks
 ### MEASURE 1: Methods and metrics are chosen and used
 **Status: Met**
-More than 80 automated tests check the guardrails with a scripted stand-in model, so they run without calling the real AI. In production, every guardrail event is counted and reported nightly: blocked injections, masked outputs, lockouts, unavailable-AI fallbacks and spend.
+More than 110 automated tests check the guardrails with a scripted stand-in model, so they run without calling the real AI. In production, every guardrail event is counted and reported nightly: blocked injections, masked outputs, lockouts, unavailable-AI fallbacks and spend.
 Evidence: `tests/`, `app/llm.py` (FakeLLM), `app/report.py`.
 
 ### MEASURE 2: The system is evaluated for trustworthiness
 **Status: Partly met**
-Security, privacy, safety and transparency are tested in code and live: the attack simulator runs 50 attacks against the real site, and the results are checked by code rather than by the attacker's script. Independent public scanners graded the site's security A+ (96% on internet.nl). What a real program would add: a measured accuracy evaluation of the AI chatbot's answers and a bias review, which a fictional-data demo can't meaningfully run.
+Security, privacy, safety and transparency are tested in code and live: the attack simulator runs 100 attacks against the real site, and the results are checked by code rather than by the attacker's script. Independent public scanners graded the site's security A+ (96% on internet.nl). What a real program would add: a measured accuracy evaluation of the AI chatbot's answers and a bias review, which a fictional-data demo can't meaningfully run.
 Evidence: `app/cipher/detect.py`, `docs/scans/`.
 
 ### MEASURE 3: Risks are tracked over time
@@ -100,7 +100,7 @@ Evidence: `deploy/auto-maintenance.sh`, `requirements.txt`, `app/spend.py`.
 
 ### MANAGE 4: Response, recovery and communication are planned and monitored
 **Status: Partly met**
-Detection and response for attacks are built in: code rules alert after 15 blocked attacks from one source and refuse that source for the rest of the run after 50, and the AI SOC writes an incident report. Demo data resets nightly to a known state. A real company would add a written AI incident response plan, customer notification steps and recovery drills.
+Detection and response for attacks are built in: code rules alert after 15 blocked attacks from one source and refuse that source for the rest of the run after 100, and the AI SOC writes an incident report. Demo data resets nightly to a known state. A real company would add a written AI incident response plan, customer notification steps and recovery drills.
 Evidence: `app/cipher/detect.py`, `app/cipher/soc.py`, `db/nightly_reset.sql`.
 
 ## The Generative AI Profile

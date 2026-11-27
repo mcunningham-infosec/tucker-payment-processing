@@ -97,8 +97,9 @@
     kv(root, [
       ["Incident type", "Automated multi-vector attack: web application, API, AI chatbot and database"],
       ["Detection", "Deterministic guardrails on every request; SOC detection rules: alert after " +
-        ((st.rules || {}).alert_after || 15) + " blocked attacks from one source (wakes the AI analyst), block after " +
-        ((st.rules || {}).block_after || 50) + " (code shuts the source down)"],
+        ((st.rules || {}).alert_after || 15) + " blocked attacks from one source (wakes the AI analyst), burst after " +
+        ((st.rules || {}).burst_count || 8) + " attacks in " + ((st.rules || {}).burst_seconds || 6) +
+        " seconds (automated tooling), block after " + ((st.rules || {}).block_after || 100) + " (code shuts the source down)"],
       ["Attack window", fmt(st.started, true) + "  to  " + fmt(st.ended, true) + (dur ? "  (" + dur + ")" : "")],
       ["Threat actor", "\"Cipher\" (automated attack run " + (st.run_id || "") + ", user agent Cipher/1.0)"],
       ["Requested by", requester + "  - the visitor who pressed the button (location from Cloudflare)"],
@@ -149,7 +150,7 @@
       rows.push([x.t, x.actor.indexOf("Policy") === 0 ? "Policy" : (x.actor.indexOf("Detection") === 0 ? "Detection rule" : "AI SOC"), "Action: " + x.action + " - " + x.detail, "", x.outcome]);
     });
     (st.detections || []).filter(function (d) { return d.fired; }).forEach(function (d) {
-      rows.push([d.t, "Detection rule", "Rule " + d.rule + " fired: " + d.count + " blocked attacks from " + d.source, "", d.outcome]);
+      rows.push([d.t, "Detection rule", "Rule " + d.rule + " fired: " + d.count + (d.rule === "burst" ? " attacks in a few seconds from " : " blocked attacks from ") + d.source, "", d.outcome]);
     });
     if (st.retry) {
       rows.push([st.retry.t, "Cipher", "Retry after the block: GET /api/health", "",

@@ -62,5 +62,5 @@ The attacker uses the AI to cause harm outside the system: financial loss, reput
 Evidence: `app/chat.py`, `app/tools.py`, `policies/ai-assistant-policy.md`.
 
 ## Detection, not just prevention
-ATLAS is also a detection map. On the site, code rules count what the real defenses blocked from each source: after 15 blocked attacks the AI SOC is woken to investigate, and after 50 the source is refused for the rest of the run. The AI SOC's incident report lists the techniques it saw, so a reader can tie every event back to this catalog.
+ATLAS is also a detection map. On the site, code rules count what the real defenses blocked from each source: after 15 blocked attacks the AI SOC is woken to investigate, and after 100 the source is refused for the rest of the run. The AI SOC's incident report lists the techniques it saw, so a reader can tie every event back to this catalog.
 Evidence: `app/cipher/detect.py`, `app/cipher/attacks.py`, `site/assets/report.js`.

@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <title>Model Risk Management: SR 26-2 (formerly SR 11-7) - Tucker Payment Processing</title>
   <meta name="description" content="Model Risk Management: SR 26-2 (formerly SR 11-7): how Tucker Payment Processing (a fictional company) meets it, with evidence.">
-  <link rel="stylesheet" href="assets/site.css?v=20261125c">
-  <link rel="stylesheet" href="assets/chat.css?v=20261125c">
-  <link rel="stylesheet" href="assets/about.css?v=20261125c">
-  <link rel="stylesheet" href="assets/standards.css?v=20261125c">
-  <link rel="stylesheet" href="assets/tour.css?v=20261125c">
+  <link rel="stylesheet" href="assets/site.css?v=20261127a">
+  <link rel="stylesheet" href="assets/chat.css?v=20261127a">
+  <link rel="stylesheet" href="assets/about.css?v=20261127a">
+  <link rel="stylesheet" href="assets/standards.css?v=20261127a">
+  <link rel="stylesheet" href="assets/tour.css?v=20261127a">
 </head>
 <body class="home-page">
   <header class="top">
@@ -38,7 +38,7 @@
       <p class="crumb"><a href="standards.html">&larr; Standards</a></p>
       <h1>Model Risk Management: SR 26-2 (formerly SR 11-7)</h1>
       <p class="muted-line">The US banking agencies&#x27; model risk guidance, applied to the site&#x27;s AI the way a bank would · Self-assessment · November 25, 2026</p>
-      <p class="std-summary"><span class="chip met">4 met</span> <span class="chip partly">5 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/model-risk-management.pdf?v=40024bc200">Download PDF</a></p>
+      <p class="std-summary"><span class="chip met">4 met</span> <span class="chip partly">5 partly met</span> <span class="chip na">1 not applicable</span> <a class="scan-all" href="standards/model-risk-management.pdf?v=b854b3cc65">Download PDF</a></p>
       <h2>About this document</h2>
       <p>This is a self-assessment written by Michael Cunningham, who designed and built the site. It is not an audit or a regulatory opinion. For fifteen years, US banks governed their models under SR 11-7 (the Federal Reserve's 2011 guidance, issued by the OCC as Bulletin 2011-12). On April 17, 2026, the Federal Reserve, the OCC and the FDIC rescinded it and issued revised interagency guidance: Federal Reserve SR 26-2, OCC Bulletin 2026-13 and FDIC FIL-15-2026. Many policies still say "SR 11-7".</p>
       <p>The revised guidance is principles-based and risk-based. It covers model development and use, validation and monitoring, governance and controls and vendor and third-party models, scaled to a bank's size and how much it relies on each model. It matters most for banks with more than $30 billion in assets.</p>
@@ -58,7 +58,7 @@
       </div>
       <h2>Development and validation</h2>
       <div class="req"><h3>Development and testing before use <span class="chip met">Met</span></h3>
-        <p>Each AI's design, intended use and limits are documented, and more than 80 automated tests check the controls before any change is deployed, using a scripted stand-in for the model so the results are exact and repeatable.</p>
+        <p>Each AI's design, intended use and limits are documented, and more than 110 automated tests check the controls before any change is deployed, using a scripted stand-in for the model so the results are exact and repeatable.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/tree/main/tests"><code>tests/</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/llm.py"><code>app/llm.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/tests/test_guardrails.py"><code>tests/test_guardrails.py</code></a>.</p>
       </div>
       <div class="req"><h3>Conceptual soundness <span class="chip partly">Partly met</span></h3>
@@ -66,7 +66,7 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/soc.py"><code>app/cipher/soc.py</code></a>.</p>
       </div>
       <div class="req"><h3>Ongoing monitoring and outcomes analysis <span class="chip partly">Partly met</span></h3>
-        <p>Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps and the attack simulator re-tests the defenses on demand with 50 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.</p>
+        <p>Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps and the attack simulator re-tests the defenses on demand with 100 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.</p>
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/report.py"><code>app/report.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/spend.py"><code>app/spend.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/cipher/detect.py"><code>app/cipher/detect.py</code></a>.</p>
       </div>
       <div class="req"><h3>Independent validation <span class="chip partly">Partly met</span></h3>
@@ -79,8 +79,8 @@
         <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/policies/ai-assistant-policy.md"><code>policies/ai-assistant-policy.md</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/README.md"><code>README.md</code></a>.</p>
       </div>
       <div class="req"><h3>Change control for models <span class="chip met">Met</span></h3>
-        <p>A change to the model, its instructions or its tools is a code change: recorded in GitHub with its full history, scanned, tested and deployed by one scripted command.</p>
-        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>.</p>
+        <p>A change to the model, its instructions or its tools is a code change: recorded in GitHub with its full history, scanned, tested automatically, tried on a separate staging environment with its own AI key and budget, then deployed by one scripted command.</p>
+        <p class="evidence"><strong>Evidence:</strong> <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/chat.py"><code>app/chat.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/app/config.py"><code>app/config.py</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/update.sh"><code>deploy/update.sh</code></a>, <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/deploy/staging.md"><code>deploy/staging.md</code></a>.</p>
       </div>
       <div class="req"><h3>Third-party and vendor models <span class="chip partly">Partly met</span></h3>
         <p>The revised guidance says model risk principles still apply when a bank cannot see inside a vendor's model, and that is the situation here. The response is to control what surrounds it: the model gets no IP addresses or card data, can only use read-only tools, sits behind a small adapter so it can be replaced, and has hard spend caps. What a bank would add is a formal vendor review of Google's own model testing.</p>
@@ -93,6 +93,6 @@
   </main>
 
   <footer>Tucker Payment Processing is a fictional company created as a technology demonstration. It does not process real payments. All data is fictional. <span class="copyright">&copy; 2026 Michael Cunningham. All rights reserved. <a href="https://github.com/mcunningham-infosec/tucker-payment-processing/blob/main/LICENSE">License</a></span></footer>
-  <script src="assets/tour.js?v=20261125c" defer></script>
+  <script src="assets/tour.js?v=20261127a" defer></script>
 </body>
 </html>

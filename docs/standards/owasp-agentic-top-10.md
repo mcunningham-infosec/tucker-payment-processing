@@ -43,7 +43,7 @@ Evidence: `app/cipher/soc.py`, `tests/test_cipher_soc.py`.
 
 ### ASI08 Cascading Failures
 **Status: Met**
-Every AI failure stops where it happens. If Gemini is down or over budget, the AI chatbot shows a fixed message instead of an answer, and the store keeps working. If the AI SOC returns garbage, loops or says nothing, its report is built from plain facts by code, and the attacker is still blocked by code after 50 attacks. Spend caps, rate limits and the four-round tool limit stop one runaway conversation from draining what everyone else needs.
+Every AI failure stops where it happens. If Gemini is down or over budget, the AI chatbot shows a fixed message instead of an answer, and the store keeps working. If the AI SOC returns garbage, loops or says nothing, its report is built from plain facts by code, and the attacker is still blocked by code after 100 attacks. Spend caps, rate limits and the four-round tool limit stop one runaway conversation from draining what everyone else needs.
 Evidence: `app/chat.py`, `app/spend.py`, `app/cipher/detect.py`, `app/cipher/soc.py`, `tests/test_guardrails.py`, `tests/test_cipher_soc.py`.
 
 ### ASI09 Human-Agent Trust Exploitation

@@ -25,7 +25,7 @@ Evidence: `docs/standards/iso-42005.md`, `docs/standards/iso-23894.md`.
 ## Development and validation
 ### Development and testing before use
 **Status: Met**
-Each AI's design, intended use and limits are documented, and more than 80 automated tests check the controls before any change is deployed, using a scripted stand-in for the model so the results are exact and repeatable.
+Each AI's design, intended use and limits are documented, and more than 110 automated tests check the controls before any change is deployed, using a scripted stand-in for the model so the results are exact and repeatable.
 Evidence: `tests/`, `app/llm.py`, `tests/test_guardrails.py`.
 
 ### Conceptual soundness
@@ -35,7 +35,7 @@ Evidence: `app/chat.py`, `app/cipher/soc.py`.
 
 ### Ongoing monitoring and outcomes analysis
 **Status: Partly met**
-Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps and the attack simulator re-tests the defenses on demand with 50 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.
+Every guardrail event is logged and summarized in a nightly report to the owner, spending is tracked against hard caps and the attack simulator re-tests the defenses on demand with 100 live attacks, counting what held. The gap: the AI chatbot's answers are not sampled and scored for accuracy, and there is no automatic check for drift when Google updates the model behind the same name.
 Evidence: `app/report.py`, `app/spend.py`, `app/cipher/detect.py`.
 
 ### Independent validation
@@ -51,8 +51,8 @@ Evidence: `policies/ai-assistant-policy.md`, `README.md`.
 
 ### Change control for models
 **Status: Met**
-A change to the model, its instructions or its tools is a code change: recorded in GitHub with its full history, scanned, tested and deployed by one scripted command.
-Evidence: `app/chat.py`, `app/config.py`, `deploy/update.sh`.
+A change to the model, its instructions or its tools is a code change: recorded in GitHub with its full history, scanned, tested automatically, tried on a separate staging environment with its own AI key and budget, then deployed by one scripted command.
+Evidence: `app/chat.py`, `app/config.py`, `deploy/update.sh`, `deploy/staging.md`.
 
 ### Third-party and vendor models
 **Status: Partly met**

@@ -14,7 +14,7 @@ Designed and built by **Michael Cunningham** with AI-assisted development, from 
 |---|---|
 | **Home** | Chat with **Tucker**, the AI support agent (Google Gemini). A live *Behind the Scenes* panel shows every guardrail as it fires. |
 | **Tucker's Treats** | A demo store. Prices, card and address come from the database, never the browser; Tucker can answer questions about your order. |
-| **Cipher's Lair** | Press one button and **Cipher** (a scripted attacker) runs real attacks against the site, mapped to the OWASP Top 10 for LLMs. Tucker's defenses respond, and the **AI SOC Squirrel** (a bounded Gemini agent) watches the real server logs and writes an incident report you can download as a PDF. |
+| **Cipher's Lair** | Press one button and **Cipher** (a scripted attacker) runs 100 real attacks against the site, mapped to the OWASP Top 10 for web apps and for LLMs: 50 by hand, then 50 at scanner speed. Tucker's defenses respond, and the **AI SOC Squirrel** (a bounded Gemini agent) watches the real server logs and writes an incident report you can download as a PDF. |
 | **About Us** | How it is built, the AI policies, the technology and the site's security scorecard. |
 | **AI Policies** | The company's policies, which Tucker answers from (retrieval-augmented generation), and a write-up for each standard the site is built to. |
 
@@ -68,7 +68,7 @@ A requirement-by-requirement write-up, with links to the code and tests that pro
 | `docs/standards/` | The standards write-ups (source of the site's standards pages and PDFs) |
 | `ops/live_watch.py` | Hourly outside-in tamper check: every live file compared byte for byte with GitHub |
 | `docs/scans/` | Dated third-party scan results behind the scorecard PDFs |
-| `tests/` | Automated tests proving the guardrails work |
+| `tests/` | Automated tests proving the guardrails work (run on every push by GitHub Actions, `.github/workflows/tests.yml`) |
 
 ## Running the tests
 Needs Python 3.12 and a local PostgreSQL:
@@ -77,7 +77,7 @@ pip install -r requirements.txt pytest
 psql -f db/schema.sql && psql -f db/roles.sql && psql -f db/seed.sql
 pytest
 ```
-The tests use a fake model, so no AI key is needed.
+The tests use a fake model, so no AI key is needed. Every change is also tried on a separate staging server before it reaches the live site (`deploy/staging.md`).
 
 ## Stack
 Google Cloud (Compute Engine, Identity-Aware Proxy, Cloud Monitoring) · Ubuntu 24.04 · Apache · Python (FastAPI) ·

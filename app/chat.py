@@ -12,6 +12,7 @@ Every step adds an event for the live "Behind the Scenes" panel.
 Tucker Payment Processing by Michael Cunningham. (c) 2026. Built with AI-assisted development.
 """
 import logging
+import threading
 import time
 
 from . import db, guardrails, limits, spend, tools
@@ -72,6 +73,9 @@ def _ev(events, type_, status, label, detail=""):
     events.append({"type": type_, "status": status, "label": label, "detail": detail})
 
 
+_LIMIT_LOCK = threading.Lock()   # one app process: makes each limit's check-then-count a single step (Cipher's race attack checks it)
+
+
 def _rate_limited(session: Session):
     """Return a reason string if this visitor is sending too much, else None."""
     now = time.time()
@@ -116,7 +120,8 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     _ev(events, "input", "ok", f"Input checks passed ({len(text)} characters)",
         "Hidden control characters removed; length under the limit.")
 
-    limited = _rate_limited(session) or _ip_limited(client_ip)
+    with _LIMIT_LOCK:          # check-and-count as one step, so a burst of parallel requests can't slip past
+        limited = _rate_limited(session) or _ip_limited(client_ip)
     if limited:
         _ev(events, "rate", "denied", "Rate limit", limited)
         db.record_event(db.event_session(session.id, session.client_ip), "rate_limited", limited)
@@ -126,6 +131,14 @@ def handle_message(session: Session, raw_text: str, llm, client_ip: str | None =
     if hit:
         _ev(events, "injection", "denied", "Prompt injection blocked before reaching the AI", f'Matched: "{hit}"')
         db.record_event(db.event_session(session.id, session.client_ip), "injection_blocked", hit)
+        return _result(session, INJECTION_REPLY, events)
+    earlier = session.recent_inputs[-2:]
+    session.recent_inputs = (earlier + [text])[-3:]
+    split = guardrails.detect_injection(" ".join(earlier + [text])) if earlier else None
+    if split:                  # each message looked harmless alone, but together they spell out an injection
+        _ev(events, "injection", "denied", "Prompt injection split across messages, blocked before the AI",
+            f'Matched across your last {len(earlier) + 1} messages: "{split}"')
+        db.record_event(db.event_session(session.id, session.client_ip), "injection_blocked", split)
         return _result(session, INJECTION_REPLY, events)
     _ev(events, "injection", "ok", "No prompt-injection patterns found")
 

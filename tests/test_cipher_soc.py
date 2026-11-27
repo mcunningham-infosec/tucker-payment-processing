@@ -83,7 +83,7 @@ def test_cipher_blocks_survive_the_nightly_reset(monkeypatch, admin):
     _fake_runner(monkeypatch)
     c = TestClient(main.app, base_url="https://testserver")
     c.post("/api/cipher/start")
-    subprocess.run(["psql", "-q", "-v", "ON_ERROR_STOP=1", "host=/var/lib/postgresql port=5433 dbname=tucker user=postgres",
+    subprocess.run(["psql", "-q", "-v", "ON_ERROR_STOP=1", __import__("conftest").ADMIN_URL,
                     "-f", "db/nightly_reset.sql"], check=True)
     fresh = TestClient(main.app, base_url="https://testserver")
     assert fresh.post("/api/cipher/start").json()["status"] == "blocked"
@@ -148,17 +148,29 @@ def test_squirrel_can_attribute_the_attacker_from_evidence():
 
 
 def test_detection_rules_count_only_real_blocks():
-    """The SOC wakes at 15 blocked attacks (not on one, that's noise) and blocks the source at 50.
+    """The SOC wakes at 15 blocked attacks (not on one, that's noise) and blocks the source at 100.
     Attacks that got through never count toward the block."""
     from app.cipher import detect
     st = {"run_id": "abcdef0123456789", "detections": []}
     fired = []
-    for i in range(60):
-        fired += [(i + 1, f) for f in detect.observe(st, {"held": True if i % 7 else False})]
-    blocked_attacks = [i + 1 for i in range(60) if i % 7]
+    for i in range(120):     # one attack every 2 seconds: too slow for the burst rule
+        fired += [(i + 1, f) for f in detect.observe(st, {"held": True if i % 7 else False, "t": i * 2.0}) if f != "burst"]
+    blocked_attacks = [i + 1 for i in range(120) if i % 7]
     assert fired[0] == (blocked_attacks[detect.ALERT_AFTER - 1], "alert")
     assert fired[1] == (blocked_attacks[detect.BLOCK_AFTER - 1], "block")
     assert st["blocked_count"] == len(blocked_attacks)
+    assert not st.get("burst_fired")
+
+
+def test_burst_rule_fires_once_when_attacks_speed_up():
+    """Act 2: 8 attacks inside 6 seconds is automated tooling. The rule fires once, held or not."""
+    from app.cipher import detect
+    st = {"run_id": "abcdef0123456789", "detections": []}
+    slow = [f for i in range(20) for f in detect.observe(st, {"held": True, "t": i * 1.5})]
+    assert "burst" not in slow                          # Act 1 pace (1.4s + request) never trips it
+    fast = [f for i in range(20) for f in detect.observe(st, {"held": i % 2 == 0, "t": 100 + i * 0.4})]
+    assert fast.count("burst") == 1
+    assert [d for d in st["detections"] if d["rule"] == "burst"][0]["fired"] is True
 
 
 def test_a_blocked_source_really_gets_403():

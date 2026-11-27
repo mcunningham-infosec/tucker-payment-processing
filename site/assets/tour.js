@@ -44,7 +44,7 @@
       say: "Now the fun part. My nemesis Cipher the cat lives in the Lair, and he'll show you around in there. Let's go!" },
 
     { page: "cipher", spot: ".lair-real", who: "cipher",
-      say: "Muhahaha! Cipher here. Tucker doesn't come in my Lair, so I'm your guide now. Everything here is real: I run 50 actual attacks against this live website, from inside its own server." },
+      say: "Muhahaha! Cipher here. Tucker doesn't come in my Lair, so I'm your guide now. Everything here is real: I run 100 actual attacks against this live website, from inside its own server." },
     { page: "cipher", spot: "#attack", who: "cipher",
       say: "When you're ready, press this and I'll start my attack (one per day). If someone else is attacking, you'll get a place in line and I'll start the moment it's your turn. Watch all three boxes. It takes about 2½ minutes." },
     { page: "cipher", spot: ".lair-box.soc", who: "cipher",

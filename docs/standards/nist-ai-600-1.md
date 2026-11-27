@@ -49,7 +49,7 @@ Evidence: `app/chat.py`, `site/assets/report-pdf.js`, `docs/standards/eu-ai-act.
 
 ### 9. Information security
 **Status: Met**
-Generative AI brings new attacks, prompt injection above all, and the site is built around them: injection checks before anything reaches the model, read-only tools, identity enforced in code rather than by the model, output masking, rate limits and spend caps. The attack simulator runs 50 real attacks against the live site on demand, and each OWASP AI risk is answered in its own write-up.
+Generative AI brings new attacks, prompt injection above all, and the site is built around them: injection checks before anything reaches the model, read-only tools, identity enforced in code rather than by the model, output masking, rate limits and spend caps. The attack simulator runs 100 real attacks against the live site on demand, and each OWASP AI risk is answered in its own write-up.
 Evidence: `app/guardrails.py`, `app/cipher/attacks.py`, `docs/standards/owasp-llm-top-10.md`, `tests/test_guardrails.py`.
 
 ### 10. Intellectual property

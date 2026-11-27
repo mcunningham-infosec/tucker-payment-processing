@@ -23,7 +23,7 @@ Out of scope: denial of service and volume testing, social engineering and third
 
 ## Testing
 
-Please don't point automated scanners or attack tools at the live site. Cipher's Lair already runs 50 real
+Please don't point automated scanners or attack tools at the live site. Cipher's Lair already runs 100 real
 attacks against it, safely, from inside its own server, and anyone can run that. For deeper testing, run the
 project locally from this repository; the tests in `tests/` show how the guardrails are checked.
 
